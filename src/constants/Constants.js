@@ -1,0 +1,16 @@
+export const ENTER_EMAIL_OR_PHONE = "Enter Email Address  or Phone Number";
+export const MOBILE_OR_EMAIL = "Mobile Number or Email Address";
+// export const ENTER_EMAIL_OR_PHONE = "Enter Phone Number";
+// export const MOBILE_OR_EMAIL = "Mobile Number ";
+export const ENTER_THE_OTP_SEND_TO = "Enter the OTP sent to";
+export const OTP_VERIFICATION = "OTP Verification";
+export const OTP_NOT_RECEIVED = "OTP not received";
+export const RESEND_CODE = "Resend Code";
+export const SUCCESSFULLY = "Successfully";
+export const VERIFICATION_SUCCESSFULL_MESSAGE = "Verification successful! Your account has been securely verified. You now have full access to all features and services.";
+export const CONTINUE = "Continue";
+export const GENERATE_OTP = "Generate OTP";
+export const LOGIN = "Login";
+export const LOGIN_TO_ACCESS = "Log in to access your account and stay connected.";
+export const BIOMETRIC = "Biometric";
+export const ALL_ORDERS = "All Orders";
