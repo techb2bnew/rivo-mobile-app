@@ -5,16 +5,31 @@ import { grayColor, whiteColor, blackColor, lightGrayColor, mediumGray } from '.
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from '../utils';
 import { spacings, style } from '../constants/Fonts';
 import { BaseStyle } from '../constants/Style';
-import { COIN_IMAGE, SALARY_IMAGE, SHEET_IMAGE, STAR_IMAGE } from '../assests/images';
+import { CARD_IMAGE, COIN_IMAGE, SALARY_IMAGE, SHEET_IMAGE, STAR_IMAGE } from '../assests/images';
 import ExpirePointsModal from '../components/modals/ExpirePointsModal';
+import { EXPIRE_POINTS } from '../constants/Constants';
+import BarcodeModal from '../components/modals/BarcodeModal';
 const { flex, alignItemsCenter, flexDirectionRow, alignJustifyCenter, borderRadius10, resizeModeContain, resizeModeCover, positionAbsolute, justifyContentSpaceBetween, textAlign } = BaseStyle;
 
 const DashBoardScreen = ({ navigation }) => {
     const [modalVisible, setModalVisible] = useState(false);
+    const [isbarCodeModalVisible, setIsbarCodeModalVisible] = useState(false);
+    const [selectedData, setSelectedData] = useState(null);
 
     const data = [
         {
             id: '1',
+            title: 'Premium Member',
+            points: '1234567890123456',
+            backgroundColor: "#1c1c1c",
+            textColor: whiteColor,
+            subtextColor: whiteColor,
+            imageBackground: whiteColor,
+            icon: CARD_IMAGE,
+            name: "Olivia Smith"
+        },
+        {
+            id: '2',
             title: 'Points Earned',
             points: '1000PT',
             backgroundColor: "#f5f5f5",
@@ -24,7 +39,7 @@ const DashBoardScreen = ({ navigation }) => {
             icon: SALARY_IMAGE,
         },
         {
-            id: '2',
+            id: '3',
             title: 'Points Balance',
             points: '600PT',
             backgroundColor: "#1c1c1c",
@@ -34,7 +49,7 @@ const DashBoardScreen = ({ navigation }) => {
             icon: COIN_IMAGE,
         },
         {
-            id: '3',
+            id: '4',
             title: 'Points Spent',
             points: '400PT',
             backgroundColor: "#f5f5f5",
@@ -44,7 +59,7 @@ const DashBoardScreen = ({ navigation }) => {
             icon: STAR_IMAGE
         },
         {
-            id: '4',
+            id: '5',
             title: 'Tier Status',
             points: 'Bronze',
             backgroundColor: "#1c1c1c",
@@ -65,10 +80,28 @@ const DashBoardScreen = ({ navigation }) => {
         { date: "20/12/2023", points: "5,00,000" },
         { date: "20/12/2023", points: "5,00,000" },
         { date: "20/12/2023", points: "5,00,000" },
+        { date: "20/12/2023", points: "5,00,000" },
+        { date: "20/12/2023", points: "5,00,000" },
     ];
 
+    const openModal = (item) => {
+        setSelectedData(item);
+        setIsbarCodeModalVisible(true);
+    };
+
+    const closeModal = () => {
+        setIsbarCodeModalVisible(false);
+        setSelectedData(null);
+    };
+
     const renderItem = ({ item }) => (
-        <Pressable style={[styles.card, { backgroundColor: item.backgroundColor }, flexDirectionRow, alignItemsCenter, justifyContentSpaceBetween, borderRadius10]}>
+        <Pressable style={[styles.card, { backgroundColor: item.backgroundColor }, flexDirectionRow, alignItemsCenter, justifyContentSpaceBetween, borderRadius10]}
+        onPress={() => {
+            if (item.id === '1') {
+                openModal(item)
+            }
+        }}
+        >
             <View>
                 <Text style={[styles.pointsText, { color: item.textColor }]}>{item.points}</Text>
                 <Text style={[styles.subText, { color: item.subtextColor }]}>{item.title}</Text>
@@ -83,15 +116,6 @@ const DashBoardScreen = ({ navigation }) => {
         <View style={[styles.container, flex]}>
             <Header navigation={navigation} />
             <View style={styles.separator} />
-            {/* <Pressable style={[styles.card, { backgroundColor: "#1c1c1c",marginHorizontal:spacings.large }, flexDirectionRow, alignItemsCenter, justifyContentSpaceBetween, borderRadius10]}>
-                <View>
-                    <Text style={[styles.pointsText, { color: whiteColor }]}>{"item.points"}</Text>
-                    <Text style={[styles.subText, { color: whiteColor }]}>{"item.title"}</Text>
-                </View>
-                <View style={[styles.iconBox, borderRadius10, { backgroundColor: whiteColor }, alignJustifyCenter]}>
-                    <Image source={COIN_IMAGE} style={[styles.icon, resizeModeContain]} />
-                </View>
-            </Pressable> */}
             <FlatList
                 data={data}
                 renderItem={renderItem}
@@ -99,19 +123,24 @@ const DashBoardScreen = ({ navigation }) => {
                 contentContainerStyle={styles.content}
                 showsVerticalScrollIndicator={false}
             />
-            {/* <TouchableOpacity
+            <Pressable
                 style={[styles.expirePointsButton, alignJustifyCenter, positionAbsolute]}
                 onPress={() => setModalVisible(true)}
             >
                 <View style={[{ width: "100%", height: "100%", backgroundColor: '#000', borderRadius: 50 }, alignJustifyCenter]}>
-                    <Text style={[styles.expirePointsText, textAlign]}>Expire Points</Text>
+                    <Text style={[styles.expirePointsText, textAlign]}>{EXPIRE_POINTS}</Text>
                 </View>
-            </TouchableOpacity> */}
+            </Pressable>
 
             {modalVisible && <ExpirePointsModal
                 visible={modalVisible}
                 onClose={() => setModalVisible(false)}
                 data={expirydata}
+            />}
+            {isbarCodeModalVisible && <BarcodeModal
+                isVisible={isbarCodeModalVisible}
+                data={selectedData}
+                onClose={closeModal}
             />}
         </View>
     );

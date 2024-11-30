@@ -1,16 +1,12 @@
 import React from "react";
-import {
-    Modal,
-    View,
-    Text,
-    TouchableOpacity,
-    FlatList,
-    StyleSheet,
-} from "react-native";
+import { Modal, View, Text, TouchableOpacity, FlatList, StyleSheet } from "react-native";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from '.././../utils';
 import { blackColor, redColor, whiteColor, grayColor, lightGrayOpacityColor } from '../../constants/Color';
-import { spacings } from '../../constants/Fonts';
+import { spacings, style } from '../../constants/Fonts';
 import Ionicons from 'react-native-vector-icons/dist/Ionicons';
+import { DATE, EXPIRE_POINTS, POINT_EXPIRE } from "../../constants/Constants";
+import { BaseStyle } from '../../constants/Style';
+const { textAlign, alignJustifyCenter, flex, borderRadius10, alignItemsCenter,flexDirectionRow,justifyContentSpaceBetween } = BaseStyle;
 
 const ExpirePointsModal = ({ visible, onClose, data }) => {
     return (
@@ -20,20 +16,20 @@ const ExpirePointsModal = ({ visible, onClose, data }) => {
             animationType="fade"
             onRequestClose={onClose}
         >
-            <View style={styles.modalContainer}>
+            <View style={[styles.modalContainer,flex,alignJustifyCenter]}>
                 <View style={styles.modalContent}>
                     {/* Header */}
-                    <View style={styles.modalHeader}>
-                        <Text style={styles.modalTitle}>Expire Points</Text>
+                    <View style={[styles.modalHeader,flexDirectionRow,alignItemsCenter,justifyContentSpaceBetween]}>
+                        <Text style={styles.modalTitle}>{EXPIRE_POINTS}</Text>
                         <TouchableOpacity onPress={onClose} >
                             <Ionicons name="close-sharp" size={24} color={blackColor} />
                         </TouchableOpacity>
                     </View>
 
                     {/* Table Header */}
-                    <View style={styles.tableHeader}>
-                        <Text style={styles.headerText}>Date</Text>
-                        <Text style={styles.headerText}>Points Expire</Text>
+                    <View style={[styles.tableHeader,flexDirectionRow,justifyContentSpaceBetween]}>
+                        <Text style={styles.headerText}>{DATE}</Text>
+                        <Text style={styles.headerText}>{POINT_EXPIRE}</Text>
                     </View>
 
                     {/* List */}
@@ -44,6 +40,8 @@ const ExpirePointsModal = ({ visible, onClose, data }) => {
                             <View
                                 style={[
                                     styles.row,
+                                    justifyContentSpaceBetween,
+                                    flexDirectionRow
                                 ]}
                             >
                                 <Text style={styles.rowText}>{item.date}</Text>
@@ -60,62 +58,47 @@ const ExpirePointsModal = ({ visible, onClose, data }) => {
 
 const styles = StyleSheet.create({
     modalContainer: {
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: "rgba(0, 0, 0, 0.5)",
+        backgroundColor: "rgba(0, 0, 0, 0.7)",
     },
     modalContent: {
         backgroundColor: whiteColor,
         width: "90%",
-        height: hp(45),
+        maxHeight: hp(42),
         borderRadius: 15,
-        padding: 15,
-        shadowColor: blackColor,
-        shadowOffset: { width: 0, height: 5 },
-        shadowOpacity: 0.3,
-        shadowRadius: 10,
-        elevation: 10,
+        padding: spacings.xxxLarge,
     },
     modalHeader: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-        marginBottom: 20,
+        marginBottom:spacings.Large2x,
     },
     modalTitle: {
-        fontSize: 22,
-        fontWeight: "700",
+        fontSize: style.fontSizeLargeX.fontSize,
+        fontWeight: style.fontWeightMedium1x.fontWeight,
         color: blackColor,
     },
     closeButton: {
         backgroundColor: redColor,
-        padding: 5,
+        padding: spacings.small,
         borderRadius: 20,
     },
     tableHeader: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        paddingVertical: 10,
+        paddingVertical: spacings.xLarge,
         borderBottomWidth: 1,
         borderBottomColor: lightGrayOpacityColor,
     },
     headerText: {
-        fontSize: 16,
-        fontWeight: "600",
+        fontSize: style.fontSizeNormal2x.fontSize,
+        fontWeight: style.fontWeightMedium.fontWeight,
         color: blackColor,
     },
     row: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        paddingVertical: 10,
-        paddingHorizontal: 5,
+        paddingVertical: spacings.xLarge,
+        paddingHorizontal: spacings.small,
         borderRadius: 8,
     },
     rowText: {
-        fontSize: 14,
+        fontSize: style.fontSizeNormal.fontSize,
         color: grayColor,
-        fontWeight: "500",
+        fontWeight: style.fontWeightThin1x.fontWeight,
     },
 });
 

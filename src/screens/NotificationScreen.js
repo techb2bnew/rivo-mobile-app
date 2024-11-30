@@ -5,6 +5,7 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from '../utils'
 import { spacings, style } from '../constants/Fonts';
 import { BaseStyle } from '../constants/Style';
 import Ionicons from 'react-native-vector-icons/dist/Ionicons';
+import { NOTIFICATIOS } from '../constants/Constants';
 
 const { flex, flexDirectionRow } = BaseStyle;
 
@@ -27,7 +28,6 @@ const NotificationScreen = ({ navigation }) => {
     </>
   );
 
-
   return (
     <View style={[styles.container, flex]}>
       <View style={[{ width: wp(100), height: "auto", padding: spacings.large }, flexDirectionRow]}>
@@ -35,7 +35,7 @@ const NotificationScreen = ({ navigation }) => {
           <Ionicons name="arrow-back" size={30} color={blackColor} />
         </Pressable>
         <Text style={styles.headerText}>
-          Notifications
+          {NOTIFICATIOS}
         </Text>
       </View>
 

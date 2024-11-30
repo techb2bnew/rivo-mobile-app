@@ -16,6 +16,7 @@ const TierScreen = ({ navigation }) => {
       title: "Bronze",
       points: 2000,
       achieved: true,
+      isInProgress: false,
       icon: BRONZE_IMAGE
     },
     {
@@ -31,6 +32,7 @@ const TierScreen = ({ navigation }) => {
       title: "Gold",
       points: 6000,
       achieved: false,
+      isInProgress: false,
       icon: GOLD_IMAGE,
     },
     {
@@ -38,6 +40,7 @@ const TierScreen = ({ navigation }) => {
       title: "Platinum",
       points: 15000,
       achieved: false,
+      isInProgress: false,
       icon: VIP_IMAGE,
     },
   ];

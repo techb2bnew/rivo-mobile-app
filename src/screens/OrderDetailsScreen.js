@@ -6,6 +6,7 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from '../utils'
 import Ionicons from 'react-native-vector-icons/dist/Ionicons';
 import CustomButton from '../components/CustomButton';
 import { BaseStyle } from '../constants/Style';
+import { DELIVERY_METHOD, LOCATION, PRICE_DETAILS, SHIPPING, SUBTOTAL, TOTAL } from '../constants/Constants';
 const { flex, alignItemsCenter, alignItemsFlexStart, flexDirectionRow, textAlign, justifyContentSpaceBetween, borderRadius10, resizeModeContain, resizeModeCover, positionAbsolute, alignJustifyCenter } = BaseStyle;
 
 const OrderDetailsScreen = ({ route, navigation }) => {
@@ -45,13 +46,13 @@ const OrderDetailsScreen = ({ route, navigation }) => {
 
                 <View style={styles.separator} />
                 <View style={styles.infoContainer}>
-                    <Text style={styles.infoTitle}>Location</Text>
+                    <Text style={styles.infoTitle}>{LOCATION}</Text>
                     <Text style={styles.infoText}>{order.location}</Text>
                 </View>
 
                 <View style={styles.separator} />
                 <View style={styles.infoContainer}>
-                    <Text style={styles.infoTitle}>Delivery Method</Text>
+                    <Text style={styles.infoTitle}>{DELIVERY_METHOD}</Text>
                     <Text style={styles.infoText}>{order.deliveryMethod}</Text>
                 </View>
 
@@ -73,17 +74,17 @@ const OrderDetailsScreen = ({ route, navigation }) => {
                     </>
                 ))}
                 <View style={styles.priceDetails}>
-                    <Text style={[styles.priceHeader, justifyContentSpaceBetween, flexDirectionRow]}>Price Details ({order.items.length} Items)</Text>
+                    <Text style={[styles.priceHeader, justifyContentSpaceBetween, flexDirectionRow]}>{PRICE_DETAILS} ({order.items.length} Items)</Text>
                     <View style={[styles.priceRow, flexDirectionRow, justifyContentSpaceBetween]}>
-                        <Text style={styles.priceLabel}>Subtotal</Text>
+                        <Text style={styles.priceLabel}>{SUBTOTAL}</Text>
                         <Text style={styles.priceValue}>{order.subtotal}</Text>
                     </View>
                     <View style={[styles.priceRow, flexDirectionRow, justifyContentSpaceBetween]}>
-                        <Text style={styles.priceLabel}>Shipping</Text>
+                        <Text style={styles.priceLabel}>{SHIPPING}</Text>
                         <Text style={styles.priceValue}>{(order.shipping) ? (order.shipping) : "--"}</Text>
                     </View>
                     <View style={[styles.priceRow, flexDirectionRow, justifyContentSpaceBetween]}>
-                        <Text style={styles.priceLabelTotal}>Total</Text>
+                        <Text style={styles.priceLabelTotal}>{TOTAL}</Text>
                         <Text style={styles.priceValueTotal}>{totalPrice}</Text>
                     </View>
                 </View>
