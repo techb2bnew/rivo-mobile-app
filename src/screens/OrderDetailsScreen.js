@@ -63,8 +63,8 @@ const OrderDetailsScreen = ({ route, navigation }) => {
                             <Image source={{ uri: item.image }} style={styles.productImage} />
                             <View style={styles.productDetails}>
                                 <Text style={styles.productName}>{item.name}</Text>
-                                <Text style={styles.productInfo}>-uuid:{item.id}</Text>
-                                <Text style={[styles.productInfo, { color: blackColor, fontWeight: style.fontWeightThin1x.fontWeight }]}>Qty: {item.quantity}</Text>
+                                <Text style={styles.productInfo}>-{item.id}</Text>
+                                <Text style={[styles.productInfo, { color: blackColor, fontWeight: style.fontWeightThin1x.fontWeight,marginTop:2 }]}>Qty: {item.quantity}</Text>
                             </View>
                             <View style={{ height: "100%" }}>
                                 <Text style={styles.productPrice}>{item.price}</Text>

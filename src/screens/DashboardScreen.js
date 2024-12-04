@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, FlatList, Text, Image, Pressable, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, FlatList, Text, Image, Pressable } from 'react-native';
 import Header from '../components/Header';
 import { grayColor, whiteColor, blackColor, lightGrayColor, mediumGray } from '../constants/Color';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from '../utils';
@@ -184,7 +184,7 @@ const styles = StyleSheet.create({
         height: wp(20),
         borderRadius: 50,
         backgroundColor: whiteColor,
-        bottom: hp(3),
+        bottom: hp(2),
         right: wp(5),
         elevation: 5,
         shadowColor: '#000',

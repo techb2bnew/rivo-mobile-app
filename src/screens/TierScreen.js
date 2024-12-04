@@ -5,7 +5,7 @@ import { blackColor, grayColor, mediumGray, whiteColor } from '../constants/Colo
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from '../utils';
 import { spacings, style } from '../constants/Fonts';
 import { BaseStyle } from '../constants/Style';
-import { BRONZE_IMAGE, GOLD_IMAGE, MANUAL_IMAGE, SILVER_IMAGE, VIP_IMAGE } from '../assests/images';
+import { BRONZE_IMAGE, GOLD_IMAGE, MANUAL_IMAGE, PROCESSING_ICON, SILVER_IMAGE, VIP_IMAGE } from '../assests/images';
 import MaterialIcons from 'react-native-vector-icons/dist/MaterialIcons';
 const { flex, alignItemsCenter, alignItemsFlexStart, flexDirectionRow, textAlign, justifyContentCenter, borderRadius10, resizeModeContain, resizeModeCover, positionAbsolute, alignJustifyCenter } = BaseStyle;
 
@@ -81,12 +81,13 @@ const TierScreen = ({ navigation }) => {
         <View style={[flex, alignJustifyCenter]}>
           {item.achieved && (
             <View style={styles.statusIcon}>
-              <MaterialIcons name="check-circle" size={20} color="green" />
+              <MaterialIcons name="check-circle" size={22} color="green" />
             </View>
           )}
           {item.isInProgress && (
             <View style={styles.statusIcon}>
-              <MaterialIcons name="sync" size={23} color="gray" />
+              {/* <MaterialIcons name="sync" size={23} color="gray" /> */}
+              <Image source={PROCESSING_ICON} style={{resizeMode:"contain",width:17,height:17}}/>
             </View>
           )}
         </View>
