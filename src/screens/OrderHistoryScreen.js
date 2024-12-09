@@ -379,14 +379,14 @@ const OrderHistoryScreen = ({ navigation }) => {
           renderItem={renderOrderItem}
           contentContainerStyle={{ paddingBottom: 20 }}
           showsVerticalScrollIndicator={false}
-          // refreshControl={
-          //   <RefreshControl
-          //     refreshing={refreshing}
-          //     onRefresh={onRefresh}
-          //     colors={["#42A5F5"]} 
-          //     tintColor="#42A5F5" 
-          //   />
-          // }
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              colors={["#42A5F5"]} 
+              tintColor="#42A5F5" 
+            />
+          }
         />
       </View>
 

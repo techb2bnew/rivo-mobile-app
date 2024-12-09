@@ -21,4 +21,5 @@ export const VIP_IMAGE = require('./vip.png');
 export const GOLD_IMAGE = require('./gold.png');
 export const CARD_IMAGE = require('./creditcard.png');
 export const PROCESSING_ICON = require('./processing.png');
-
+export const FEATHER_ICON = require('./FeathersIocn.png');
+export const CELEBRATION_ICON = require('./celebration.png');

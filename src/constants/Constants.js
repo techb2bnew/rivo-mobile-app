@@ -1,4 +1,4 @@
-export const ENTER_EMAIL_OR_PHONE = "Enter Email Address  or Phone Number";
+export const ENTER_EMAIL_OR_PHONE = "Enter Email Address or Phone Number";
 export const MOBILE_OR_EMAIL = "Mobile Number or Email Address";
 // export const ENTER_EMAIL_OR_PHONE = "Enter Phone Number";
 // export const MOBILE_OR_EMAIL = "Mobile Number ";
@@ -29,3 +29,5 @@ export const POINTS = "Points";
 export const ORDERS = "Orders";
 export const DOB = "Dob";
 export const DOA = "Doa";
+export const EARNED_POINTS = "Earned Points";
+export const SPENT_POINTS = "Spent Points";

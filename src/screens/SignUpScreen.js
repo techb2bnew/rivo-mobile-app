@@ -105,6 +105,7 @@ const SignUpScreen = ({ navigation }) => {
               keyboardType="default"
               value={inputValue}
               onChangeText={setInputValue}
+              placeholderTextColor={grayColor}
             />
           </View>
           {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
@@ -115,7 +116,7 @@ const SignUpScreen = ({ navigation }) => {
       ) : (
         <View style={[flex, justifyContentCenter]}>
           <Text style={[styles.title, textAlign]}>{OTP_VERIFICATION}</Text>
-          <Text style={[styles.subtitle, textAlign,{width:wp(80)}]}>
+          <Text style={[styles.subtitle, textAlign, { width: wp(80) }]}>
             {ENTER_THE_OTP_SEND_TO} {inputValue}
           </Text>
           <View style={[styles.otpContainer, alignItemsCenter]}>
@@ -129,13 +130,15 @@ const SignUpScreen = ({ navigation }) => {
             />
           </View>
           {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
-          <Text style={[styles.subtitle, textAlign,flexDirectionRow,{height:hp(2)}]}>
-            {OTP_NOT_RECEIVED} ?
-            <Pressable onPress={onPressResendCode} style={{ marginTop: spacings.large }}>
-              <Text style={[styles.subtitle, textAlign, { color: blackColor, fontWeight: "600", textDecorationLine: "underline",height:hp(2) }]}> {RESEND_CODE}
+          <View style={{ flexDirection: "row", alignSelf: 'center' }}>
+            <Text style={[styles.subtitle, textAlign, flexDirectionRow, { height: hp(3.5) }]}>
+              {OTP_NOT_RECEIVED} ?
+            </Text>
+            <Pressable onPress={onPressResendCode} style={{ height: hp(3) }}>
+              <Text style={[styles.subtitle, textAlign, { color: blackColor, fontWeight: "600", textDecorationLine: "underline", }]}> {RESEND_CODE}
               </Text>
             </Pressable>
-          </Text>
+          </View>
           <View style={{ marginTop: spacings.ExtraLarge1x }}>
             <CustomButton title="Submit" onPress={handleOtpSubmit} />
           </View>
@@ -161,13 +164,14 @@ const styles = StyleSheet.create({
   title: {
     fontSize: style.fontSizeLarge3x.fontSize,
     fontWeight: style.fontWeightBold.fontWeight,
-
+    width: wp(80),
+    textAlign:"center"
   },
   subtitle: {
     fontSize: style.fontSizeNormal2x.fontSize,
     color: grayColor,
     alignItems: "center",
-    justifyContent:"center"
+    justifyContent: "center"
   },
   inputContainer: {
     borderWidth: 1,

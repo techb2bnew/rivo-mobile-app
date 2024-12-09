@@ -23,7 +23,7 @@ const BarcodeModal = ({ isVisible, data, onClose }) => {
                 <View style={[styles.modalContainer, borderRadius10, alignItemsCenter]}>
                     <View style={[{ padding: spacings.large, width: "100%" }, alignJustifyCenter]}>
                         <Text style={styles.modalName}>{data.name}</Text>
-                        <Text style={styles.modalMembership}>{data.title}</Text>
+                        {/* <Text style={styles.modalMembership}>{data.title}</Text> */}
                         <Text style={styles.modalCardNumber}>{data.points}</Text>
                     </View>
                     {/* Barcode */}
