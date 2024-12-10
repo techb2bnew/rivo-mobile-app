@@ -14,13 +14,14 @@ const OrderDetailsScreen = ({ route, navigation }) => {
     const calculateTotalPrice = () => {
         // Calculate the total price of items
         const totalPrice = order.items.reduce((total, item) => {
-            const price = parseFloat(item.price.replace('$', ''));
+            // const price = parseFloat(item?.price?.replace('$', ''));
+            const price = item.price
             return total + price * item.quantity;
         }, 0);
 
         // Add shipping cost (if available, else default to $0)
         const shippingCost = order.shipping
-            ? parseFloat(order.shipping.replace('$', ''))
+            ? parseFloat(order.shipping)
             : 0;  // Default to 0 if shipping is missing or undefined
 
         const grandTotal = totalPrice + shippingCost;
@@ -64,10 +65,10 @@ const OrderDetailsScreen = ({ route, navigation }) => {
                             <View style={styles.productDetails}>
                                 <Text style={styles.productName}>{item.name}</Text>
                                 <Text style={styles.productInfo}>-{item.id}</Text>
-                                <Text style={[styles.productInfo, { color: blackColor, fontWeight: style.fontWeightThin1x.fontWeight,marginTop:2 }]}>Qty: {item.quantity}</Text>
+                                <Text style={[styles.productInfo, { color: blackColor, fontWeight: style.fontWeightThin1x.fontWeight, marginTop: 2 }]}>Qty: {item.quantity}</Text>
                             </View>
                             <View style={{ height: "100%" }}>
-                                <Text style={styles.productPrice}>{item.price}</Text>
+                                <Text style={styles.productPrice}>${item.price}</Text>
                             </View>
                         </View>
                         <View style={styles.separator} />
@@ -77,15 +78,15 @@ const OrderDetailsScreen = ({ route, navigation }) => {
                     <Text style={[styles.priceHeader, justifyContentSpaceBetween, flexDirectionRow]}>{PRICE_DETAILS} ({order.items.length} Items)</Text>
                     <View style={[styles.priceRow, flexDirectionRow, justifyContentSpaceBetween]}>
                         <Text style={styles.priceLabel}>{SUBTOTAL}</Text>
-                        <Text style={styles.priceValue}>{order.subtotal}</Text>
+                        <Text style={styles.priceValue}>${order.subtotal}</Text>
                     </View>
                     <View style={[styles.priceRow, flexDirectionRow, justifyContentSpaceBetween]}>
                         <Text style={styles.priceLabel}>{SHIPPING}</Text>
-                        <Text style={styles.priceValue}>{(order.shipping) ? (order.shipping) : "--"}</Text>
+                        <Text style={styles.priceValue}>${(order.shipping) ? (order.shipping) : "--"}</Text>
                     </View>
                     <View style={[styles.priceRow, flexDirectionRow, justifyContentSpaceBetween]}>
                         <Text style={styles.priceLabelTotal}>{TOTAL}</Text>
-                        <Text style={styles.priceValueTotal}>{totalPrice}</Text>
+                        <Text style={styles.priceValueTotal}>${totalPrice}</Text>
                     </View>
                 </View>
 
@@ -170,7 +171,7 @@ const styles = StyleSheet.create({
         color: grayColor,
     },
     priceValue: {
-        fontSize: style.fontSizeSmall.fontSize,
+        fontSize: style.fontSizeNormal.fontSize,
         color: blackColor,
     },
     priceLabelTotal: {

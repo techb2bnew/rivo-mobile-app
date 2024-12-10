@@ -37,6 +37,7 @@ const TabNavigator = () => {
                 height: 24,
                 tintColor: focused ? blackColor : 'gray',
                 alignSelf: 'center',
+                resizeMode:"contain"
               }}
             />
           );

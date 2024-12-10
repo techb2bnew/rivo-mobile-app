@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
     modalContent: {
         backgroundColor: whiteColor,
         padding: spacings.Large2x,
-        width: '80%',
+        width: '90%',
     },
     successIcon: {
         fontSize: spacings.ExtraLarge4x,
@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
     buttonText: {
         color: whiteColor,
         fontSize: style.fontSizeMedium.fontSize,
-        fontWeight: style.fontWeightBold.fontWeight,
+        fontWeight: style.fontWeightMedium.fontWeight,
     },
 });
 

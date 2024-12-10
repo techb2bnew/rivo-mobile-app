@@ -53,7 +53,7 @@ const SignUpScreen = ({ navigation }) => {
   // };
 
   // Validate OTP
-  
+
   const validateOtp = () => {
     if (!otp || otp.length < 4) {
       setErrorMessage('Please enter a valid 4-digit OTP.');
@@ -130,12 +130,12 @@ const SignUpScreen = ({ navigation }) => {
             />
           </View>
           {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
-          <View style={{ flexDirection: "row", alignSelf: 'center' }}>
+          <View style={{ flexDirection: "row", alignSelf: 'center', marginTop: spacings.xxLarge }}>
             <Text style={[styles.subtitle, textAlign, flexDirectionRow, { height: hp(3.5) }]}>
               {OTP_NOT_RECEIVED} ?
             </Text>
             <Pressable onPress={onPressResendCode} style={{ height: hp(3) }}>
-              <Text style={[styles.subtitle, textAlign, { color: blackColor, fontWeight: "600", textDecorationLine: "underline", }]}> {RESEND_CODE}
+              <Text style={[styles.subtitle, textAlign, { color: blackColor, fontWeight: "800", textDecorationLine: "underline", }]}> {RESEND_CODE}
               </Text>
             </Pressable>
           </View>
@@ -165,7 +165,7 @@ const styles = StyleSheet.create({
     fontSize: style.fontSizeLarge3x.fontSize,
     fontWeight: style.fontWeightBold.fontWeight,
     width: wp(80),
-    textAlign:"center"
+    textAlign: "center"
   },
   subtitle: {
     fontSize: style.fontSizeNormal2x.fontSize,
@@ -177,7 +177,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: blackColor,
     paddingHorizontal: spacings.xLarge,
-    marginBottom: spacings.Large2x,
+    // marginBottom: spacings.Large2x,
   },
   countryCode: {
     fontSize: style.fontSizeNormal2x.fontSize,
@@ -188,7 +188,7 @@ const styles = StyleSheet.create({
     fontSize: style.fontSizeNormal2x.fontSize,
   },
   otpContainer: {
-    marginVertical: spacings.xLarge,
+    marginTop: spacings.xLarge,
   },
   otpWrapper: {
     marginTop: spacings.large,

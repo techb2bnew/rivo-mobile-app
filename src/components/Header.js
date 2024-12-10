@@ -7,7 +7,7 @@ import { BaseStyle } from '../constants/Style';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp, } from '../utils';
 const { alignItemsCenter, alignJustifyCenter, flexDirectionRow, borderRadius10, justifyContentSpaceBetween } = BaseStyle;
 
-const Header = ({navigation}) => {
+const Header = ({ navigation }) => {
     const onPressNotification = () => {
         navigation.navigate("Notification")
     }
@@ -29,7 +29,7 @@ const Header = ({navigation}) => {
                 <TouchableOpacity onPress={onPressNotification}>
                     <Image
                         source={BELL_IMAGE}
-                        style={styles.icon}
+                        style={[styles.icon, { marginTop: 2 }]}
                     />
                 </TouchableOpacity>
 

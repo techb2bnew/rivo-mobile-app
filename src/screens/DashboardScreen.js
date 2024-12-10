@@ -24,7 +24,7 @@ const DashBoardScreen = ({ navigation }) => {
             backgroundColor: "#1c1c1c",
             textColor: whiteColor,
             subtextColor: whiteColor,
-            imageBackground: whiteColor,
+            imageBackground: "#e6e6e6",
             icon: CARD_IMAGE,
             name: "Olivia Smith"
         },
@@ -65,7 +65,7 @@ const DashBoardScreen = ({ navigation }) => {
             backgroundColor: "#1c1c1c",
             textColor: whiteColor,
             subtextColor: whiteColor,
-            imageBackground: whiteColor,
+            imageBackground: "#e6e6e6",
             icon: SHEET_IMAGE
         },
     ];

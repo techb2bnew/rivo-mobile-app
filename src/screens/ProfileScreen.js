@@ -26,7 +26,7 @@ const ProfileScreen = ({ navigation }) => {
     setEmail("rivo@gmail.com");
     setPoint("2000");
     setOrder("12");
-    setDoa("05th May, 2020");
+    setDoa("05th May,2020");
     setDob("06th Nov,1997");
     setImageUrl("https://s3-alpha-sig.figma.com/img/5933/2448/f48059d31c0669631b5ea41f6434a0d3?Expires=1734912000&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=Z8hOlHMFg2wDnOhLisKw5LVJredwB2mXdtbrVznL~oSR8AcMxUmhl~P-~EnP8MmoAf~qgAoyt-UcdQFyTYCt3FoAuVHjTfJfWrtK1O5zFaYKX8LoMx6Fu3zJcY3tk3syN5c0CXlvkJuC2t~kl2jeDgQHJ8hbzUwvyps3Z~8XCBC~Hc2RkENqpunEI-hv4H2ZhDR0aTz4DWXvaZHHLdLzchgS0DKsCF-I7XSKHQjgzktCnkHKIFUXcx0Y6X4LXy~cBCZIgTPARkI6VYOkoaBwialVueZj5i-3Pm7yIgznBRihrHGzIdFY4Eu2iNPCCaE-HJSvMTPzjLCStseGuieUCw__")
   }, [])
@@ -122,7 +122,7 @@ const styles = StyleSheet.create({
   },
   pointBox: {
     width: wp(100),
-    height: hp(10),
+    height: hp(12),
     marginTop: spacings.large,
     borderTopColor: "#d9d9d9",
     borderTopWidth: 1,

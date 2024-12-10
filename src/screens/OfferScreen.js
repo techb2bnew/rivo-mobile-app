@@ -9,10 +9,20 @@ import Carousel, { Pagination } from 'react-native-snap-carousel';
 import { BANNER_IMAGE } from '../assests/images';
 const { flex, alignItemsCenter, flexDirectionRow, textAlign, alignJustifyCenter, borderRadius10, resizeModeContain, resizeModeCover, positionAbsolute } = BaseStyle;
 
-const OfferScreen = ({navigation}) => {
+const OfferScreen = ({ navigation }) => {
     const [activeSlide, setActiveSlide] = useState(0);
 
     const carouselItems = [
+        {
+            image: 'https://www.feathers.com.au/cdn/shop/files/feathers-boutique-black-friday-2024-20percent-off-everything-mob.jpg?v=1731557910&width=960',
+            // caption: 'Luxury In Layers',
+            // text: "50 - 70% Off"
+        },
+        {
+            image: 'https://www.feathers.com.au/cdn/shop/files/feathers-boutique-collections-coats-jackets-kent-tailored-vest-camel.jpg?v=1731879643&width=800',
+            caption: 'Luxury In Layers',
+            text: "50 - 70% Off"
+        },
         {
             image: 'https://s3-alpha-sig.figma.com/img/8797/d63a/61d5b03b0db98c346e470afc16996bf6?Expires=1733702400&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=RPRA1P6azT-z7Gx7ALzwnUMlk2rdKdzQOGyyLXF1Y7w2CEPNDH1xgorRqFMXtsUdLWdcqarlsUO4csyyd7JbR9hj3ddAlPShhlvhJSOATV~TUCcjq58~2fbL8xfdvW7zTKRgd59HMQNxNMwVqd2U-eYiPFwIkYLdQNHsn0tKINUUBLvjheElkbyRDr4QyNCER2mb9qvPwx83fw621Eb2puFmuAyDNwBs1tGXv2yat7U6ibbfjFF6vi7ryKq5swMHdQ8vtoj5oMSF7kdjNzMjBtjwI98dOltK6SxQ6NPsVKReRYdSs-7P2dfUBVZllO2mVQQUN01co0tZXFZOK6elUg__',
             caption: 'Get All That You Covet',
@@ -28,16 +38,7 @@ const OfferScreen = ({navigation}) => {
             caption: 'Luxury In Layers',
             text: "50 - 70% Off"
         },
-        {
-            image: 'https://www.feathers.com.au/cdn/shop/files/feathers-boutique-black-friday-2024-20percent-off-everything-mob.jpg?v=1731557910&width=960',
-            // caption: 'Luxury In Layers',
-            // text: "50 - 70% Off"
-        },
-        {
-            image: 'https://www.feathers.com.au/cdn/shop/files/feathers-boutique-collections-coats-jackets-kent-tailored-vest-camel.jpg?v=1731879643&width=800',
-            caption: 'Luxury In Layers',
-            text: "50 - 70% Off"
-        },
+       
     ];
 
     const categories = [
@@ -87,7 +88,7 @@ const OfferScreen = ({navigation}) => {
 
     return (
         <View style={[styles.container, flex]}>
-            <Header navigation={navigation}/>
+            <Header navigation={navigation} />
             <ScrollView showsVerticalScrollIndicator={false}>
                 <View style={{ marginVertical: spacings.large }}>
                     <Carousel
@@ -147,8 +148,8 @@ const styles = StyleSheet.create({
         backgroundColor: "rgba(0, 0, 0, 0.5)",
     },
     categoryImage: {
-        width: wp(30),
-        height: wp(30),
+        width: wp(28),
+        height: wp(28),
     },
     categoryLabel: {
         color: whiteColor,
@@ -180,7 +181,7 @@ const styles = StyleSheet.create({
     sectionHeader: {
         fontSize: style.fontSizeLarge1x.fontSize,
         fontWeight: style.fontWeightMedium.fontWeight,
-        margin: spacings.large
+        marginBottom: spacings.large
     },
 
 });

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, FlatList, RefreshControl, Platform, Pressable } from 'react-native';
 import Header from '../components/Header';
 import { blackColor, goldColor, grayColor, mediumGray, whiteColor, greenColor } from '../constants/Color';
@@ -7,268 +7,334 @@ import { spacings, style } from '../constants/Fonts';
 import { BaseStyle } from '../constants/Style';
 import { ALL_ORDERS } from '../constants/Constants';
 import Entypo from 'react-native-vector-icons/dist/Entypo';
+import getRealm from '../schemas/schemas';
+
 const { flex, alignItemsCenter, alignItemsFlexStart, flexDirectionRow, textAlign, justifyContentSpaceBetween, borderRadius10, resizeModeContain, resizeModeCover, positionAbsolute, alignJustifyCenter } = BaseStyle;
 
+const orderdata = [
+  {
+    id: '12456',
+    points: 500,
+    date: ' Oct 20, 2024',
+    time: '06:00 PM',
+    status: 'Fulfilled',
+    location: '#2748 bottlebrush',
+    store: "online Store",
+    deliveryMethod: "Economy",
+    subtotal: "$48.00",
+    shipping: "$4.00",
+    items: [
+      {
+        id: 'uuid:5a780f5b-2435-4e43bb',
+        name: 'Selling Plans Ski Wax',
+        price: '$24.00',
+        quantity: 1,
+        image: 'https://dfstudio-d420.kxcdn.com/wordpress/wp-content/uploads/2019/06/digital_camera_photo-1080x675.jpg',
+      },
+      {
+        id: 'uuid:5a780f5b-2435-4e43bb',
+        name: 'Selling Plans Ski Wax',
+        price: '$24.00',
+        quantity: 1,
+        image: 'https://dfstudio-d420.kxcdn.com/wordpress/wp-content/uploads/2019/06/digital_camera_photo-1080x675.jpg',
+      },
+      {
+        id: 'uuid:5a780f5b-2435-4e43bb',
+        name: 'Selling Plans Ski Wax',
+        price: '$24.00',
+        quantity: 1,
+        image: 'https://dfstudio-d420.kxcdn.com/wordpress/wp-content/uploads/2019/06/digital_camera_photo-1080x675.jpg',
+      },
+    ],
+  },
+  {
+    id: '12458',
+    points: 400,
+    date: ' Oct 23, 2024',
+    time: '06:00 PM',
+    status: 'Pending',
+    location: '#2748 bottlebrush',
+    store: "online Store",
+    deliveryMethod: "Economy",
+    subtotal: "$48.00",
+    shipping: "$4.00",
+    items: [
+      {
+        id: '2',
+        name: 'Ski Wax Deluxe',
+        price: '$34.00',
+        quantity: 2,
+        image: 'https://dfstudio-d420.kxcdn.com/wordpress/wp-content/uploads/2019/06/digital_camera_photo-1080x675.jpg',
+      },
+    ],
+  },
+  {
+    id: '12459',
+    points: 250,
+    date: ' Oct 28, 2024',
+    time: '06:14 PM',
+    status: 'Fulfilled',
+    location: '#2748 bottlebrush',
+    store: "online Store",
+    deliveryMethod: "Economy",
+    subtotal: "$48.00",
+    shipping: "$4.00",
+    items: [
+      {
+        id: '2',
+        name: 'Ski Wax Deluxe',
+        price: '$34.00',
+        quantity: 2,
+        image: 'https://dfstudio-d420.kxcdn.com/wordpress/wp-content/uploads/2019/06/digital_camera_photo-1080x675.jpg',
+      },
+    ],
+  },
+  {
+    id: '12460',
+    points: 515,
+    date: ' Nov 20, 2024',
+    time: '06:10 PM',
+    status: 'Pending',
+    location: '#2748 bottlebrush',
+    store: "online Store",
+    deliveryMethod: "Economy",
+    subtotal: "$48.00",
+    shipping: "$4.00",
+    items: [
+      {
+        id: '2',
+        name: 'Ski Wax Deluxe',
+        price: '$34.00',
+        quantity: 2,
+        image: 'https://dfstudio-d420.kxcdn.com/wordpress/wp-content/uploads/2019/06/digital_camera_photo-1080x675.jpg',
+      },
+    ],
+  },
+  {
+    id: '12461',
+    points: 50,
+    date: ' Nov 22, 2024',
+    time: '06:03 PM',
+    status: 'Pending',
+    location: '#2748 bottlebrush',
+    store: "online Store",
+    deliveryMethod: "Economy",
+    subtotal: "$48.00",
+    shipping: "$4.00",
+    items: [
+      {
+        id: '2',
+        name: 'Ski Wax Deluxe',
+        price: '$34.00',
+        quantity: 2,
+        image: 'https://dfstudio-d420.kxcdn.com/wordpress/wp-content/uploads/2019/06/digital_camera_photo-1080x675.jpg',
+      },
+    ],
+  },
+  {
+    id: '12462',
+    points: 520,
+    date: ' Nov 24, 2024',
+    time: '06:10 PM',
+    status: 'Fulfilled',
+    location: '#2748 bottlebrush',
+    store: "online Store",
+    deliveryMethod: "Economy",
+    subtotal: "$48.00",
+    shipping: "",
+    items: [
+      {
+        id: '2',
+        name: 'Ski Wax Deluxe',
+        price: '$34.00',
+        quantity: 2,
+        image: 'https://dfstudio-d420.kxcdn.com/wordpress/wp-content/uploads/2019/06/digital_camera_photo-1080x675.jpg',
+      },
+    ],
+  },
+  {
+    id: '12463',
+    points: 450,
+    date: ' Nov 25, 2024',
+    time: '06:00 AM',
+    status: 'Fulfilled',
+    location: '#2748 bottlebrush',
+    store: "online Store",
+    deliveryMethod: "Economy",
+    subtotal: "$48.00",
+    shipping: "$4.00",
+    items: [
+      {
+        id: '2',
+        name: 'Ski Wax Deluxe',
+        price: '$34.00',
+        quantity: 2,
+        image: 'https://dfstudio-d420.kxcdn.com/wordpress/wp-content/uploads/2019/06/digital_camera_photo-1080x675.jpg',
+      },
+    ],
+  },
+  {
+    id: '12464',
+    points: 350,
+    date: ' Nov 27, 2024',
+    time: '03:00 PM',
+    status: 'Fulfilled',
+    location: '#2748 bottlebrush',
+    store: "online Store",
+    deliveryMethod: "Economy",
+    subtotal: "$48.00",
+    shipping: "$4.00",
+    items: [
+      {
+        id: '2',
+        name: 'Ski Wax Deluxe',
+        price: '$34.00',
+        quantity: 2,
+        image: 'https://dfstudio-d420.kxcdn.com/wordpress/wp-content/uploads/2019/06/digital_camera_photo-1080x675.jpg',
+      },
+    ],
+  },
+  {
+    id: '12465',
+    points: 430,
+    date: ' Nov 28, 2024',
+    time: '06:00 PM',
+    status: 'Fulfilled',
+    location: '#2748 bottlebrush',
+    store: "online Store",
+    deliveryMethod: "Economy",
+    subtotal: "$48.00",
+    shipping: "$4.00",
+    items: [
+      {
+        id: '2',
+        name: 'Ski Wax Deluxe',
+        price: '$34.00',
+        quantity: 2,
+        image: 'https://dfstudio-d420.kxcdn.com/wordpress/wp-content/uploads/2019/06/digital_camera_photo-1080x675.jpg',
+      },
+    ],
+  },
+  {
+    id: '12466',
+    points: 430,
+    date: ' Nov 29, 2024',
+    time: '06:00 PM',
+    status: 'Pending',
+    location: '#2748 bottlebrush',
+    store: "online Store",
+    deliveryMethod: "Economy",
+    subtotal: "$48.00",
+    shipping: "",
+    items: [
+      {
+        id: '2',
+        name: 'Ski Wax Deluxe',
+        price: '$34.00',
+        quantity: 2,
+        image: 'https://dfstudio-d420.kxcdn.com/wordpress/wp-content/uploads/2019/06/digital_camera_photo-1080x675.jpg',
+      },
+    ],
+  },
+];
+
 const OrderHistoryScreen = ({ navigation }) => {
-  const [expandedOrderId, setExpandedOrderId] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
-  const [orders, setOrders] = useState([
-    {
-      id: '12456',
-      points: 500,
-      date: ' Oct 20, 2024',
-      time: '06:00 PM',
-      status: 'Fulfilled',
-      location: '#2748 bottlebrush',
-      store: "online Store",
-      deliveryMethod: "Economy",
-      subtotal: "$48.00",
-      shipping: "$4.00",
-      items: [
-        {
-          id: 'uuid:5a780f5b-2435-4e43bb',
-          name: 'Selling Plans Ski Wax',
-          price: '$24.00',
-          quantity: 1,
-          image: 'https://dfstudio-d420.kxcdn.com/wordpress/wp-content/uploads/2019/06/digital_camera_photo-1080x675.jpg',
-        },
-        {
-          id: 'uuid:5a780f5b-2435-4e43bb',
-          name: 'Selling Plans Ski Wax',
-          price: '$24.00',
-          quantity: 1,
-          image: 'https://dfstudio-d420.kxcdn.com/wordpress/wp-content/uploads/2019/06/digital_camera_photo-1080x675.jpg',
-        },
-        {
-          id: 'uuid:5a780f5b-2435-4e43bb',
-          name: 'Selling Plans Ski Wax',
-          price: '$24.00',
-          quantity: 1,
-          image: 'https://dfstudio-d420.kxcdn.com/wordpress/wp-content/uploads/2019/06/digital_camera_photo-1080x675.jpg',
-        },
-      ],
-    },
-    {
-      id: '12458',
-      points: 400,
-      date: ' Oct 23, 2024',
-      time: '06:00 PM',
-      status: 'Pending',
-      location: '#2748 bottlebrush',
-      store: "online Store",
-      deliveryMethod: "Economy",
-      subtotal: "$48.00",
-      shipping: "$4.00",
-      items: [
-        {
-          id: '2',
-          name: 'Ski Wax Deluxe',
-          price: '$34.00',
-          quantity: 2,
-          image: 'https://dfstudio-d420.kxcdn.com/wordpress/wp-content/uploads/2019/06/digital_camera_photo-1080x675.jpg',
-        },
-      ],
-    },
-    {
-      id: '12459',
-      points: 250,
-      date: ' Oct 28, 2024',
-      time: '06:14 PM',
-      status: 'Fulfilled',
-      location: '#2748 bottlebrush',
-      store: "online Store",
-      deliveryMethod: "Economy",
-      subtotal: "$48.00",
-      shipping: "$4.00",
-      items: [
-        {
-          id: '2',
-          name: 'Ski Wax Deluxe',
-          price: '$34.00',
-          quantity: 2,
-          image: 'https://dfstudio-d420.kxcdn.com/wordpress/wp-content/uploads/2019/06/digital_camera_photo-1080x675.jpg',
-        },
-      ],
-    },
-    {
-      id: '12460',
-      points: 515,
-      date: ' Nov 20, 2024',
-      time: '06:10 PM',
-      status: 'Pending',
-      location: '#2748 bottlebrush',
-      store: "online Store",
-      deliveryMethod: "Economy",
-      subtotal: "$48.00",
-      shipping: "$4.00",
-      items: [
-        {
-          id: '2',
-          name: 'Ski Wax Deluxe',
-          price: '$34.00',
-          quantity: 2,
-          image: 'https://dfstudio-d420.kxcdn.com/wordpress/wp-content/uploads/2019/06/digital_camera_photo-1080x675.jpg',
-        },
-      ],
-    },
-    {
-      id: '12461',
-      points: 50,
-      date: ' Nov 22, 2024',
-      time: '06:03 PM',
-      status: 'Pending',
-      location: '#2748 bottlebrush',
-      store: "online Store",
-      deliveryMethod: "Economy",
-      subtotal: "$48.00",
-      shipping: "$4.00",
-      items: [
-        {
-          id: '2',
-          name: 'Ski Wax Deluxe',
-          price: '$34.00',
-          quantity: 2,
-          image: 'https://dfstudio-d420.kxcdn.com/wordpress/wp-content/uploads/2019/06/digital_camera_photo-1080x675.jpg',
-        },
-      ],
-    },
-    {
-      id: '12462',
-      points: 520,
-      date: ' Nov 24, 2024',
-      time: '06:10 PM',
-      status: 'Fulfilled',
-      location: '#2748 bottlebrush',
-      store: "online Store",
-      deliveryMethod: "Economy",
-      subtotal: "$48.00",
-      shipping: "",
-      items: [
-        {
-          id: '2',
-          name: 'Ski Wax Deluxe',
-          price: '$34.00',
-          quantity: 2,
-          image: 'https://dfstudio-d420.kxcdn.com/wordpress/wp-content/uploads/2019/06/digital_camera_photo-1080x675.jpg',
-        },
-      ],
-    },
-    {
-      id: '12463',
-      points: 450,
-      date: ' Nov 25, 2024',
-      time: '06:00 AM',
-      status: 'Fulfilled',
-      location: '#2748 bottlebrush',
-      store: "online Store",
-      deliveryMethod: "Economy",
-      subtotal: "$48.00",
-      shipping: "$4.00",
-      items: [
-        {
-          id: '2',
-          name: 'Ski Wax Deluxe',
-          price: '$34.00',
-          quantity: 2,
-          image: 'https://dfstudio-d420.kxcdn.com/wordpress/wp-content/uploads/2019/06/digital_camera_photo-1080x675.jpg',
-        },
-      ],
-    },
-    {
-      id: '12464',
-      points: 350,
-      date: ' Nov 27, 2024',
-      time: '03:00 PM',
-      status: 'Fulfilled',
-      location: '#2748 bottlebrush',
-      store: "online Store",
-      deliveryMethod: "Economy",
-      subtotal: "$48.00",
-      shipping: "$4.00",
-      items: [
-        {
-          id: '2',
-          name: 'Ski Wax Deluxe',
-          price: '$34.00',
-          quantity: 2,
-          image: 'https://dfstudio-d420.kxcdn.com/wordpress/wp-content/uploads/2019/06/digital_camera_photo-1080x675.jpg',
-        },
-      ],
-    },
-    {
-      id: '12465',
-      points: 430,
-      date: ' Nov 28, 2024',
-      time: '06:00 PM',
-      status: 'Fulfilled',
-      location: '#2748 bottlebrush',
-      store: "online Store",
-      deliveryMethod: "Economy",
-      subtotal: "$48.00",
-      shipping: "$4.00",
-      items: [
-        {
-          id: '2',
-          name: 'Ski Wax Deluxe',
-          price: '$34.00',
-          quantity: 2,
-          image: 'https://dfstudio-d420.kxcdn.com/wordpress/wp-content/uploads/2019/06/digital_camera_photo-1080x675.jpg',
-        },
-      ],
-    },
-    {
-      id: '12466',
-      points: 430,
-      date: ' Nov 29, 2024',
-      time: '06:00 PM',
-      status: 'Pending',
-      location: '#2748 bottlebrush',
-      store: "online Store",
-      deliveryMethod: "Economy",
-      subtotal: "$48.00",
-      shipping: "",
-      items: [
-        {
-          id: '2',
-          name: 'Ski Wax Deluxe',
-          price: '$34.00',
-          quantity: 2,
-          image: 'https://dfstudio-d420.kxcdn.com/wordpress/wp-content/uploads/2019/06/digital_camera_photo-1080x675.jpg',
-        },
-      ],
-    },
-  ]);
+  const [orders, setOrders] = useState(orderdata);
+  const [ordersData, setOrdersData] = useState(orderdata);
 
-  // useEffect(() => {
-  //   const fetchOrderHistory = async () => {
-  //     try {
-  //       // Check if the API has already been called before (using flag in AsyncStorage)
-  //       const isFirstTime = await AsyncStorage.getItem('orderHistoryFetched');
+  // const saveOrderToRealm = (orderData) => {
+  //   const realm = getRealm();
+  //   try {
+  //     realm.write(() => {
+  //       orderData.forEach((order) => {
+  //         realm.create('Order', {
+  //           id: order.id,
+  //           points: order.points,
+  //           date: order.date,
+  //           time: order.time,
+  //           status: order.status,
+  //           location: order.location,
+  //           store: order.store,
+  //           deliveryMethod: order.deliveryMethod,
+  //           subtotal: order.subtotal,
+  //           shipping: order.shipping,
+  //           items: order.items.map((item) => ({
+  //             id: item.id,
+  //             name: item.name,
+  //             price: item.price,
+  //             quantity: item.quantity,
+  //             image: item.image,
+  //           })),
+  //         });
+  //       });
+  //     });
+  //     console.log('Orders saved successfully!');
+  //   } catch (error) {
+  //     console.error('Error saving order to Realm:', error);
+  //   }
+  // };
 
-  //       if (isFirstTime !== 'true') {
-  //         // First time, hit the API to fetch data
-  //         const response = await axios.get('YOUR_API_URL');
-  //         setOrderHistory(response.data); // Store the fetched data in state
+  const saveOrderToRealm = (orderData) => {
+    const realm = getRealm();
 
-  //         // Store the data in AsyncStorage for future use
-  //         await AsyncStorage.setItem('orderHistoryData', JSON.stringify(response.data));
-  //         await AsyncStorage.setItem('orderHistoryFetched', 'true'); // Set the flag
-  //       } else {
-  //         // Not the first time, load data from AsyncStorage
-  //         const cachedData = await AsyncStorage.getItem('orderHistoryData');
-  //         if (cachedData) {
-  //           setOrderHistory(JSON.parse(cachedData)); // Use cached data from AsyncStorage
-  //         }
-  //       }
-  //     } catch (error) {
-  //       console.error('Error fetching order history:', error);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
+    const convertToNumber = (value) => {
+      // Remove the dollar sign and any non-numeric characters
+      const cleanedValue = value.replace(/[^\d.-]/g, '');
+      const numericValue = parseFloat(cleanedValue);
 
-  //   fetchOrderHistory();
-  // }, []);
+      return isNaN(numericValue) ? 0 : numericValue; // If conversion fails, return 0
+    };
+
+    try {
+      realm.write(() => {
+        orderData.forEach((order) => {
+          // Check if the order already exists in Realm
+          const existingOrder = realm.objectForPrimaryKey('Order', order.id);
+
+          if (!existingOrder) {
+            realm.create('Order', {
+              id: order.id,
+              points: Number(order.points),  // Convert points to number
+              date: order.date,
+              time: order.time,
+              status: order.status,
+              location: order.location,
+              store: order.store,
+              deliveryMethod: order.deliveryMethod,
+              subtotal: convertToNumber(order.subtotal), // Convert subtotal to number
+              shipping: convertToNumber(order.shipping), // Convert shipping to number
+              items: order.items.map((item) => ({
+                id: item.id,
+                name: item.name,
+                price: convertToNumber(item.price), // Convert item price to number
+                quantity: Number(item.quantity), // Ensure quantity is a number
+                image: item.image,
+              })),
+            });
+          } else {
+            console.log(`Order with ID ${order.id} already exists, skipping.`);
+          }
+        });
+      });
+      console.log('Orders processed successfully!');
+    } catch (error) {
+      console.error('Error saving order to Realm:', error);
+    }
+  };
+
+
+  useEffect(() => {
+    if (orders?.length) {
+      saveOrderToRealm(orders);
+    }
+    const loadOrders = () => {
+      const ordersFromRealm = fetchOrdersFromRealm();
+      setOrdersData(ordersFromRealm.reverse());
+    };
+
+    loadOrders();
+  }, [orders]);
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -317,7 +383,7 @@ const OrderHistoryScreen = ({ navigation }) => {
           ],
         },
         {
-          id: '124555',
+          id: '124555', // Ensure all new IDs are unique
           points: 500,
           date: ' Oct 20, 2024',
           time: '06:00 PM',
@@ -338,14 +404,24 @@ const OrderHistoryScreen = ({ navigation }) => {
           ],
         },
       ];
-      setOrders([...newData, ...orders]);
+
+      // Merge new data with existing orders, ensuring no duplicates
+      const mergedData = [
+        ...newData.filter(
+          (newItem) => !orders.some((existingItem) => existingItem.id === newItem.id)
+        ),
+        ...orders
+
+      ];
+
+      setOrders(mergedData);
       setRefreshing(false);
     }, 2000);
   };
 
   const renderOrderItem = ({ item }) => (
-    <Pressable style={styles.orderContainer} 
-    onPress={() => { navigation.navigate('OrderDetails', { order: item }) }}
+    <Pressable style={styles.orderContainer}
+      onPress={() => { navigation.navigate('OrderDetails', { order: item }) }}
     >
       <View style={[flexDirectionRow, justifyContentSpaceBetween, alignItemsCenter]}>
         <Text style={styles.orderId}>Order #{item.id}</Text>
@@ -367,6 +443,19 @@ const OrderHistoryScreen = ({ navigation }) => {
     </Pressable>
   );
 
+  const fetchOrdersFromRealm = () => {
+    const realm = getRealm();
+    try {
+      const orders = realm.objects('Order');
+      console.log('Fetched orders:', orders);
+      return Array.from(orders);
+    } catch (error) {
+      console.error('Error fetching orders from Realm:', error);
+      return [];
+    }
+  };
+
+
   return (
     <View style={[styles.container, flex]}>
       <Header navigation={navigation} />
@@ -374,8 +463,8 @@ const OrderHistoryScreen = ({ navigation }) => {
       <View style={{ height: Platform.OS === "android" ? hp(88) : hp(78) }}>
         <Text style={[styles.title, { padding: spacings.large }]}>{ALL_ORDERS}</Text>
         <FlatList
-          data={orders}
-          keyExtractor={(item) => item.id}
+          data={ordersData}
+          keyExtractor={(item) => item.id.toString()}
           renderItem={renderOrderItem}
           contentContainerStyle={{ paddingBottom: 20 }}
           showsVerticalScrollIndicator={false}
@@ -383,8 +472,8 @@ const OrderHistoryScreen = ({ navigation }) => {
             <RefreshControl
               refreshing={refreshing}
               onRefresh={onRefresh}
-              colors={["#42A5F5"]} 
-              tintColor="#42A5F5" 
+              colors={["#42A5F5"]}
+              tintColor="#42A5F5"
             />
           }
         />

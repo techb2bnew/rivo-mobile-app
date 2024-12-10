@@ -162,7 +162,7 @@ const WalletScreen = ({ navigation }) => {
       </View>
 
       {/* Summary */}
-      <View style={[styles.summary, flexDirectionRow, justifyContentSpaceBetween]}>
+      <View style={[styles.summary, flexDirectionRow, justifyContentSpaceBetween,alignItemsCenter]}>
         <View>
           <Text style={[styles.summaryMonth, { color: grayColor }]}>2024</Text>
           <Text style={[styles.summaryMonth]}>November</Text>
@@ -247,7 +247,8 @@ const styles = StyleSheet.create({
   },
   infoText: {
     padding: spacings.xxxxLarge,
-    fontWeight: style.fontWeightMedium.fontWeight,
+    fontSize: style.fontSizeSmall2x.fontSize,
+    fontWeight: style.fontWeightThin1x.fontWeight,
     color: blackColor,
   },
   separator: {
