@@ -9,6 +9,7 @@ import { BaseStyle } from '../constants/Style';
 import OTPTextInput from 'react-native-otp-textinput';
 import { CONTINUE, ENTER_EMAIL_OR_PHONE, ENTER_THE_OTP_SEND_TO, GENERATE_OTP, MOBILE_OR_EMAIL, OTP_NOT_RECEIVED, OTP_VERIFICATION, RESEND_CODE, SUCCESSFULLY, VERIFICATION_SUCCESSFULL_MESSAGE } from '../constants/Constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { triggerLocalNotification } from '../notificationService';
 const { flex, alignItemsCenter, flexDirectionRow, textAlign, justifyContentCenter, borderRadius10, justifyContentSpaceBetween } = BaseStyle;
 
 const SignUpScreen = ({ navigation }) => {
@@ -80,6 +81,7 @@ const SignUpScreen = ({ navigation }) => {
     setIsSuccessModalVisible(false);
     await AsyncStorage.setItem('userToken', "12345678");
     navigation.replace('TabNavigator');
+    triggerLocalNotification("Welcome!", "Welcome to the app");
   };
 
   // const handleLogout = async () => {
