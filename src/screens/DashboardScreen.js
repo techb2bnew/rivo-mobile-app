@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { View, StyleSheet, FlatList, Text, Image, Pressable } from 'react-native';
 import Header from '../components/Header';
 import { grayColor, whiteColor, blackColor, lightGrayColor, mediumGray } from '../constants/Color';
@@ -9,12 +9,18 @@ import { CARD_IMAGE, COIN_IMAGE, SALARY_IMAGE, SHEET_IMAGE, STAR_IMAGE } from '.
 import ExpirePointsModal from '../components/modals/ExpirePointsModal';
 import { EXPIRE_POINTS } from '../constants/Constants';
 import BarcodeModal from '../components/modals/BarcodeModal';
+import { useDispatch } from 'react-redux';
+import messaging from '@react-native-firebase/messaging';
+import PushNotification from 'react-native-push-notification';
+import { useFocusEffect } from '@react-navigation/native';
+import { addNotification } from '../redux/actions';
 const { flex, alignItemsCenter, flexDirectionRow, alignJustifyCenter, borderRadius10, resizeModeContain, resizeModeCover, positionAbsolute, justifyContentSpaceBetween, textAlign } = BaseStyle;
 
 const DashBoardScreen = ({ navigation }) => {
     const [modalVisible, setModalVisible] = useState(false);
     const [isbarCodeModalVisible, setIsbarCodeModalVisible] = useState(false);
     const [selectedData, setSelectedData] = useState(null);
+    const dispatch = useDispatch();
 
     const data = [
         {
@@ -96,11 +102,11 @@ const DashBoardScreen = ({ navigation }) => {
 
     const renderItem = ({ item }) => (
         <Pressable style={[styles.card, { backgroundColor: item.backgroundColor }, flexDirectionRow, alignItemsCenter, justifyContentSpaceBetween, borderRadius10]}
-        onPress={() => {
-            if (item.id === '1') {
-                openModal(item)
-            }
-        }}
+            onPress={() => {
+                if (item.id === '1') {
+                    openModal(item)
+                }
+            }}
         >
             <View>
                 <Text style={[styles.pointsText, { color: item.textColor }]}>{item.points}</Text>
@@ -111,6 +117,37 @@ const DashBoardScreen = ({ navigation }) => {
             </View>
         </Pressable>
     );
+
+    const fetchNotifications = () => {
+        PushNotification.getDeliveredNotifications((deliveredNotifications) => {
+            deliveredNotifications.forEach((notification) => {
+                dispatch(addNotification({
+                    identifier: notification.identifier,
+                    title: notification.title,
+                    body: notification.body,
+                }));
+            });
+        });
+    };
+
+    const listenForPushNotifications = () => {
+        messaging().onMessage(async (remoteMessage) => {
+            // Check if notification is not already added by checking the identifier
+            dispatch(addNotification({
+                identifier: remoteMessage.messageId,
+                title: remoteMessage.notification?.title || 'No Title',
+                body: remoteMessage.notification?.body || 'No Body',
+            }));
+        });
+    };
+
+    useFocusEffect(
+        useCallback(() => {
+            fetchNotifications();
+            listenForPushNotifications();
+        }, [])
+    );
+
 
     return (
         <View style={[styles.container, flex]}>

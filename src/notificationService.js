@@ -1,9 +1,4 @@
-// notificationService.js
-import { Platform } from 'react-native';
 import PushNotification from 'react-native-push-notification';
-
-// Configure Push Notification
-
 
 // Function to schedule notification
 export const scheduleNotification = (title,message) => {

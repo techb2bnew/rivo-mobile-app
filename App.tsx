@@ -9,6 +9,8 @@ import NetInfo from '@react-native-community/netinfo';
 import Toast from './src/components/Toast';
 import PushNotification from 'react-native-push-notification';
 import messaging from '@react-native-firebase/messaging';
+import { Provider} from 'react-redux';
+import store from './src/redux/store';
 
 function App(): React.JSX.Element {
   const [showSplash, setShowSplash] = useState(true);
@@ -16,7 +18,6 @@ function App(): React.JSX.Element {
   const [isConnected, setIsConnected] = useState(true);
   const [toastMessage, setToastMessage] = useState('');
   const [toastVisible, setToastVisible] = useState(false);
-  
   useEffect(() => {
     const timeout = setTimeout(() => setShowSplash(false), 3000);
     return () => clearTimeout(timeout);
@@ -71,7 +72,7 @@ function App(): React.JSX.Element {
     getFCMToken();
 
   }, []);
-  
+
   useEffect(() => {
     const checkLoginStatus = async () => {
       const userToken = await AsyncStorage.getItem('userToken');
@@ -108,6 +109,7 @@ function App(): React.JSX.Element {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
+      <Provider store={store}>
       <NavigationContainer>
         {showSplash ? (
           <CustomSplashScreen />
@@ -118,6 +120,7 @@ function App(): React.JSX.Element {
         )}
       </NavigationContainer>
       <Toast message={toastMessage} visible={toastVisible} />
+      </Provider>
     </SafeAreaView>
   );
 }

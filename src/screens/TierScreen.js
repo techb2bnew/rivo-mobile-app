@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Image, FlatList } from 'react-native';
 import Header from '../components/Header';
 import { blackColor, grayColor, mediumGray, whiteColor } from '../constants/Color';
@@ -7,9 +7,15 @@ import { spacings, style } from '../constants/Fonts';
 import { BaseStyle } from '../constants/Style';
 import { BRONZE_IMAGE, GOLD_IMAGE, MANUAL_IMAGE, PROCESSING_ICON, SILVER_IMAGE, VIP_IMAGE } from '../assests/images';
 import MaterialIcons from 'react-native-vector-icons/dist/MaterialIcons';
+import { useDispatch } from 'react-redux';
+import messaging from '@react-native-firebase/messaging';
+import PushNotification from 'react-native-push-notification';
+import { useFocusEffect } from '@react-navigation/native';
+import { addNotification } from '../redux/actions';
 const { flex, alignItemsCenter, alignItemsFlexStart, flexDirectionRow, textAlign, justifyContentCenter, borderRadius10, resizeModeContain, resizeModeCover, positionAbsolute, alignJustifyCenter } = BaseStyle;
 
 const TierScreen = ({ navigation }) => {
+  const dispatch = useDispatch();
   const levels = [
     {
       id: "1",
@@ -87,13 +93,44 @@ const TierScreen = ({ navigation }) => {
           {item.isInProgress && (
             <View style={styles.statusIcon}>
               {/* <MaterialIcons name="sync" size={23} color="gray" /> */}
-              <Image source={PROCESSING_ICON} style={{resizeMode:"contain",width:17,height:17}}/>
+              <Image source={PROCESSING_ICON} style={{ resizeMode: "contain", width: 17, height: 17 }} />
             </View>
           )}
         </View>
       </View>
     );
   };
+
+  const fetchNotifications = () => {
+    PushNotification.getDeliveredNotifications((deliveredNotifications) => {
+      deliveredNotifications.forEach((notification) => {
+        dispatch(addNotification({
+          identifier: notification.identifier,
+          title: notification.title,
+          body: notification.body,
+        }));
+      });
+    });
+  };
+
+  const listenForPushNotifications = () => {
+    messaging().onMessage(async (remoteMessage) => {
+      // Check if notification is not already added by checking the identifier
+      dispatch(addNotification({
+        identifier: remoteMessage.messageId,
+        title: remoteMessage.notification?.title || 'No Title',
+        body: remoteMessage.notification?.body || 'No Body',
+      }));
+    });
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchNotifications();
+      listenForPushNotifications();
+    }, [])
+  );
+
 
   return (
     <View style={[styles.container, flex]}>

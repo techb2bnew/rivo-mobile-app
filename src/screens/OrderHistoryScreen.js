@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { View, Text, StyleSheet, FlatList, RefreshControl, Platform, Pressable } from 'react-native';
 import Header from '../components/Header';
 import { blackColor, goldColor, grayColor, mediumGray, whiteColor, greenColor } from '../constants/Color';
@@ -8,6 +8,12 @@ import { BaseStyle } from '../constants/Style';
 import { ALL_ORDERS } from '../constants/Constants';
 import Entypo from 'react-native-vector-icons/dist/Entypo';
 import getRealm from '../schemas/schemas';
+import { useDispatch } from 'react-redux';
+import messaging from '@react-native-firebase/messaging';
+import PushNotification from 'react-native-push-notification';
+import { triggerLocalNotification } from '../notificationService';
+import { useFocusEffect } from '@react-navigation/native';
+import { addNotification } from '../redux/actions';
 
 const { flex, alignItemsCenter, alignItemsFlexStart, flexDirectionRow, textAlign, justifyContentSpaceBetween, borderRadius10, resizeModeContain, resizeModeCover, positionAbsolute, alignJustifyCenter } = BaseStyle;
 
@@ -239,6 +245,7 @@ const orderdata = [
 ];
 
 const OrderHistoryScreen = ({ navigation }) => {
+  const dispatch = useDispatch();
   const [refreshing, setRefreshing] = useState(false);
   const [orders, setOrders] = useState(orderdata);
   const [ordersData, setOrdersData] = useState(orderdata);
@@ -322,6 +329,36 @@ const OrderHistoryScreen = ({ navigation }) => {
       console.error('Error saving order to Realm:', error);
     }
   };
+
+  const fetchNotifications = () => {
+    PushNotification.getDeliveredNotifications((deliveredNotifications) => {
+      deliveredNotifications.forEach((notification) => {
+        dispatch(addNotification({
+          identifier: notification.identifier,
+          title: notification.title,
+          body: notification.body,
+        }));
+      });
+    });
+  };
+
+  const listenForPushNotifications = () => {
+    messaging().onMessage(async (remoteMessage) => {
+      // Check if notification is not already added by checking the identifier
+      dispatch(addNotification({
+        identifier: remoteMessage.messageId,
+        title: remoteMessage.notification?.title || 'No Title',
+        body: remoteMessage.notification?.body || 'No Body',
+      }));
+    });
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchNotifications();
+      listenForPushNotifications();
+    }, [])
+  );
 
 
   useEffect(() => {
@@ -447,7 +484,7 @@ const OrderHistoryScreen = ({ navigation }) => {
     const realm = getRealm();
     try {
       const orders = realm.objects('Order');
-      console.log('Fetched orders:', orders);
+      // console.log('Fetched orders:', orders);
       return Array.from(orders);
     } catch (error) {
       console.error('Error fetching orders from Realm:', error);

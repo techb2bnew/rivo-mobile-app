@@ -5,9 +5,14 @@ import { blackColor, whiteColor } from '../constants/Color';
 import { spacings, style } from '../constants/Fonts';
 import { BaseStyle } from '../constants/Style';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp, } from '../utils';
+import { useSelector } from 'react-redux';
+import useNotificationCount from '../hooks/useNotificationCount';
 const { alignItemsCenter, alignJustifyCenter, flexDirectionRow, borderRadius10, justifyContentSpaceBetween } = BaseStyle;
 
 const Header = ({ navigation }) => {
+    const notificationCount = useNotificationCount();
+    // console.log("notificationcpount", notificationCount)
+
     const onPressNotification = () => {
         navigation.navigate("Notification")
     }
@@ -15,7 +20,6 @@ const Header = ({ navigation }) => {
     const onPressWallet = () => {
         navigation.navigate("Wallet")
     }
-
     return (
         <View style={[styles.headerContainer, flexDirectionRow]}>
             <View style={{ width: "82%" }}>
@@ -31,6 +35,11 @@ const Header = ({ navigation }) => {
                         source={BELL_IMAGE}
                         style={[styles.icon, { marginTop: 2 }]}
                     />
+                    {notificationCount > 0 && (
+                        <View style={styles.badge}>
+                            <Text style={styles.badgeText}>{notificationCount}</Text>
+                        </View>
+                    )}
                 </TouchableOpacity>
 
                 <TouchableOpacity onPress={onPressWallet}>
@@ -63,6 +72,23 @@ const styles = StyleSheet.create({
         width: 25,
         height: 25,
         resizeMode: "contain"
+    },
+    badge: {
+        position: 'absolute',
+        top: 0,
+        right: 0,
+        backgroundColor: 'red',
+        borderRadius: 8,
+        height: 16,
+        minWidth: 16,
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingHorizontal: 2,
+    },
+    badgeText: {
+        color: 'white',
+        fontSize: 10,
+        fontWeight: 'bold',
     },
 });
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Image, FlatList } from 'react-native';
 import Header from '../components/Header';
 import { blackColor, grayColor, whiteColor } from '../constants/Color';
@@ -7,10 +7,17 @@ import { spacings, style } from '../constants/Fonts';
 import { BaseStyle } from '../constants/Style';
 import Carousel, { Pagination } from 'react-native-snap-carousel';
 import { BANNER_IMAGE } from '../assests/images';
+import { useDispatch } from 'react-redux';
+import messaging from '@react-native-firebase/messaging';
+import PushNotification from 'react-native-push-notification';
+import { useFocusEffect } from '@react-navigation/native';
+import { addNotification } from '../redux/actions';
+import { triggerLocalNotification } from '../notificationService';
 const { flex, alignItemsCenter, flexDirectionRow, textAlign, alignJustifyCenter, borderRadius10, resizeModeContain, resizeModeCover, positionAbsolute } = BaseStyle;
 
 const OfferScreen = ({ navigation }) => {
     const [activeSlide, setActiveSlide] = useState(0);
+    const dispatch = useDispatch();
 
     const carouselItems = [
         {
@@ -38,7 +45,7 @@ const OfferScreen = ({ navigation }) => {
             caption: 'Luxury In Layers',
             text: "50 - 70% Off"
         },
-       
+
     ];
 
     const categories = [
@@ -85,6 +92,37 @@ const OfferScreen = ({ navigation }) => {
             </View>
         </View>
     );
+  
+    const fetchNotifications = () => {
+        PushNotification.getDeliveredNotifications((deliveredNotifications) => {
+            deliveredNotifications.forEach((notification) => {
+                dispatch(addNotification({
+                    identifier: notification.identifier,
+                    title: notification.title,
+                    body: notification.body,
+                }));
+            });
+        });
+    };
+
+    const listenForPushNotifications = () => {
+        messaging().onMessage(async (remoteMessage) => {
+            // Check if notification is not already added by checking the identifier
+            dispatch(addNotification({
+                identifier: remoteMessage.messageId,
+                title: remoteMessage.notification?.title || 'No Title',
+                body: remoteMessage.notification?.body || 'No Body',
+            }));
+        });
+    };
+
+    useFocusEffect(
+        useCallback(() => {
+            fetchNotifications();
+            listenForPushNotifications();
+        }, [])
+    );
+
 
     return (
         <View style={[styles.container, flex]}>

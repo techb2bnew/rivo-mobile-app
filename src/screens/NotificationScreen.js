@@ -11,6 +11,8 @@ import { NO_NOTIFICTION_IMG } from '../assests/images';
 import { GestureHandlerRootView, Swipeable } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import messaging from '@react-native-firebase/messaging';
+import { useDispatch } from 'react-redux';
+import { resetNotificationCount } from '../redux/actions';
 
 const { flex, flexDirectionRow } = BaseStyle;
 
@@ -22,35 +24,31 @@ const NotificationScreen = ({ navigation }) => {
   //   { id: '4', title: 'Credit Card Connected!', description: 'Credit card has been linked.' },
   //   { id: '5', title: 'Account Setup Successfully!', description: 'Your account has been created.' },
   // ];
-
+  const dispatch = useDispatch();
   const [notifications, setNotifications] = useState([]);
 
   const fetchNotifications = () => {
     PushNotification.getDeliveredNotifications((deliveredNotifications) => {
-      console.log('Delivered Notifications:', deliveredNotifications);
+      // console.log('Delivered Notifications:', deliveredNotifications);
       setNotifications(deliveredNotifications);
     });
   };
 
   const listenForPushNotifications = () => {
     messaging().onMessage(async (remoteMessage) => {
-      console.log('Push Notification Received:', remoteMessage);
+      // console.log('Push Notification Received:', remoteMessage);
       setNotifications(remoteMessage);
-      // setNotifications((prevNotifications) => [
-      //   ...prevNotifications,
-      //   {
-      //     id: String(prevNotifications.length + 1),
-      //     title: remoteMessage.notification.title,
-      //     description: remoteMessage.notification.body,
-      //   },
-      // ]);
     });
   };
-
+  
   useEffect(() => {
     fetchNotifications();
-    listenForPushNotifications()
+    listenForPushNotifications();
   }, []);
+
+  useEffect(() => {
+    dispatch(resetNotificationCount());
+  }, [dispatch]);
 
   const removeNotification = (id) => {
     PushNotification.removeDeliveredNotifications([id]);
