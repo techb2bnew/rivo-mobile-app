@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Pressable, Alert } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Pressable, Alert, ActivityIndicator } from 'react-native';
 import CustomButton from '../components/CustomButton';
 import SuccesfullModal from '../components/modals/SuccesfullModal';
 import { blackColor, grayColor, whiteColor } from '../constants/Color';
@@ -18,6 +18,26 @@ const SignUpScreen = ({ navigation }) => {
   const [isSuccessModalVisible, setIsSuccessModalVisible] = useState(false);
   const [otp, setOtp] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const [token, setToken] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [countdown, setCountdown] = useState(0); // Countdown state
+  const [isResendEnabled, setIsResendEnabled] = useState(true);
+  const connectionId = "YYSU839655";
+
+  // Timer effect
+  useEffect(() => {
+    let timer;
+    if (countdown > 0) {
+      timer = setInterval(() => {
+        setCountdown(prevCountdown => prevCountdown - 1);
+      }, 1000);
+    } else {
+      clearInterval(timer);
+      setIsResendEnabled(true); // Enable resend button after timer ends
+    }
+
+    return () => clearInterval(timer); // Cleanup interval
+  }, [countdown]);
 
   const validateInputValue = () => {
     if (!inputValue.trim()) {
@@ -36,25 +56,6 @@ const SignUpScreen = ({ navigation }) => {
     return true;
   };
 
-  // const validateInputValue = () => {
-  //   if (!inputValue.trim()) {
-  //     setErrorMessage("This field is required");
-  //     return false;
-  //   }
-  //   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  //   const phoneRegex = /^\+?\d{10,15}$/;
-
-  //   if (!phoneRegex.test(inputValue)) {
-  //     setErrorMessage("Please enter a valid email or phone number");
-  //     return false;
-  //   }
-
-  //   setErrorMessage("");
-  //   return true;
-  // };
-
-  // Validate OTP
-
   const validateOtp = () => {
     if (!otp || otp.length < 4) {
       setErrorMessage('Please enter a valid 4-digit OTP.');
@@ -63,35 +64,112 @@ const SignUpScreen = ({ navigation }) => {
     return true;
   };
 
+
   const handleGenerateOtp = () => {
-    if (validateInputValue()) {
-      setErrorMessage('');
-      setIsOtpSent(true);
+    // Validate the input value before proceeding
+    if (!validateInputValue()) {
+      return; // Exit if validation fails
+    }
+    if (inputValue.includes("@")) {
+      contactData = inputValue;
+    } else {
+      contactData = inputValue.startsWith('+') ? inputValue : `${countryCode}${inputValue}`;
+    }
+    setLoading(true);
+    const myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+
+    const raw = JSON.stringify({
+      contact: contactData.trim(),
+      connection_id: connectionId,
+    });
+
+    const requestOptions = {
+      method: "POST",
+      headers: myHeaders,
+      body: raw,
+      redirect: "follow",
+    };
+
+    fetch("https://publicapi.dev.saasintegrator.online/api/check-contact", requestOptions)
+      .then((response) => response.json())
+      .then((result) => {
+        setLoading(false);
+        if (result.success) {
+          setIsOtpSent(true);
+          setErrorMessage("");
+          setToken(result.data.token);
+
+          console.log("OTP sent successfully:", result);
+        } else {
+          setErrorMessage(result.message || "Failed to send OTP.");
+        }
+      })
+      .catch((error) => {
+        setLoading(false);
+        console.error("Error generating OTP:", error);
+        setErrorMessage("An error occurred while sending OTP.");
+      });
+  };
+
+  const handleOtpSubmit = async () => {
+    // Validate OTP first
+    if (validateOtp()) {
+      setLoading(true);
+      console.log("otpinputValue", otp);
+
+      // Use the API to verify OTP
+      const myHeaders = new Headers();
+      myHeaders.append("Authorization", `Bearer ${token}`);
+      myHeaders.append("Content-Type", "application/json");
+
+      const raw = JSON.stringify({
+        otp: otp, // Use OTP entered by user
+      });
+
+      const requestOptions = {
+        method: "POST",
+        headers: myHeaders,
+        body: raw,
+        redirect: "follow",
+      };
+
+      try {
+        const response = await fetch("https://publicapi.dev.saasintegrator.online/api/verify-otp", requestOptions);
+        const result = await response.json();
+
+        if (result.success) {
+          setLoading(false);
+          // OTP verified successfully
+          setIsSuccessModalVisible(true);
+          setErrorMessage('');
+        } else {
+          // OTP verification failed
+          setErrorMessage(result.message || 'Failed to verify OTP.');
+        }
+      } catch (error) {
+        setLoading(false);
+        console.error("Error verifying OTP:", error);
+        setErrorMessage("An error occurred while verifying OTP.");
+      }
     }
   };
 
-  const handleOtpSubmit = () => {
-    if (validateOtp()) {
-      setErrorMessage('');
-      setIsSuccessModalVisible(true);
-    }
-  };
 
   const handleContinue = async () => {
     setIsSuccessModalVisible(false);
-    await AsyncStorage.setItem('userToken', "12345678");
+    await AsyncStorage.setItem('userToken', token);
     navigation.replace('TabNavigator');
     triggerLocalNotification("Welcome!", "Welcome to the app");
   };
 
-  // const handleLogout = async () => {
-  //   await AsyncStorage.removeItem('userToken');
-  //   navigation.navigate('Login'); // Redirect to login screen after logout
-  // };
-
   const onPressResendCode = () => {
-    console.log("clickedonPressResendCode")
-  }
+    if (countdown === 0) {
+      setCountdown(30);
+      setIsResendEnabled(false);
+    }
+    handleGenerateOtp();
+  };
 
   return (
     <View style={[styles.container, flex]}>
@@ -136,14 +214,31 @@ const SignUpScreen = ({ navigation }) => {
             <Text style={[styles.subtitle, textAlign, flexDirectionRow, { height: hp(3.5) }]}>
               {OTP_NOT_RECEIVED} ?
             </Text>
-            <Pressable onPress={onPressResendCode} style={{ height: hp(3) }}>
+            {/* <Pressable onPress={onPressResendCode} style={{ height: hp(3) }} disabled={countdown > 0}>
               <Text style={[styles.subtitle, textAlign, { color: blackColor, fontWeight: "800", textDecorationLine: "underline", }]}> {RESEND_CODE}
               </Text>
-            </Pressable>
+            </Pressable> */}
+            {countdown > 0 ? (
+              <Text style={styles.timerText}> Resend OTP in {countdown}s</Text>
+            ) : (
+              <Pressable onPress={onPressResendCode} disabled={!isResendEnabled}>
+                <Text style={[styles.subtitle, textAlign, { color: blackColor, fontWeight: "800", textDecorationLine: "underline", }]}>
+                  {RESEND_CODE}
+                </Text>
+              </Pressable>
+            )}
           </View>
           <View style={{ marginTop: spacings.ExtraLarge1x }}>
             <CustomButton title="Submit" onPress={handleOtpSubmit} />
           </View>
+        </View>
+      )}
+
+      {loading && (
+        <View style={styles.loadingContainer}>
+          <Text style={styles.loadingText}>Please wait...</Text>
+          <ActivityIndicator size="large" color={"#42A5F5"} />
+
         </View>
       )}
       <SuccesfullModal
@@ -206,6 +301,22 @@ const styles = StyleSheet.create({
   errorText: {
     color: 'red',
     fontSize: style.fontSizeNormal.fontSize,
+  },
+  loadingContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 1000,
+  },
+  loadingText: {
+    marginTop: spacings.medium,
+    fontSize: 16,
+    color: blackColor,
   },
 });
 
