@@ -14,6 +14,8 @@ import messaging from '@react-native-firebase/messaging';
 import PushNotification from 'react-native-push-notification';
 import { useFocusEffect } from '@react-navigation/native';
 import { addNotification } from '../redux/actions';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
 const { flex, alignItemsCenter, flexDirectionRow, alignJustifyCenter, borderRadius10, resizeModeContain, resizeModeCover, positionAbsolute, justifyContentSpaceBetween, textAlign } = BaseStyle;
 
 const DashBoardScreen = ({ navigation }) => {
@@ -145,8 +147,34 @@ const DashBoardScreen = ({ navigation }) => {
         useCallback(() => {
             fetchNotifications();
             listenForPushNotifications();
+            fetchProfileData();
         }, [])
     );
+
+    const fetchProfileData = async () => {
+        try {
+            const token = await AsyncStorage.getItem('userToken');
+
+            if (!token) {
+                throw new Error('Token not found');
+            }
+            const response = await axios.get('https://publicapi.dev.saasintegrator.online/api/profile', {
+                headers: {
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+
+            if (response.data.success) {
+                const availablePoints = response.data?.data?.available_loyalty_points;
+                await AsyncStorage.setItem('currentPoints', String(availablePoints));
+            } else {
+                throw new Error('Failed to fetch profile data');
+            }
+        } catch (err) {
+            console.error('Error fetching profile data:', err.message || err);
+        }
+    };
 
 
     return (

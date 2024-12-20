@@ -13,11 +13,16 @@ import PushNotification from 'react-native-push-notification';
 import { useFocusEffect } from '@react-navigation/native';
 import { addNotification } from '../redux/actions';
 import { triggerLocalNotification } from '../notificationService';
+import LoaderModal from '../components/modals/LoaderModal';
 const { flex, alignItemsCenter, flexDirectionRow, textAlign, alignJustifyCenter, borderRadius10, resizeModeContain, resizeModeCover, positionAbsolute } = BaseStyle;
 
 const OfferScreen = ({ navigation }) => {
     const [activeSlide, setActiveSlide] = useState(0);
     const dispatch = useDispatch();
+    const [offers, setOffers] = useState(null);
+    const [loading, setLoading] = useState(true);
+
+
 
     const carouselItems = [
         {
@@ -92,7 +97,7 @@ const OfferScreen = ({ navigation }) => {
             </View>
         </View>
     );
-  
+
     const fetchNotifications = () => {
         PushNotification.getDeliveredNotifications((deliveredNotifications) => {
             deliveredNotifications.forEach((notification) => {
@@ -115,6 +120,30 @@ const OfferScreen = ({ navigation }) => {
             }));
         });
     };
+
+    useEffect(() => {
+        const fetchOffers = async () => {
+            try {
+                const response = await fetch("https://rivo-admin-c5ddaab83d6b.herokuapp.com/api/proxy/offers?page=1&limit=10", {
+                    method: "GET",
+                    redirect: "follow",
+                });
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                const result = await response.json();
+                setOffers(result.data);
+            } catch (error) {
+                setError(error.message);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchOffers();
+    }, []);
 
     useFocusEffect(
         useCallback(() => {
@@ -147,16 +176,16 @@ const OfferScreen = ({ navigation }) => {
                 </View>
                 <Text style={[styles.sectionHeader, textAlign]}>Luxury In Layers</Text>
                 <FlatList
-                    data={categories}
+                    data={offers}
                     horizontal
                     // keyExtractor={(item) => item.id}
                     contentContainerStyle={styles.categories}
                     showsHorizontalScrollIndicator={false}
                     renderItem={({ item }) => (
                         <View style={[styles.categoryBox, borderRadius10]}>
-                            <Image source={{ uri: item.image }} style={[styles.categoryImage, resizeModeCover, borderRadius10]} />
+                            <Image source={{ uri: item.fileUrl }} style={[styles.categoryImage, resizeModeCover, borderRadius10]} />
                             <View style={[styles.overlay, borderRadius10, alignJustifyCenter]}>
-                                <Text style={[styles.categoryLabel, textAlign, positionAbsolute, { fontSize: style.fontSizeMedium.fontSize, }]}>{item.label}</Text>
+                                <Text style={[styles.categoryLabel, textAlign, positionAbsolute, { fontSize: style.fontSizeMedium.fontSize, }]}>{item.name}</Text>
                             </View>
                         </View>
                     )}
@@ -164,6 +193,9 @@ const OfferScreen = ({ navigation }) => {
                 <View style={[{ width: "95%", height: hp(15), margin: spacings.large, alignItemsCenter }, borderRadius10]}>
                     <Image source={BANNER_IMAGE} style={[{ width: "100%", height: hp(15) }, borderRadius10]} />
                 </View>
+                {loading && (
+                    <LoaderModal visible={loading} message="Please wait..." />
+                )}
             </ScrollView>
         </View>
     );

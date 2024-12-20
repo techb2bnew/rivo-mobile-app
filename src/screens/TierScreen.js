@@ -12,93 +12,101 @@ import messaging from '@react-native-firebase/messaging';
 import PushNotification from 'react-native-push-notification';
 import { useFocusEffect } from '@react-navigation/native';
 import { addNotification } from '../redux/actions';
+import LoaderModal from '../components/modals/LoaderModal';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { PLUGGIN_ID } from '../constants/Constants';
 const { flex, alignItemsCenter, alignItemsFlexStart, flexDirectionRow, textAlign, justifyContentCenter, borderRadius10, resizeModeContain, resizeModeCover, positionAbsolute, alignJustifyCenter } = BaseStyle;
 
 const TierScreen = ({ navigation }) => {
   const dispatch = useDispatch();
-  const levels = [
-    {
-      id: "1",
-      title: "Bronze",
-      points: 2000,
-      achieved: true,
-      isInProgress: false,
-      icon: BRONZE_IMAGE
-    },
-    {
-      id: "2",
-      title: "Silver",
-      points: 4500,
-      achieved: false,
-      isInProgress: true,
-      icon: SILVER_IMAGE
-    },
-    {
-      id: "3",
-      title: "Gold",
-      points: 6000,
-      achieved: false,
-      isInProgress: false,
-      icon: GOLD_IMAGE,
-    },
-    {
-      id: "4",
-      title: "Platinum",
-      points: 15000,
-      achieved: false,
-      isInProgress: false,
-      icon: VIP_IMAGE,
-    },
-  ];
-
+  const [levels, setLevels] = useState([]);
+  const [loading, setLoading] = useState(false);
   const reversedData = [...levels].reverse();
 
-  const renderItem = ({ item, index }) => {
-    // const isLastItem = index === levels.length - 1;
-    // const nextItem = !isLastItem ? levels[index + 1] : null;
-    // const isNextAchieved = nextItem ? nextItem.achieved : false;
-    const isLastItem = index === reversedData.length - 1; // Using reversed data
-    const isItemAchievedOrInProgress = item.achieved || item.isInProgress;
-    const nextItem = !isLastItem ? reversedData[index + 1] : null;
-    return (
-      <View style={[styles.itemContainer, flexDirectionRow, alignItemsFlexStart]}>
-        <View style={[styles.iconContainer, alignItemsCenter]}>
-          <View style={[styles.iconWrapper, alignJustifyCenter, { borderColor: item.achieved === true ? blackColor : mediumGray }]}>
-            <Image source={item.icon} style={[styles.icon, resizeModeContain]} />
-          </View>
-          {!isLastItem && (
-            <View
-              style={[
-                styles.line,
-                // Show solid line for items above or part of progress
-                isItemAchievedOrInProgress
-                  ? { borderColor: blackColor, borderStyle: 'solid' }
-                  : { borderColor: grayColor, borderStyle: 'dashed' },
-              ]}
-            />
-          )}
-        </View>
-        <View style={{ width: wp(60) }}>
-          <Text style={styles.title}>{item.title}</Text>
-          <Text style={styles.subtitle}>
-            After collecting {item.points} points
-          </Text>
-        </View>
-        <View style={[flex, alignJustifyCenter]}>
-          {item.achieved && (
-            <View style={styles.statusIcon}>
-              <MaterialIcons name="check-circle" size={22} color="green" />
-            </View>
-          )}
-          {item.isInProgress && (
-            <View style={styles.statusIcon}>
-              {/* <MaterialIcons name="sync" size={23} color="gray" /> */}
-              <Image source={PROCESSING_ICON} style={{ resizeMode: "contain", width: 17, height: 17 }} />
-            </View>
-          )}
-        </View>
-      </View>
-    );
+  const fetchTiers = async () => {
+    setLoading(true);
+    try {
+      // Retrieve token and current points from AsyncStorage
+      const token = await AsyncStorage.getItem("userToken");
+      const currentPoints = await AsyncStorage.getItem("currentPoints");
+
+      if (!token ) {
+        console.warn("Token missing in AsyncStorage");
+        setLoading(false);
+        return;
+      }
+
+      if (!currentPoints) {
+        console.warn("current points missing in AsyncStorage");
+        setLoading(false);
+        return;
+      }
+
+      // Prepare headers
+      const myHeaders = new Headers();
+      myHeaders.append("Authorization", `Bearer ${token}`);
+      myHeaders.append("Content-Type", "application/json");
+
+      // API URL and request options
+      const url = `https://publicapi.dev.saasintegrator.online/api/vip-tiers?plugin_id=${PLUGGIN_ID}`;
+      const requestOptions = {
+        method: "GET",
+        headers: myHeaders,
+        redirect: "follow",
+      };
+
+      // Fetch data from API
+      const response = await fetch(url, requestOptions);
+      const result = await response.json();
+
+      if (result.success) {
+        const sortedTiers = result.data.sort((a, b) => a.threshold - b.threshold);
+        let levels = [];
+
+        sortedTiers.forEach((item, index) => {
+          const achieved = currentPoints >= item.threshold;
+          const isInProgress =
+            currentPoints < item.threshold &&
+            currentPoints >= (sortedTiers[index - 1]?.threshold || 0);
+
+          levels.push({
+            id: item.id.toString(),
+            name: item.name,
+            points: item.threshold,
+            achieved,
+            isInProgress,
+            icon: getTierIcon(item.name),
+          });
+        });
+
+        // Update state with levels array
+        setLevels(levels);
+        // console.log("Processed Levels:", levels);
+      } else {
+        console.error("Failed to fetch tiers:", result.message);
+      }
+    } catch (error) {
+      console.error("Error fetching tiers:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getTierIcon = (name) => {
+    switch (name.toLowerCase()) {
+      case "bronze":
+        return BRONZE_IMAGE;
+      case "silver":
+        return SILVER_IMAGE;
+      case "gold":
+        return GOLD_IMAGE;
+      case "diamond":
+        return VIP_IMAGE;
+      case "wholesale":
+        return VIP_IMAGE;
+      default:
+        return BRONZE_IMAGE;
+    }
   };
 
   const fetchNotifications = () => {
@@ -126,22 +134,71 @@ const TierScreen = ({ navigation }) => {
 
   useFocusEffect(
     useCallback(() => {
+      fetchTiers();
       fetchNotifications();
       listenForPushNotifications();
     }, [])
   );
 
 
+  const renderItem = ({ item, index }) => {
+    // console.log("item:::", item)
+    const isLastItem = index === reversedData.length - 1; // Using reversed data
+    const isItemAchievedOrInProgress = item.achieved || item.isInProgress;
+    const nextItem = !isLastItem ? reversedData[index + 1] : null;
+    return (
+      <View style={[styles.itemContainer, flexDirectionRow, alignItemsFlexStart]}>
+        <View style={[styles.iconContainer, alignItemsCenter]}>
+          <View style={[styles.iconWrapper, alignJustifyCenter, { borderColor: item.achieved === true ? blackColor : mediumGray }]}>
+            <Image source={item.icon} style={[styles.icon, resizeModeContain]} />
+          </View>
+          {!isLastItem && (
+            <View
+              style={[
+                styles.line,
+                // Show solid line for items above or part of progress
+                isItemAchievedOrInProgress
+                  ? { borderColor: blackColor, borderStyle: 'solid' }
+                  : { borderColor: grayColor, borderStyle: 'dashed' },
+              ]}
+            />
+          )}
+        </View>
+        <View style={{ width: wp(60) }}>
+          <Text style={styles.title}>{item.name}</Text>
+          <Text style={styles.subtitle}>
+            After collecting {item.points} points
+          </Text>
+        </View>
+        <View style={[flex, alignJustifyCenter]}>
+          {item.achieved && (
+            <View style={styles.statusIcon}>
+              <MaterialIcons name="check-circle" size={22} color="green" />
+            </View>
+          )}
+          {item.isInProgress && (
+            <View style={styles.statusIcon}>
+              {/* <MaterialIcons name="sync" size={23} color="gray" /> */}
+              <Image source={PROCESSING_ICON} style={{ resizeMode: "contain", width: 17, height: 17 }} />
+            </View>
+          )}
+        </View>
+      </View>
+    );
+  };
+
   return (
     <View style={[styles.container, flex]}>
       <Header navigation={navigation} />
       <View style={styles.separator} />
-      <FlatList
+      {loading ? (
+        <LoaderModal visible={loading} message="Loading tiers..." />
+      ) : (<FlatList
         data={reversedData}
         keyExtractor={(item) => item.id}
         renderItem={renderItem}
         contentContainerStyle={styles.listContainer}
-      />
+      />)}
     </View>
   );
 };

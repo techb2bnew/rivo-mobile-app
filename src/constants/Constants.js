@@ -31,3 +31,6 @@ export const DOB = "DOB";
 export const DOA = "DOA";
 export const EARNED_POINTS = "Earned Points";
 export const SPENT_POINTS = "Spent Points";
+
+export const CONNECTION_ID = "YEPM307571";
+export const PLUGGIN_ID = "sid_0r9lx47trdc4scppekx1x";

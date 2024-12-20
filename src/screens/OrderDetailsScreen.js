@@ -11,27 +11,14 @@ const { flex, alignItemsCenter, alignItemsFlexStart, flexDirectionRow, textAlign
 
 const OrderDetailsScreen = ({ route, navigation }) => {
     const { order } = route.params;
-    const calculateTotalPrice = () => {
-        // Calculate the total price of items
-        const totalPrice = order.items.reduce((total, item) => {
-            // const price = parseFloat(item?.price?.replace('$', ''));
-            const price = item.price
-            return total + price * item.quantity;
-        }, 0);
-
-        // Add shipping cost (if available, else default to $0)
-        const shippingCost = order.shipping
-            ? parseFloat(order.shipping)
-            : 0;  // Default to 0 if shipping is missing or undefined
-
-        const grandTotal = totalPrice + shippingCost;
-
-        // Return the grand total rounded to 2 decimal places
-        return grandTotal.toFixed(2);
-    };
-
-
-    const totalPrice = order.total ? order.total : calculateTotalPrice();
+    const orderDate = new Date(order.date);
+    const formattedDate = orderDate.toLocaleDateString('en-GB');
+    const formattedTime = orderDate.toLocaleTimeString('en-GB', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false,
+    });
+    // console.log(order.items)
     return (
         <View style={[styles.container, flex]}>
             <View style={{ width: wp(100), height: "auto", padding: spacings.large }}>
@@ -40,31 +27,32 @@ const OrderDetailsScreen = ({ route, navigation }) => {
                 </Pressable>
             </View>
             <ScrollView contentContainerStyle={styles.scrollContainer}>
-                <Text style={styles.title}>#{order.id}</Text>
+                <Text style={styles.title}>Order ID: #{order.id}</Text>
+
                 <Text style={styles.orderDate}>
-                    {order.date} at {order.time} from {order.store}
+                    {formattedDate} at {formattedTime}
                 </Text>
 
                 <View style={styles.separator} />
                 <View style={styles.infoContainer}>
-                    <Text style={styles.infoTitle}>{LOCATION}</Text>
-                    <Text style={styles.infoText}>{order.location}</Text>
+                    <Text style={styles.infoTitle}>{"Status"}</Text>
+                    <Text style={styles.infoText}>{order.status}</Text>
                 </View>
 
-                <View style={styles.separator} />
+                {/* <View style={styles.separator} />
                 <View style={styles.infoContainer}>
                     <Text style={styles.infoTitle}>{DELIVERY_METHOD}</Text>
                     <Text style={styles.infoText}>{order.deliveryMethod}</Text>
-                </View>
+                </View> */}
 
                 <View style={styles.separator} />
                 {order.items.map((item) => (
                     <>
                         <View key={item.id} style={[styles.productContainer, flexDirectionRow, alignItemsCenter]}>
-                            <Image source={{ uri: item.image }} style={styles.productImage} />
+                            {/* <Image source={{ uri: item.image }} style={styles.productImage} /> */}
                             <View style={styles.productDetails}>
-                                <Text style={styles.productName}>{item.name}</Text>
-                                <Text style={styles.productInfo}>-{item.id}</Text>
+                                <Text style={styles.productName}>Name : {item.name}</Text>
+                                <Text style={styles.productInfo}>id - {item.id}</Text>
                                 <Text style={[styles.productInfo, { color: blackColor, fontWeight: style.fontWeightThin1x.fontWeight, marginTop: 2 }]}>Qty: {item.quantity}</Text>
                             </View>
                             <View style={{ height: "100%" }}>
@@ -76,17 +64,22 @@ const OrderDetailsScreen = ({ route, navigation }) => {
                 ))}
                 <View style={styles.priceDetails}>
                     <Text style={[styles.priceHeader, justifyContentSpaceBetween, flexDirectionRow]}>{PRICE_DETAILS} ({order.items.length} Items)</Text>
+
+                    {order.items.map((item) => (
+                        <>
+                            <View style={[styles.priceRow, flexDirectionRow, justifyContentSpaceBetween]}>
+                                <Text style={styles.priceLabel}>Price</Text>
+                                <Text style={styles.priceValue}>${item.price}</Text>
+                            </View>
+                            <View style={[styles.priceRow, flexDirectionRow, justifyContentSpaceBetween]}>
+                                <Text style={styles.priceLabel}>Quantity</Text>
+                                <Text style={styles.priceValue}>{item.quantity}</Text>
+                            </View>
+                        </>
+                    ))}
                     <View style={[styles.priceRow, flexDirectionRow, justifyContentSpaceBetween]}>
-                        <Text style={styles.priceLabel}>{SUBTOTAL}</Text>
-                        <Text style={styles.priceValue}>${order.subtotal}</Text>
-                    </View>
-                    <View style={[styles.priceRow, flexDirectionRow, justifyContentSpaceBetween]}>
-                        <Text style={styles.priceLabel}>{SHIPPING}</Text>
-                        <Text style={styles.priceValue}>${(order.shipping) ? (order.shipping) : "--"}</Text>
-                    </View>
-                    <View style={[styles.priceRow, flexDirectionRow, justifyContentSpaceBetween]}>
-                        <Text style={styles.priceLabelTotal}>{TOTAL}</Text>
-                        <Text style={styles.priceValueTotal}>${totalPrice}</Text>
+                        <Text style={styles.priceLabelTotal}>{TOTAL} Amount</Text>
+                        <Text style={styles.priceValueTotal}>${order?.points}</Text>
                     </View>
                 </View>
 
@@ -103,7 +96,7 @@ const styles = StyleSheet.create({
         padding: spacings.large,
     },
     title: {
-        fontSize: style.fontSizeLarge.fontSize,
+        fontSize: style.fontSizeMedium.fontSize,
         fontWeight: 'bold',
         color: blackColor,
         marginBottom: spacings.small,
@@ -112,7 +105,7 @@ const styles = StyleSheet.create({
         fontSize: style.fontSizeSmall2x.fontSize,
         fontWeight: style.fontWeightThin.fontWeight,
         color: grayColor,
-        marginBottom: spacings.medium,
+        marginVertical: spacings.medium,
     },
     infoContainer: {
         marginBottom: spacings.medium,

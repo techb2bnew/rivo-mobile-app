@@ -7,9 +7,10 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp, } from '../utils
 import { spacings, style } from '../constants/Fonts';
 import { BaseStyle } from '../constants/Style';
 import OTPTextInput from 'react-native-otp-textinput';
-import { CONTINUE, ENTER_EMAIL_OR_PHONE, ENTER_THE_OTP_SEND_TO, GENERATE_OTP, MOBILE_OR_EMAIL, OTP_NOT_RECEIVED, OTP_VERIFICATION, RESEND_CODE, SUCCESSFULLY, VERIFICATION_SUCCESSFULL_MESSAGE } from '../constants/Constants';
+import { CONTINUE, ENTER_EMAIL_OR_PHONE, ENTER_THE_OTP_SEND_TO, GENERATE_OTP, MOBILE_OR_EMAIL, OTP_NOT_RECEIVED, OTP_VERIFICATION, RESEND_CODE, SUCCESSFULLY, VERIFICATION_SUCCESSFULL_MESSAGE, CONNECTION_ID } from '../constants/Constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { triggerLocalNotification } from '../notificationService';
+import LoaderModal from '../components/modals/LoaderModal';
 const { flex, alignItemsCenter, flexDirectionRow, textAlign, justifyContentCenter, borderRadius10, justifyContentSpaceBetween } = BaseStyle;
 
 const SignUpScreen = ({ navigation }) => {
@@ -22,7 +23,6 @@ const SignUpScreen = ({ navigation }) => {
   const [loading, setLoading] = useState(false);
   const [countdown, setCountdown] = useState(0); // Countdown state
   const [isResendEnabled, setIsResendEnabled] = useState(true);
-  const connectionId = "YYSU839655";
 
   // Timer effect
   useEffect(() => {
@@ -70,6 +70,7 @@ const SignUpScreen = ({ navigation }) => {
     if (!validateInputValue()) {
       return; // Exit if validation fails
     }
+    let contactData;
     if (inputValue.includes("@")) {
       contactData = inputValue;
     } else {
@@ -81,7 +82,7 @@ const SignUpScreen = ({ navigation }) => {
 
     const raw = JSON.stringify({
       contact: contactData.trim(),
-      connection_id: connectionId,
+      connection_id: CONNECTION_ID,
     });
 
     const requestOptions = {
@@ -99,8 +100,8 @@ const SignUpScreen = ({ navigation }) => {
           setIsOtpSent(true);
           setErrorMessage("");
           setToken(result.data.token);
-
           console.log("OTP sent successfully:", result);
+
         } else {
           setErrorMessage(result.message || "Failed to send OTP.");
         }
@@ -142,9 +143,11 @@ const SignUpScreen = ({ navigation }) => {
           setLoading(false);
           // OTP verified successfully
           setIsSuccessModalVisible(true);
+          
           setErrorMessage('');
         } else {
           // OTP verification failed
+          setLoading(false);
           setErrorMessage(result.message || 'Failed to verify OTP.');
         }
       } catch (error) {
@@ -157,10 +160,10 @@ const SignUpScreen = ({ navigation }) => {
 
 
   const handleContinue = async () => {
-    setIsSuccessModalVisible(false);
-    await AsyncStorage.setItem('userToken', token);
+    await AsyncStorage.setItem("userToken", token);
     navigation.replace('TabNavigator');
     triggerLocalNotification("Welcome!", "Welcome to the app");
+    setIsSuccessModalVisible(false);
   };
 
   const onPressResendCode = () => {
@@ -235,11 +238,7 @@ const SignUpScreen = ({ navigation }) => {
       )}
 
       {loading && (
-        <View style={styles.loadingContainer}>
-          <Text style={styles.loadingText}>Please wait...</Text>
-          <ActivityIndicator size="large" color={"#42A5F5"} />
-
-        </View>
+        <LoaderModal visible={loading} message="Please wait..." />
       )}
       <SuccesfullModal
         visible={isSuccessModalVisible}
@@ -301,23 +300,7 @@ const styles = StyleSheet.create({
   errorText: {
     color: 'red',
     fontSize: style.fontSizeNormal.fontSize,
-  },
-  loadingContainer: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    zIndex: 1000,
-  },
-  loadingText: {
-    marginTop: spacings.medium,
-    fontSize: 16,
-    color: blackColor,
-  },
+  }
 });
 
 export default SignUpScreen;
