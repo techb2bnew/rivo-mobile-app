@@ -7,7 +7,7 @@ import { spacings, style } from '../constants/Fonts';
 import { BaseStyle } from '../constants/Style';
 import { CARD_IMAGE, COIN_IMAGE, SALARY_IMAGE, SHEET_IMAGE, STAR_IMAGE } from '../assests/images';
 import ExpirePointsModal from '../components/modals/ExpirePointsModal';
-import { EXPIRE_POINTS } from '../constants/Constants';
+import { EXPIRE_POINTS, PLUGGIN_ID } from '../constants/Constants';
 import BarcodeModal from '../components/modals/BarcodeModal';
 import { useDispatch } from 'react-redux';
 import messaging from '@react-native-firebase/messaging';
@@ -16,25 +16,30 @@ import { useFocusEffect } from '@react-navigation/native';
 import { addNotification } from '../redux/actions';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
+import { saveOrderLength } from '../redux/orders/orderAction';
 const { flex, alignItemsCenter, flexDirectionRow, alignJustifyCenter, borderRadius10, resizeModeContain, resizeModeCover, positionAbsolute, justifyContentSpaceBetween, textAlign } = BaseStyle;
 
 const DashBoardScreen = ({ navigation }) => {
     const [modalVisible, setModalVisible] = useState(false);
     const [isbarCodeModalVisible, setIsbarCodeModalVisible] = useState(false);
     const [selectedData, setSelectedData] = useState(null);
+    const [balancePoint, setBalancePoint] = useState(null);
+    const [userName, setUserName] = useState("");
+    const [phoneNumber, setPhoneNumber] = useState(null);
+    const [tierStatus, setTierStatus] = useState(null);
     const dispatch = useDispatch();
 
     const data = [
         {
             id: '1',
-            title: 'Olivia Smith',
-            points: '8580765445',
+            title: `${userName}`,
+            points: phoneNumber != null ? `${phoneNumber}` : '8580765445',
             backgroundColor: "#1c1c1c",
             textColor: whiteColor,
             subtextColor: whiteColor,
             imageBackground: "#e6e6e6",
             icon: CARD_IMAGE,
-            name: "Olivia Smith"
+            name: `${userName}`
         },
         // {
         //     id: '2',
@@ -49,10 +54,10 @@ const DashBoardScreen = ({ navigation }) => {
         {
             id: '2',
             title: 'Points Balance',
-            points: '600PT',
+            points: `${balancePoint} PT`,
             backgroundColor: "#f5f5f5",
             textColor: blackColor,
-            subtextColor: blackColor,
+            subtextColor: "#808080",
             imageBackground: "#e6e6e6",
             icon: COIN_IMAGE,
         },
@@ -69,7 +74,7 @@ const DashBoardScreen = ({ navigation }) => {
         {
             id: '3',
             title: 'Tier Status',
-            points: 'Bronze',
+            points: `${tierStatus}`,
             backgroundColor: "#1c1c1c",
             textColor: whiteColor,
             subtextColor: whiteColor,
@@ -102,24 +107,6 @@ const DashBoardScreen = ({ navigation }) => {
         setSelectedData(null);
     };
 
-    const renderItem = ({ item }) => (
-        <Pressable style={[styles.card, { backgroundColor: item.backgroundColor }, flexDirectionRow, alignItemsCenter, justifyContentSpaceBetween, borderRadius10]}
-            onPress={() => {
-                if (item.id === '1') {
-                    openModal(item)
-                }
-            }}
-        >
-            <View>
-                <Text style={[styles.pointsText, { color: item.textColor }]}>{item.points}</Text>
-                <Text style={[styles.subText, { color: item.subtextColor }]}>{item.title}</Text>
-            </View>
-            <View style={[styles.iconBox, borderRadius10, { backgroundColor: item.imageBackground }, alignJustifyCenter]}>
-                <Image source={item.icon} style={[styles.icon, resizeModeContain]} />
-            </View>
-        </Pressable>
-    );
-
     const fetchNotifications = () => {
         PushNotification.getDeliveredNotifications((deliveredNotifications) => {
             deliveredNotifications.forEach((notification) => {
@@ -148,8 +135,15 @@ const DashBoardScreen = ({ navigation }) => {
             fetchNotifications();
             listenForPushNotifications();
             fetchProfileData();
+            fetchOrdersFromAPI();
         }, [])
     );
+
+    useEffect(() => {
+        if (balancePoint !== null) {
+            fetchTiers(balancePoint);
+        }
+    }, [balancePoint]);
 
     const fetchProfileData = async () => {
         try {
@@ -168,6 +162,9 @@ const DashBoardScreen = ({ navigation }) => {
             if (response.data.success) {
                 const availablePoints = response.data?.data?.available_loyalty_points;
                 await AsyncStorage.setItem('currentPoints', String(availablePoints));
+                setBalancePoint(response.data?.data?.available_loyalty_points);
+                setUserName(response.data?.data?.full_name);
+                setPhoneNumber(response.data?.data?.phone);
             } else {
                 throw new Error('Failed to fetch profile data');
             }
@@ -176,6 +173,115 @@ const DashBoardScreen = ({ navigation }) => {
         }
     };
 
+    const fetchTiers = async (balancePoint) => {
+        try {
+            const token = await AsyncStorage.getItem("userToken");
+            if (!token) {
+                console.warn("Token missing in AsyncStorage");
+                return;
+            }
+            const url = `https://publicapi.dev.saasintegrator.online/api/vip-tiers?plugin_id=${PLUGGIN_ID}`;
+            const myHeaders = new Headers();
+            myHeaders.append("Authorization", `Bearer ${token}`);
+            myHeaders.append("Content-Type", "application/json");
+
+            const requestOptions = {
+                method: "GET",
+                headers: myHeaders,
+                redirect: "follow",
+            };
+
+            const response = await fetch(url, requestOptions);
+            const result = await response.json();
+
+            if (result.success && result.data) {
+                const tiers = result.data;
+
+                const tierNamesAndThresholds = tiers.map(tier => ({
+                    threshold: tier.threshold,
+                    name: tier.name,
+                }));
+
+                tierNamesAndThresholds.sort((a, b) => a.threshold - b.threshold);
+
+                let selectedTier = null;
+
+                for (let i = 0; i < tierNamesAndThresholds.length; i++) {
+                    const tier = tierNamesAndThresholds[i];
+
+                    if (balancePoint >= tier.threshold) {
+                        selectedTier = tier.name;
+                    } else {
+                        break;
+                    }
+                }
+                if (selectedTier) {
+                    // console.log("Selected Tier:", selectedTier);
+                    setTierStatus(selectedTier);
+                } else {
+                    console.log("No tier found for the balance point.");
+                    setTierStatus(null);
+                }
+            } else {
+                console.error("Failed to fetch tiers:", result.message);
+            }
+        } catch (error) {
+            console.error("Error fetching tiers:", error);
+        }
+    };
+
+    const fetchOrdersFromAPI = async () => {
+        try {
+            const token = await AsyncStorage.getItem('userToken');
+            if (!token) {
+                console.log('No authentication token found');
+                return;
+            }
+            const myHeaders = new Headers();
+            myHeaders.append("Authorization", `Bearer ${token}`);
+            myHeaders.append("Accept", "application/json");
+
+            const from_date = "2023-12-1";
+            const to_date = "2024-12-15";
+
+            const response = await fetch(
+                `https://publicapi.dev.saasintegrator.online/api/orders?page=1&per_page=25&from_date=${from_date}&to_date=${to_date}`,
+                { method: "GET", headers: myHeaders }
+            );
+
+            const result = await response.json();
+            // console.log("result.data.data", result.data.data.length);
+            dispatch(saveOrderLength(result.data.data.length));
+        } catch (error) {
+            console.error("Error fetching orders:", error.message);
+        }
+    };
+
+    const capitalizeWords = (str) => {
+        if (!str) return "";
+        return str
+            .split(" ")
+            .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+            .join(" ");
+    };
+
+    const renderItem = ({ item }) => (
+        <Pressable style={[styles.card, { backgroundColor: item.backgroundColor }, flexDirectionRow, alignItemsCenter, justifyContentSpaceBetween, borderRadius10]}
+            onPress={() => {
+                if (item.id === '1') {
+                    openModal(item)
+                }
+            }}
+        >
+            <View>
+                <Text style={[styles.pointsText, { color: item.textColor }]}>{item.points}</Text>
+                <Text style={[styles.subText, { color: item.subtextColor }]}>{capitalizeWords(item.title)}</Text>
+            </View>
+            <View style={[styles.iconBox, borderRadius10, { backgroundColor: item.imageBackground }, alignJustifyCenter]}>
+                <Image source={item.icon} style={[styles.icon, resizeModeContain]} />
+            </View>
+        </Pressable>
+    );
 
     return (
         <View style={[styles.container, flex]}>
@@ -188,14 +294,14 @@ const DashBoardScreen = ({ navigation }) => {
                 contentContainerStyle={styles.content}
                 showsVerticalScrollIndicator={false}
             />
-            <Pressable
+            {/* <Pressable
                 style={[styles.expirePointsButton, alignJustifyCenter, positionAbsolute]}
                 onPress={() => setModalVisible(true)}
             >
                 <View style={[{ width: "100%", height: "100%", backgroundColor: '#000', borderRadius: 50 }, alignJustifyCenter]}>
                     <Text style={[styles.expirePointsText, textAlign]}>{EXPIRE_POINTS}</Text>
                 </View>
-            </Pressable>
+            </Pressable> */}
 
             {modalVisible && <ExpirePointsModal
                 visible={modalVisible}

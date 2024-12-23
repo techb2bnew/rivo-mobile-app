@@ -13,10 +13,17 @@ import { BaseStyle } from '../../constants/Style';
 const { textAlign, alignJustifyCenter, flex, borderRadius10, alignItemsCenter, justifyContentSpaceBetween, flexDirectionRow } = BaseStyle;
 
 const WalletModal = ({ visible, onClose, transaction }) => {
-  if (!transaction) return null;
+  if (!transaction ||!visible) return null;
 
-  const { type, points, date, description, transactionId, orderNumber } =
-    transaction;
+  const { points, id, orders, item } = transaction;
+  const formatDate = (isoDate) => {
+    const date = new Date(isoDate);
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = date.toLocaleString("en-US", { month: "short" });
+    const year = date.getFullYear();
+    return `${day} ${month}, ${year}`;
+  };
+
 
   return (
     <Modal
@@ -28,32 +35,45 @@ const WalletModal = ({ visible, onClose, transaction }) => {
       <Pressable style={[styles.modalOverlay, flex, alignJustifyCenter]} onPress={onClose}>
         <View style={[styles.modalContent, borderRadius10, alignItemsCenter]}>
           <Text style={styles.modalTitle}>
-            Points {type === "Earned" ? "Earned" : "Spent"}
+            Points {item.transaction_type === "earned" ? "Earned" : "Spent"}
           </Text>
-          <Text style={[styles.modalDescription, textAlign]}>{description}</Text>
-          <View style={{ width: wp(30), height: hp(6), alignItems: 'center', justifyContent: 'center', backgroundColor: blackColor, borderRadius: 10 }}>
+          <Text style={[styles.modalDescription, textAlign]}>{item?.transaction_type === "earned"
+            ? "Purchase on Feathers"
+            : item?.transaction_type === "redeemed"
+              ? "Spent points on Feathers"
+              : "Transaction on Feathers"}
+          </Text>
+          <View style={{ paddingHorizontal: spacings.large, height: hp(6), alignItems: 'center', justifyContent: 'center', backgroundColor: blackColor, borderRadius: 10 }}>
             <Text style={styles.modalPoints}>{points} Points</Text>
           </View>
-          <Text style={styles.modalDate}>{date}</Text>
-          {(transactionId || orderNumber) && <View style={styles.separator} />}
-          {transactionId &&
-            <View style={[{ width: "90%" }, justifyContentSpaceBetween, alignItemsCenter, flexDirectionRow]}>
-              <Text style={[styles.transactionDetails, { color: blackColor }]}>
-                Transaction ID
-              </Text>
-              <Text style={styles.transactionDetails}>
-                {transactionId}
-              </Text>
+          <Text style={styles.modalDate}>{formatDate(item.created_at)}</Text>
+          {(id || orders[0]?.uid) && <View style={styles.separator} />}
+          {id &&
+            <View style={[{ width: "100%" }, alignItemsCenter, flexDirectionRow]}>
+              <View style={{width:"44%"}}>
+                <Text style={[styles.transactionDetails, { color: blackColor }]}>
+                  Transaction ID
+                </Text>
+              </View>
+              <View >
+                <Text style={[styles.transactionDetails, { color: "#1C1C1C" }]}>
+                  {id}
+                </Text>
+              </View>
             </View>
           }
-          {orderNumber &&
-            <View style={[{ width: "90%", paddingVertical: 5 }, justifyContentSpaceBetween, alignItemsCenter, flexDirectionRow]}>
-              <Text style={[styles.transactionDetails, { color: blackColor }]}>
-                Order Number
-              </Text>
-              <Text style={styles.transactionDetails}>
-                {orderNumber}
-              </Text>
+          {orders[0]?.uid &&
+            <View style={[{ width: "100%", paddingVertical: 5 }, alignItemsCenter, flexDirectionRow]}>
+              <View style={{width:"44%"}}>
+                <Text style={[styles.transactionDetails, { color: blackColor }]}>
+                  Order Number
+                </Text>
+              </View>
+              <View >
+                <Text style={styles.transactionDetails}>
+                  {orders[0]?.uid}
+                </Text>
+              </View>
             </View>}
         </View>
       </Pressable>
@@ -66,7 +86,7 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
   modalContent: {
-    width: wp(85),
+    width: wp(90),
     backgroundColor: whiteColor,
     padding: spacings.xxxxLarge,
   },
@@ -77,7 +97,7 @@ const styles = StyleSheet.create({
   },
   modalDescription: {
     fontSize: style.fontSizeNormal.fontSize,
-    color: grayColor,
+    color: blackColor,
     marginBottom: spacings.large,
   },
   modalPoints: {
@@ -88,7 +108,7 @@ const styles = StyleSheet.create({
   },
   modalDate: {
     fontSize: style.fontSizeNormal.fontSize,
-    color: grayColor,
+    color: blackColor,
     marginVertical: spacings.large,
   },
   separator: {
@@ -99,7 +119,7 @@ const styles = StyleSheet.create({
   },
   transactionDetails: {
     fontSize: style.fontSizeNormal.fontSize,
-    color: grayColor,
+    color: "#1C1C1C",
     marginBottom: 5,
   },
 });

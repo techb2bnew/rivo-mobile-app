@@ -30,7 +30,7 @@ const TierScreen = ({ navigation }) => {
       const token = await AsyncStorage.getItem("userToken");
       const currentPoints = await AsyncStorage.getItem("currentPoints");
 
-      if (!token ) {
+      if (!token) {
         console.warn("Token missing in AsyncStorage");
         setLoading(false);
         return;
@@ -75,7 +75,7 @@ const TierScreen = ({ navigation }) => {
             points: item.threshold,
             achieved,
             isInProgress,
-            icon: getTierIcon(item.name),
+            icon: getTierIcon(item.name, achieved),
           });
         });
 
@@ -92,7 +92,7 @@ const TierScreen = ({ navigation }) => {
     }
   };
 
-  const getTierIcon = (name) => {
+  const getTierIcon = (name, achieved) => {
     switch (name.toLowerCase()) {
       case "bronze":
         return BRONZE_IMAGE;
@@ -102,8 +102,11 @@ const TierScreen = ({ navigation }) => {
         return GOLD_IMAGE;
       case "diamond":
         return VIP_IMAGE;
-      case "wholesale":
+      case "Retailer":
         return VIP_IMAGE;
+      case "wholesale":
+        // return VIP_IMAGE;
+        return achieved ? BRONZE_IMAGE : VIP_IMAGE;
       default:
         return BRONZE_IMAGE;
     }

@@ -23,7 +23,7 @@ const ProfileScreen = ({ navigation }) => {
     const fetchProfileData = async () => {
       try {
         const token = await AsyncStorage.getItem('userToken');
-
+        console.log(token)
         if (!token) {
           setError('Token not found');
           setLoading(false);
@@ -59,9 +59,18 @@ const ProfileScreen = ({ navigation }) => {
     <Image source={{ uri: profileData?.data?.photo }} style={[{ width: wp(23), height: "100%", borderRadius: 50 }]} />
   ) : (
     <View style={{ width: 80, height: 80, borderRadius: 50, backgroundColor: grayColor, justifyContent: 'center', alignItems: 'center' }}>
-      <Text style={{ fontSize: 40, color: '#fff' }}>{profileData?.data?.full_name?.charAt(0)}</Text>
+      <Text style={{ fontSize: 40, color: '#fff' }}>{profileData?.data?.full_name?.charAt(0).toUpperCase()}</Text>
     </View>
   );
+
+  const capitalizeWords = (str) => {
+    if (!str) return "";
+    return str
+      .split(" ")
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(" ");
+  };
+
   return (
     <View style={[styles.container, flex]}>
 
@@ -72,7 +81,7 @@ const ProfileScreen = ({ navigation }) => {
       </View>
 
       <View style={[{ width: wp(100), height: hp(15), padding: spacings.xxLarge }, flexDirectionRow]}>
-        <View style={style.imageBox}>
+        <View style={[, alignJustifyCenter]}>
           {/* <Image
             source={{ uri: imageUrl }}
             style={[{ width: wp(23), height: "100%", borderRadius: 50 }]}
@@ -80,8 +89,8 @@ const ProfileScreen = ({ navigation }) => {
           {renderAvatar}
 
         </View>
-        <View style={[{ width: "100%", height: hp(13) }, justifyContentCenter]}>
-          <Text style={styles.text}>{profileData?.data?.full_name}</Text>
+        <View style={[{ width: "100%", height: hp(11.5) }, justifyContentCenter]}>
+          <Text style={styles.text}>{capitalizeWords(profileData?.data?.full_name)}</Text>
         </View>
       </View>
 
@@ -90,7 +99,7 @@ const ProfileScreen = ({ navigation }) => {
           <Feather name="phone" size={25} color={blackColor} />
         </View>
         <View style={{ paddingVertical: spacings.xxLarge }}>
-          <Text style={[styles.text, { fontSize: style.fontSizeNormal.fontSize, }]}>{profileData?.data?.phone}</Text>
+          <Text style={[styles.text, { fontSize: style.fontSizeNormal.fontSize, paddingTop: 5 }]}>{profileData?.data?.phone}</Text>
         </View>
       </View>}
 
@@ -99,7 +108,7 @@ const ProfileScreen = ({ navigation }) => {
           <Fontisto name="email" size={25} color={blackColor} />
         </View>
         <View>
-          <Text style={[styles.text, { fontSize: style.fontSizeNormal.fontSize, }]}>{profileData?.data?.email}</Text>
+          <Text style={[styles.text, { fontSize: style.fontSizeNormal.fontSize, paddingTop: 5 }]}>{profileData?.data?.email}</Text>
         </View>
       </View>}
 
@@ -133,7 +142,7 @@ const ProfileScreen = ({ navigation }) => {
         </View>
       </View>}
       {loading && (
-         <LoaderModal visible={loading} message="Please wait..." />
+        <LoaderModal visible={loading} message="Please wait..." />
       )}
     </View>
 

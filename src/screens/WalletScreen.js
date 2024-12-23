@@ -9,196 +9,266 @@ import { EARNED_POINTS, SPENT_POINTS, WALLET } from '../constants/Constants';
 import { FlatList } from 'react-native-gesture-handler';
 import { CELEBRATION_ICON, FEATHER_ICON } from '../assests/images';
 import WalletModal from '../components/modals/WalletModal';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import LoaderModal from '../components/modals/LoaderModal';
 const { flex, flexDirectionRow, alignJustifyCenter, resizeModeContain, resizeModeCover, justifyContentSpaceBetween, justifyContentCenter, borderRadius10, borderWidth1, textAlign, alignItemsCenter, justifyContentSpaceEvenly } = BaseStyle;
 
 const WalletScreen = ({ navigation }) => {
-  const [activeTab, setActiveTab] = useState("Earned");
+  const [activeTab, setActiveTab] = useState("All");
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState(null);
-  const [transactionData, setTransactionData] = useState([])
-  const [showAll, setShowAll] = useState(false);
-
-  const data = [
-    {
-      id: 1, type: "Earned", points: 100, date: "10 Nov, 2024", description: "Purchased on Feathers", icon: FEATHER_ICON, transactionId: "432062451345",
-      orderNumber: "#12345678",
-    },
-    {
-      id: 2, type: "Spent", points: 30, date: "15 Nov, 2024", description: "Purchased on Feathers", icon: FEATHER_ICON, transactionId: "432062451345",
-      orderNumber: "#12345678",
-    },
-    { id: 3, type: "Earned", points: 70, date: "19 Nov, 2024", description: "Birthday Month 🎉🥳🎂🎈", icon: CELEBRATION_ICON },
-    { id: 4, type: "Spent", points: 50, date: "25 Nov, 2024", description: "Purchased on Feathers", icon: FEATHER_ICON },
-    {
-      id: 5, type: "Earned", points: 50, date: "28 Nov, 2024", description: "Purchased on Feathers", icon: FEATHER_ICON, transactionId: "432062451345",
-      orderNumber: "#12345678",
-    },
-    { id: 6, type: "Earned", points: 50, date: "25 Nov, 2024", description: "Purchased on Feathers", icon: FEATHER_ICON },
-    { id: 7, type: "Earned", points: 50, date: "25 Nov, 2024", description: "Purchased on Feathers", icon: FEATHER_ICON },
-    { id: 8, type: "Earned", points: 50, date: "25 Nov, 2024", description: "Purchased on Feathers", icon: FEATHER_ICON },
-    { id: 9, type: "Spent", points: 60, date: "25 Nov, 2024", description: "Purchased on Feathers", icon: FEATHER_ICON },
-    { id: 10, type: "Spent", points: 30, date: "25 Nov, 2024", description: "Purchased on Feathers", icon: FEATHER_ICON },
-    { id: 11, type: "Spent", points: 10, date: "25 Nov, 2024", description: "Purchased on Feathers", icon: FEATHER_ICON },
-
-  ];
+  const [transactionData, setTransactionData] = useState([]);
+  const [totalPoints, setTotalPoints] = useState('');
+  const [loading, setLoading] = useState(false);
+  const currentDate = new Date();
+  const currentYear = currentDate.getFullYear();
+  const currentMonth = currentDate.toLocaleString("en-US", { month: "long" });
 
   useEffect(() => {
-    setTransactionData(data);
-  }, [])
+    fetchWalletHistory("", "", "all");
+  }, []);
 
-  // const filteredData = transactionData.filter((item) =>
-  //   activeTab === "Earned" ? item.type === "Earned" : item.type === "Spent"
-  // );
-  const filteredData = showAll
-    ? transactionData
-    : transactionData.filter((item) =>
-      activeTab === "Earned" ? item.type === "Earned" : item.type === "Spent"
-    );
+  // console.log("waleet", selectedTransaction, modalVisible)
 
-  const openModal = (transaction) => {
-    setSelectedTransaction(transaction);
-    setModalVisible(true);
+  const fetchWalletHistory = async (fromDate, toDate, transactionType) => {
+    setTotalPoints('')
+    setTransactionData([]);
+    setLoading(true);
+    try {
+      const token = await AsyncStorage.getItem("userToken");
+      if (!token) {
+        setLoading(false)
+        console.log("Token not found");
+        return;
+      }
+
+      const url = new URL("https://publicapi.dev.saasintegrator.online/api/wallet-history");
+      url.searchParams.append("from_date", fromDate);
+      url.searchParams.append("to_date", toDate);
+      url.searchParams.append("transaction_type", transactionType);
+
+      const myHeaders = new Headers();
+      myHeaders.append("Authorization", `Bearer ${token}`);
+      myHeaders.append("Accept", "application/json");
+
+      const requestOptions = {
+        method: "GET",
+        headers: myHeaders,
+        redirect: "follow",
+      };
+
+      const response = await fetch(url, requestOptions);
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status} - ${response.statusText}`);
+      }
+
+      const result = await response.json();
+      // console.log("Result:", result.data.data);
+      setTransactionData(result.data.data);
+      const totalPoints = result.data.data.reduce((sum, transaction) => {
+        // Convert points to a number before adding
+        return sum + parseFloat(transaction.points);
+      }, 0);
+      // console.log(totalPoints)
+      setTotalPoints(totalPoints.toFixed(2));
+      setLoading(false);
+    } catch (error) {
+      setLoading(false);
+      console.error("Error fetching wallet history:", error);
+    }
   };
 
-  const closeModal = () => {
+  const handleTabChange = (tab) => {
+    setModalVisible(false);
+    setSelectedTransaction(null);
+    setActiveTab(tab);
+    const transactionType = tab === "All" ? "all" : tab === "Earned" ? "earned" : "spent";
+    fetchWalletHistory("", "", transactionType);
+  };
+
+  const getWalletDetail = async (walletHistoryId) => {
+    try {
+      const token = await AsyncStorage.getItem("userToken");
+
+      if (!token) {
+        console.log("Token not found");
+        return;
+      }
+      const myHeaders = new Headers();
+      myHeaders.append("Authorization", `Bearer ${token}`);
+      myHeaders.append("Accept", "application/json");
+
+      const requestOptions = {
+        method: "GET",
+        headers: myHeaders,
+        redirect: "follow",
+      };
+
+      const url = `https://publicapi.dev.saasintegrator.online/api/wallet-detail/${walletHistoryId}`;
+
+      // Fetch wallet details
+      const response = await fetch(url, requestOptions);
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error("Error fetching wallet details:", error);
+      throw error;
+    }
+  };
+
+  const openModal = async (item) => {
+    setLoading(true);
+    setModalVisible(false)
+    try {
+      const walletDetail = await getWalletDetail(item.id);
+      setSelectedTransaction({ ...walletDetail.data, item })
+      setModalVisible(true);
+      // console.log("Wallet Details Fetched:", walletDetail.data);
+    } catch (error) {
+      console.error("Error fetching wallet details:", error);
+      setSelectedTransaction(null);
+    } finally {
+      setLoading(false)
+    }
+  };
+
+  const handleCloseModal = () => {
     setModalVisible(false);
     setSelectedTransaction(null);
   };
 
-  const renderTransaction = ({ item }) => (
-    <Pressable style={[styles.transactionContainer, flexDirectionRow, alignItemsCenter]}
-      onPress={() => openModal(item)}
-    >
-      <View style={[styles.iconContainer, alignJustifyCenter, borderWidth1]}>
-        <Image source={item.icon} style={{ resizeMode: "contain", width: wp(10), height: wp(8) }} />
-      </View>
-      <View style={[flex]}>
-        <Text style={styles.transactionType}>
-          Points {item.type}{" "}
-        </Text>
-        <Text style={styles.description}>{item.description}</Text>
-        <Text style={styles.date}>{item.date}</Text>
-      </View>
-      <Text
-        style={[
-          styles.points,
-          { color: item.type === "Spent" ? redColor : blackColor },
-        ]}
-      >
-        {item.points}
-      </Text>
-    </Pressable>
-  );
-
-
-  const handleTabChange = (tab) => {
-    if (tab === "All") {
-      setShowAll(true);
-      setActiveTab(null); 
-    } else {
-      setShowAll(false);
-      setActiveTab(tab); 
-    }
+  const capitalizeWords = (str) => {
+    if (!str) return "";
+    return str
+      .split(" ")
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(" ");
   };
-  return (
-    <View style={[styles.container, flex]}>
-      <View style={[{ width: wp(100), height: "auto", padding: spacings.large }, flexDirectionRow]}>
-        <Pressable onPress={() => { navigation.goBack(); }}>
-          <Ionicons name="arrow-back" size={30} color={blackColor} />
-        </Pressable>
-        <Text style={styles.headerText}>
-          {WALLET}
-        </Text>
-      </View>
-      <View style={[styles.tabs, flexDirectionRow, justifyContentSpaceEvenly]}>
-        <TouchableOpacity
-          style={[
-            styles.tabButton, alignJustifyCenter, borderRadius10, borderWidth1,
-            showAll && styles.activeTabButton,
-          ]}
-          onPress={() => handleTabChange("All")}
-        >
-          <Text
-            style={[
-              styles.tabText,
-              showAll && styles.activeTabText,
-            ]}
-          >
-            All Points
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[
-            styles.tabButton, alignJustifyCenter, borderRadius10, borderWidth1,
-            activeTab === "Earned" && styles.activeTabButton,
-          ]}
-          onPress={() => handleTabChange("Earned")}
-        >
-          <Text
-            style={[
-              styles.tabText,
-              activeTab === "Earned" && styles.activeTabText,
-            ]}
-          >
-            {EARNED_POINTS}
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[
-            styles.tabButton, alignJustifyCenter, borderRadius10, borderWidth1,
-            activeTab === "Spent" && styles.activeTabButton,
-          ]}
-          onPress={() => handleTabChange("Spent")}
-        >
-          <Text
-            style={[
-              styles.tabText,
-              activeTab === "Spent" && styles.activeTabText,
-            ]}
-          >
-            {SPENT_POINTS}
-          </Text>
-        </TouchableOpacity>
-      </View>
 
-      {/* Summary */}
-      <View style={[styles.summary, flexDirectionRow, justifyContentSpaceBetween,alignItemsCenter]}>
-        <View>
-          <Text style={[styles.summaryMonth, { color: grayColor }]}>2024</Text>
-          <Text style={[styles.summaryMonth]}>November</Text>
+  const renderTransaction = ({ item }) => {
+    // Function to format the date
+    const formatDate = (isoDate) => {
+      const date = new Date(isoDate);
+      const day = date.getDate().toString().padStart(2, '0'); // Ensures two digits
+      const month = date.toLocaleString("en-US", { month: "short" }); // Gets the short month name
+      const year = date.getFullYear();
+      return `${day} ${month}, ${year}`;
+    };
+
+    return (
+      <Pressable style={[styles.transactionContainer, flexDirectionRow, alignItemsCenter]}
+        onPress={() => openModal(item)}
+      >
+        <View style={[styles.iconContainer, alignJustifyCenter, borderWidth1]}>
+          <Image source={FEATHER_ICON} style={{ resizeMode: "contain", width: wp(10), height: wp(8) }} />
         </View>
-        <Text style={styles.summaryPoints}>20,000 Points</Text>
+        <View style={[flex]}>
+          <Text style={styles.transactionType}>
+            Points {capitalizeWords(item.transaction_type === "redeemed" ? "Spent" : item.transaction_type)}
+          </Text>
+          <Text style={styles.description}>
+            {item?.transaction_type === "earned"
+              ? "Purchase on Feathers"
+              : item?.transaction_type === "redeemed"
+                ? "Spent points on Feathers"
+                : "Transaction on Feathers"}
+          </Text>
+          <Text style={styles.date}>{formatDate(item.created_at)}</Text>
+        </View>
+        <Text
+          style={[
+            styles.points,
+            { color: item.transaction_type === "redeemed" ? redColor : blackColor },
+          ]}
+        >
+          {item.points}
+        </Text>
+      </Pressable>
+    );
+  };
+
+  return (
+    
+    <View style={[styles.container, flex]}>
+      <View style={[{ width: "100%", height: "auto", padding: 16 }, flexDirectionRow]}>
+        <Pressable onPress={() => navigation.goBack()}>
+          <Ionicons name="arrow-back" size={30} color="#252837" />
+        </Pressable>
+        <Text style={styles.headerText}>Wallet</Text>
       </View>
 
-      {/* Info */}
+      <View style={[styles.tabs, flexDirectionRow, justifyContentSpaceEvenly]}>
+        {["All", "Earned", "Spent"].map((tab) => (
+          <TouchableOpacity
+            key={tab}
+
+            style={[
+              styles.tabButton, alignJustifyCenter, borderRadius10, borderWidth1,
+              activeTab === tab && styles.activeTabButton,
+            ]}
+            onPress={() => handleTabChange(tab)}
+          >
+            <Text
+              style={[
+                styles.tabText,
+                activeTab === tab && styles.activeTabText,
+              ]}
+            >
+              {tab === "All" ? "All Points" : tab === "Earned" ? "Earned Points" : "Spent Points"}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+
+      <View style={[styles.summary, flexDirectionRow, justifyContentSpaceBetween, alignItemsCenter]}>
+        <View>
+          <Text style={[styles.summaryMonth, { color: grayColor }]}>{currentYear}</Text>
+          <Text style={[styles.summaryMonth]}>{currentMonth}</Text>
+        </View>
+        <Text style={styles.summaryPoints}>{totalPoints} Points</Text>
+      </View>
+
       <Text style={[styles.infoText, textAlign]}>
-        {showAll
+        {activeTab === "All"
           ? "You are seeing all transactions on Feathers"
           : activeTab === "Earned"
             ? "You are seeing earned transactions on Feathers"
-            : "You are seeing spent transactions on Feathers"
-        }
+            : "You are seeing spent transactions on Feathers"}
       </Text>
 
       <View style={styles.separator} />
 
-      {/* Transactions */}
-      <FlatList
-        data={filteredData}
-        renderItem={renderTransaction}
-        keyExtractor={(item) => item.id.toString()}
-        contentContainerStyle={styles.transactionsList}
-        showsVerticalScrollIndicator={false}
-      />
-      {modalVisible && <WalletModal
-        visible={modalVisible}
-        onClose={closeModal}
-        transaction={selectedTransaction}
-      />}
-    </View>
+      {transactionData?.length === 0 ? (
+        <Text style={styles.noTransactionsText}>No transactions available</Text>
+      ) : (
+        <FlatList
+          data={transactionData}
+          renderItem={renderTransaction}
+          keyExtractor={(item) => item.id.toString()}
+          contentContainerStyle={styles.transactionsList}
+          showsVerticalScrollIndicator={false}
+        />
+      )}
+      {/* {loading && (
+        <LoaderModal visible={loading} message="Please wait..." />
+      )} */}
+      {modalVisible && selectedTransaction!=null && (
+        <WalletModal
+          visible={modalVisible}
+          onClose={handleCloseModal}
+          transaction={selectedTransaction}
+        />
+      )}
 
+    </View>
   );
 };
+
+
 
 const styles = StyleSheet.create({
   container: {
@@ -289,6 +359,13 @@ const styles = StyleSheet.create({
   date: {
     fontSize: style.fontSizeSmall1x.fontSize,
     color: "#aaa",
+  },
+  noTransactionsText: {
+    fontSize: style.fontSizeNormal1x.fontSize,
+    fontWeight: style.fontWeightMedium.fontWeight,
+    color: mediumGray, // or use any other color you prefer
+    textAlign: 'center',
+    paddingVertical: spacings.large,
   },
 
 });

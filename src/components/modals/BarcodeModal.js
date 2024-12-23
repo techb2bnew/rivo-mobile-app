@@ -11,7 +11,13 @@ const BarcodeModal = ({ isVisible, data, onClose }) => {
     if (!data || !data.points) return null;
 
     // console.log("Barcode Data:", data.points);
-
+    const capitalizeWords = (str) => {
+        if (!str) return "";
+        return str
+          .split(" ")
+          .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+          .join(" ");
+      };
     return (
         <Modal
             visible={isVisible}
@@ -22,7 +28,7 @@ const BarcodeModal = ({ isVisible, data, onClose }) => {
             <Pressable style={[styles.modalOverlay, flex, alignJustifyCenter]} onPress={onClose}>
                 <View style={[styles.modalContainer, borderRadius10, alignItemsCenter]}>
                     <View style={[{ padding: spacings.large, width: "100%" }, alignJustifyCenter]}>
-                        <Text style={styles.modalName}>{data.name}</Text>
+                        <Text style={styles.modalName}>{capitalizeWords(data.name)}</Text>
                         {/* <Text style={styles.modalMembership}>{data.title}</Text> */}
                         <Text style={styles.modalCardNumber}>{data.points}</Text>
                     </View>

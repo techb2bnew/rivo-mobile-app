@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Image, FlatList } from 'react-native';
 import Header from '../components/Header';
 import { blackColor, grayColor, whiteColor } from '../constants/Color';
@@ -21,8 +21,6 @@ const OfferScreen = ({ navigation }) => {
     const dispatch = useDispatch();
     const [offers, setOffers] = useState(null);
     const [loading, setLoading] = useState(true);
-
-
 
     const carouselItems = [
         {
@@ -90,10 +88,10 @@ const OfferScreen = ({ navigation }) => {
 
     const renderCarouselItem = ({ item }) => (
         <View style={[alignItemsCenter]}>
-            <Image source={{ uri: item.image }} style={styles.carouselImage} />
+            <Image source={{ uri: item.fileUrl }} style={styles.carouselImage} />
             <View style={styles.captionContainer}>
-                <Text style={[textAlign, positionAbsolute, { bottom: 50, left: 35, right: 35, color: whiteColor }]}>{item.caption}</Text>
-                <Text style={[styles.categoryLabel, textAlign, positionAbsolute, { bottom: 10, left: 35, right: 35 }]}>{item.text}</Text>
+                {/* <Text style={[textAlign, positionAbsolute, { bottom: 50, left: 35, right: 35, color: whiteColor }]}>{item.name}</Text> */}
+                <Text style={[styles.categoryLabel, textAlign, positionAbsolute, { bottom: 10, left: 35, right: 35 }]}>{item.name}</Text>
             </View>
         </View>
     );
@@ -151,22 +149,20 @@ const OfferScreen = ({ navigation }) => {
             listenForPushNotifications();
         }, [])
     );
-
-
     return (
         <View style={[styles.container, flex]}>
             <Header navigation={navigation} />
             <ScrollView showsVerticalScrollIndicator={false}>
                 <View style={{ marginVertical: spacings.large }}>
                     <Carousel
-                        data={carouselItems}
+                        data={offers?.slice(0,3)}
                         renderItem={renderCarouselItem}
                         sliderWidth={wp(100)}
                         itemWidth={wp(100)}
                         onSnapToItem={(index) => setActiveSlide(index)}
                     />
                     <Pagination
-                        dotsLength={carouselItems.length}
+                        dotsLength={3}
                         activeDotIndex={activeSlide}
                         containerStyle={styles.paginationContainer}
                         dotStyle={styles.dotStyle}

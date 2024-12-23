@@ -435,13 +435,24 @@ const OrderHistoryScreen = ({ navigation }) => {
   }, []);
 
   const renderOrderItem = ({ item }) => {
-    const orderDate = new Date(item.date);
-    const formattedDate = orderDate.toLocaleDateString('en-GB');
-    const formattedTime = orderDate.toLocaleTimeString('en-GB', {
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: false,
-    });
+    const formatDate = (isoDate) => {
+      const date = new Date(isoDate);
+      const day = date.getDate().toString().padStart(2, '0'); // Two-digit day
+      const month = date.toLocaleString("en-US", { month: "short" }); // Short month name
+      const year = date.getFullYear();
+      return `${day} ${month}, ${year}`;
+    };
+
+    // Function to format the time
+    const formatTime = (isoDate) => {
+      const date = new Date(isoDate);
+      const hours = date.getHours().toString().padStart(2, '0');
+      const minutes = date.getMinutes().toString().padStart(2, '0');
+      return `${hours}:${minutes}`; // 24-hour format
+    };
+
+    const formattedDate = formatDate(item.date);
+    const formattedTime = formatTime(item.date);
 
     return (
       <Pressable
@@ -504,9 +515,9 @@ const OrderHistoryScreen = ({ navigation }) => {
             />
           }
         />
-         {loading && (
-         <LoaderModal visible={loading} message="Please wait..." />
-      )}
+        {loading && (
+          <LoaderModal visible={loading} message="Please wait..." />
+        )}
       </View>
     </View>
   );

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Pressable, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Pressable, Alert, ActivityIndicator, KeyboardAvoidingView, Platform } from 'react-native';
 import CustomButton from '../components/CustomButton';
 import SuccesfullModal from '../components/modals/SuccesfullModal';
 import { blackColor, grayColor, whiteColor } from '../constants/Color';
@@ -175,6 +175,10 @@ const SignUpScreen = ({ navigation }) => {
   };
 
   return (
+    <KeyboardAvoidingView
+    style={{ flex: 1 }}
+    behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+  >
     <View style={[styles.container, flex]}>
       {!isOtpSent ? (
         <View style={[flex, justifyContentCenter]}>
@@ -249,6 +253,7 @@ const SignUpScreen = ({ navigation }) => {
         onButtonPress={handleContinue}
       />
     </View>
+    </KeyboardAvoidingView>
   );
 };
 
