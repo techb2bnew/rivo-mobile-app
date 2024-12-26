@@ -14,13 +14,25 @@ export const OFFER_IMAGE = require('./discount.png');
 export const TIER_IMAGE = require('./layer.png');
 export const ORDERS_IMAGE = require('./shoppingbag.png');
 export const PROFILE_IMAGE = require('./user.png');
-export const BRONZE_IMAGE = require('./bronze.png');
-export const MANUAL_IMAGE = require('./manual.png');
-export const SILVER_IMAGE = require('./silver.png');
-export const VIP_IMAGE = require('./vip.png');
-export const GOLD_IMAGE = require('./gold.png');
 export const CARD_IMAGE = require('./creditcard.png');
 export const PROCESSING_ICON = require('./processing.png');
 export const FEATHER_ICON = require('./FeathersIocn.png');
 export const CELEBRATION_ICON = require('./celebration.png');
-export const NO_NOTIFICTION_IMG = require('./noNotification.png')
+export const NO_NOTIFICTION_IMG = require('./noNotification.png');
+
+
+//tier images
+export const BRONZE_DARK_IMAGE = require('./bronzeDark.png');
+export const BRONZE_LIGHT_IMAGE = require('./bronzeLight.png');
+export const DEFAULT_DARK_IMAGE = require('./defaultDark.png');
+export const DEFAULT_LIGHT_IMAGE = require('./defaultLight.png');
+export const SILVER_DARK_IMAGE = require('./silverDark.png');
+export const SILVER_LIGHT_IMAGE = require('./silverLight.png');
+export const GOLD_DARK_IMAGE = require('./goldDark.png');
+export const GOLD_LIGHT_IMAGE = require('./goldLight.png');
+export const DIAMOND_DARK_IMAGE = require('./diamondDark.png');
+export const DIAMOND_LIGHT_IMAGE = require('./diamondLight.png');
+export const WHOLESALE_DARK_IMAGE = require('./wholesaleDark.png');
+export const WHOLESALE_LIGHT_IMAGE = require('./wholesaleLight.png');
+export const RETAILER_DARK_IMAGE = require('./retailerDark.png');
+export const RETAILER_LIGHT_IMAGE = require('./retailerLight.png');

@@ -23,7 +23,7 @@ const ProfileScreen = ({ navigation }) => {
     const fetchProfileData = async () => {
       try {
         const token = await AsyncStorage.getItem('userToken');
-        console.log(token)
+        // console.log(token)
         if (!token) {
           setError('Token not found');
           setLoading(false);

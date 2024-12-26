@@ -162,7 +162,7 @@ const SignUpScreen = ({ navigation }) => {
   const handleContinue = async () => {
     await AsyncStorage.setItem("userToken", token);
     navigation.replace('TabNavigator');
-    triggerLocalNotification("Welcome!", "Welcome to the app");
+    // triggerLocalNotification("Welcome!", "Welcome to the app");
     setIsSuccessModalVisible(false);
   };
 

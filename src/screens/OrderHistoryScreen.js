@@ -304,7 +304,7 @@ const OrderHistoryScreen = ({ navigation }) => {
       );
 
       const result = await response.json();
-      console.log("result.data.data", result.data.data);
+      // console.log("result.data.data", result.data.data);
 
       if (result.data.data && result.data.data.length > 0) {
         saveOrderToRealm(result.data.data);

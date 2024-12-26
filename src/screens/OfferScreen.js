@@ -149,13 +149,14 @@ const OfferScreen = ({ navigation }) => {
             listenForPushNotifications();
         }, [])
     );
+
     return (
         <View style={[styles.container, flex]}>
             <Header navigation={navigation} />
             <ScrollView showsVerticalScrollIndicator={false}>
                 <View style={{ marginVertical: spacings.large }}>
                     <Carousel
-                        data={offers?.slice(0,3)}
+                        data={offers?.slice(1, 4)}
                         renderItem={renderCarouselItem}
                         sliderWidth={wp(100)}
                         itemWidth={wp(100)}
@@ -181,14 +182,24 @@ const OfferScreen = ({ navigation }) => {
                         <View style={[styles.categoryBox, borderRadius10]}>
                             <Image source={{ uri: item.fileUrl }} style={[styles.categoryImage, resizeModeCover, borderRadius10]} />
                             <View style={[styles.overlay, borderRadius10, alignJustifyCenter]}>
-                                <Text style={[styles.categoryLabel, textAlign, positionAbsolute, { fontSize: style.fontSizeMedium.fontSize, }]}>{item.name}</Text>
+                                <Text style={[styles.categoryLabel, textAlign, positionAbsolute, { fontSize: style.fontSizeSmall2x.fontSize, }]}>{item.name}</Text>
                             </View>
                         </View>
                     )}
                 />
-                <View style={[{ width: "95%", height: hp(15), margin: spacings.large, alignItemsCenter }, borderRadius10]}>
-                    <Image source={BANNER_IMAGE} style={[{ width: "100%", height: hp(15) }, borderRadius10]} />
-                </View>
+
+                <FlatList
+                    data={offers?.slice(0,1)}
+                    horizontal
+                    // keyExtractor={(item) => item.id}
+                    contentContainerStyle={{width:"100%"}}
+                    showsHorizontalScrollIndicator={false}
+                    renderItem={({ item }) => (
+                        <View style={[{ width: "95%", height: hp(15), margin: spacings.large, alignItemsCenter, backgroundColor: "#2D2D27" }, borderRadius10]}>
+                            <Image source={{ uri: item.fileUrl }} style={[{ width: "100%", height: hp(15) }, borderRadius10]} />
+                        </View>
+                    )}
+                />
                 {loading && (
                     <LoaderModal visible={loading} message="Please wait..." />
                 )}

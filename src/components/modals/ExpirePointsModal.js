@@ -9,6 +9,16 @@ import { BaseStyle } from '../../constants/Style';
 const { textAlign, alignJustifyCenter, flex, borderRadius10, alignItemsCenter, flexDirectionRow, justifyContentSpaceBetween } = BaseStyle;
 
 const ExpirePointsModal = ({ visible, onClose, data }) => {
+    const formatDate = (isoDate) => {
+        if (!isoDate) {
+            return ' -';
+        }
+        const date = new Date(isoDate);
+        const day = date.getDate().toString().padStart(2, '0');
+        const month = date.toLocaleString("en-US", { month: "short" }); 
+        const year = date.getFullYear();
+        return `${day} ${month}, ${year}`;
+    };
     return (
         <Modal
             transparent
@@ -44,8 +54,9 @@ const ExpirePointsModal = ({ visible, onClose, data }) => {
                                     flexDirectionRow
                                 ]}
                             >
-                                <Text style={styles.rowText}>{item.date}</Text>
-                                <Text style={styles.rowText}>{item.points}</Text>
+                                {/* <Text style={styles.rowText}>{formatDate('2022-07-31T16:29:38.024Z')}</Text> */}
+                                <Text style={styles.rowText}>{formatDate(item.points_expire_at)}</Text>
+                                <Text style={styles.rowText}>{item.vip_tier.threshold}</Text>
                             </View>
                         )}
                         showsVerticalScrollIndicator={false}

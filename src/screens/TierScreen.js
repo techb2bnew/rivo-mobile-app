@@ -5,7 +5,7 @@ import { blackColor, grayColor, mediumGray, whiteColor } from '../constants/Colo
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from '../utils';
 import { spacings, style } from '../constants/Fonts';
 import { BaseStyle } from '../constants/Style';
-import { BRONZE_IMAGE, GOLD_IMAGE, MANUAL_IMAGE, PROCESSING_ICON, SILVER_IMAGE, VIP_IMAGE } from '../assests/images';
+import { BRONZE_DARK_IMAGE, BRONZE_IMAGE, BRONZE_LIGHT_IMAGE, DEFAULT_DARK_IMAGE, DEFAULT_LIGHT_IMAGE, DIAMOND_DARK_IMAGE, DIAMOND_LIGHT_IMAGE, GOLD_DARK_IMAGE, GOLD_IMAGE, GOLD_LIGHT_IMAGE, MANUAL_IMAGE, PROCESSING_ICON, RETAILER_DARK_IMAGE, RETAILER_LIGHT_IMAGE, SILVER_DARK_IMAGE, SILVER_IMAGE, SILVER_LIGHT_IMAGE, VIP_IMAGE, WHOLESALE_DARK_IMAGE, WHOLESALE_LIGHT_IMAGE } from '../assests/images';
 import MaterialIcons from 'react-native-vector-icons/dist/MaterialIcons';
 import { useDispatch } from 'react-redux';
 import messaging from '@react-native-firebase/messaging';
@@ -95,20 +95,19 @@ const TierScreen = ({ navigation }) => {
   const getTierIcon = (name, achieved) => {
     switch (name.toLowerCase()) {
       case "bronze":
-        return BRONZE_IMAGE;
+        return achieved ? BRONZE_DARK_IMAGE : BRONZE_LIGHT_IMAGE;
       case "silver":
-        return SILVER_IMAGE;
+        return achieved ? SILVER_DARK_IMAGE : SILVER_LIGHT_IMAGE;
       case "gold":
-        return GOLD_IMAGE;
+        return achieved ? GOLD_DARK_IMAGE : GOLD_LIGHT_IMAGE;
       case "diamond":
-        return VIP_IMAGE;
-      case "Retailer":
-        return VIP_IMAGE;
+        return achieved ? DIAMOND_DARK_IMAGE : DIAMOND_LIGHT_IMAGE;
+      case "retailer":
+        return achieved ? RETAILER_DARK_IMAGE : RETAILER_LIGHT_IMAGE;
       case "wholesale":
-        // return VIP_IMAGE;
-        return achieved ? BRONZE_IMAGE : VIP_IMAGE;
+        return achieved ? WHOLESALE_DARK_IMAGE : WHOLESALE_LIGHT_IMAGE;
       default:
-        return BRONZE_IMAGE;
+        return achieved ? DEFAULT_DARK_IMAGE : DEFAULT_LIGHT_IMAGE;
     }
   };
 

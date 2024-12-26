@@ -27,6 +27,7 @@ const DashBoardScreen = ({ navigation }) => {
     const [userName, setUserName] = useState("");
     const [phoneNumber, setPhoneNumber] = useState(null);
     const [tierStatus, setTierStatus] = useState(null);
+    const [expiryPointsData, setExpiryPointsData] = useState([]);
     const dispatch = useDispatch();
 
     const data = [
@@ -83,20 +84,21 @@ const DashBoardScreen = ({ navigation }) => {
         },
     ];
 
-    const expirydata = [
-        { date: "20/12/2023", points: "5,00,000" },
-        { date: "02/02/2024", points: "10,00,000" },
-        { date: "05/06/2024", points: "20,000" },
-        { date: "20/12/2023", points: "5,00,000" },
-        { date: "20/12/2023", points: "5,00,000" },
-        { date: "20/12/2023", points: "5,00,000" },
-        { date: "20/12/2023", points: "5,00,000" },
-        { date: "20/12/2023", points: "5,00,000" },
-        { date: "20/12/2023", points: "5,00,000" },
-        { date: "20/12/2023", points: "5,00,000" },
-        { date: "20/12/2023", points: "5,00,000" },
-    ];
-
+    // const expirydata = [
+    //     { date: "20/12/2023", points: "5,00,000" },
+    //     { date: "02/02/2024", points: "10,00,000" },
+    //     { date: "05/06/2024", points: "20,000" },
+    //     { date: "20/12/2023", points: "5,00,000" },
+    //     { date: "20/12/2023", points: "5,00,000" },
+    //     { date: "20/12/2023", points: "5,00,000" },
+    //     { date: "20/12/2023", points: "5,00,000" },
+    //     { date: "20/12/2023", points: "5,00,000" },
+    //     { date: "20/12/2023", points: "5,00,000" },
+    //     { date: "20/12/2023", points: "5,00,000" },
+    //     { date: "20/12/2023", points: "5,00,000" },
+    // ];
+ 
+    
     const openModal = (item) => {
         setSelectedData(item);
         setIsbarCodeModalVisible(true);
@@ -130,12 +132,45 @@ const DashBoardScreen = ({ navigation }) => {
         });
     };
 
+    const fetchExpPoints = async () => {
+        try {
+            const userToken = await AsyncStorage.getItem('userToken');
+            if (!userToken) {
+                console.error("User token not found in local storage");
+                return;
+            }
+
+            const headers = new Headers();
+            headers.append("Authorization", `Bearer ${userToken}`);
+            headers.append("Content-Type", "application/json");
+
+
+            const url = `https://publicapi.dev.saasintegrator.online/api/points-events?plugin_id=${PLUGGIN_ID}`;
+
+            const requestOptions = {
+                method: "GET",
+                headers: headers,
+                redirect: "follow",
+            };
+
+            const response = await fetch(url, requestOptions);
+
+            const result = await response.json();
+            setExpiryPointsData(result?.data)
+            // console.log("ExpPoints", result.data);
+        } catch (error) {
+            console.error("Error fetching ExpPoints:", error);
+        }
+    };
+
+
     useFocusEffect(
         useCallback(() => {
             fetchNotifications();
             listenForPushNotifications();
             fetchProfileData();
             fetchOrdersFromAPI();
+            fetchExpPoints();
         }, [])
     );
 
@@ -294,19 +329,19 @@ const DashBoardScreen = ({ navigation }) => {
                 contentContainerStyle={styles.content}
                 showsVerticalScrollIndicator={false}
             />
-            {/* <Pressable
+            <Pressable
                 style={[styles.expirePointsButton, alignJustifyCenter, positionAbsolute]}
                 onPress={() => setModalVisible(true)}
             >
                 <View style={[{ width: "100%", height: "100%", backgroundColor: '#000', borderRadius: 50 }, alignJustifyCenter]}>
                     <Text style={[styles.expirePointsText, textAlign]}>{EXPIRE_POINTS}</Text>
                 </View>
-            </Pressable> */}
+            </Pressable>
 
             {modalVisible && <ExpirePointsModal
                 visible={modalVisible}
                 onClose={() => setModalVisible(false)}
-                data={expirydata}
+                data={expiryPointsData}
             />}
             {isbarCodeModalVisible && <BarcodeModal
                 isVisible={isbarCodeModalVisible}
