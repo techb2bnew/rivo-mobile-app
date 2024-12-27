@@ -152,7 +152,7 @@ const styles = StyleSheet.create({
         marginBottom: 4,
     },
     productInfo: {
-        fontSize: style.fontSizeSmall.fontSize,
+        fontSize: style.fontSizeSmall2x.fontSize,
         color: grayColor,
         paddingTop: spacings.small
     },
