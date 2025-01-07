@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "160871997489",
-    "project_id": "public-apis-c6694",
-    "storage_bucket": "public-apis-c6694.firebasestorage.app"
+    "project_number": "335579932540",
+    "project_id": "rivo-notification",
+    "storage_bucket": "rivo-notification.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:160871997489:android:03a7aebbe13e9efb63f510",
+        "mobilesdk_app_id": "1:335579932540:android:8dc01c446c31dec50526f9",
         "android_client_info": {
           "package_name": "com.feathers"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyCkR2GGr00f-AVDHPKQvZU6I95VHyXM64o"
+          "current_key": "AIzaSyAVVWZ2m0mQRdGwwvx7HnRsZDWjRmRz41o"
         }
       ],
       "services": {

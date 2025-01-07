@@ -55,7 +55,7 @@ const WalletModal = ({ visible, onClose, transaction }) => {
                   Transaction ID
                 </Text>
               </View>
-              <View >
+              <View style={{width:"50%"}}>
                 <Text style={[styles.transactionDetails, { color: "#1C1C1C" }]}>
                   {id}
                 </Text>

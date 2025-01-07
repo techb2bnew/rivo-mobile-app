@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Image, FlatList, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Image, FlatList, TouchableOpacity, Pressable } from 'react-native';
 import Header from '../components/Header';
 import { blackColor, grayColor, whiteColor } from '../constants/Color';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from '../utils';
@@ -22,7 +22,7 @@ const OfferScreen = ({ navigation }) => {
     const [offers, setOffers] = useState(null);
     const [loading, setLoading] = useState(true);
     const renderCarouselItem = ({ item }) => (
-        <TouchableOpacity onPress={() => navigation.navigate('WebViewScreen', { url: item.offerLink })}>
+        <Pressable onPress={() => navigation.navigate('WebViewScreen', { url: item.offerLink })}>
             <View style={[alignItemsCenter]}>
                 <Image source={{ uri: item.fileUrl }} style={styles.carouselImage} />
                 <View style={styles.captionContainer}>
@@ -30,7 +30,7 @@ const OfferScreen = ({ navigation }) => {
                     <Text style={[styles.categoryLabel, textAlign, positionAbsolute, { bottom: 10, left: 35, right: 35 }]}>{item.name}</Text>
                 </View>
             </View>
-        </TouchableOpacity>
+        </Pressable>
     );
 
     const fetchNotifications = () => {
@@ -116,14 +116,14 @@ const OfferScreen = ({ navigation }) => {
                     contentContainerStyle={styles.categories}
                     showsHorizontalScrollIndicator={false}
                     renderItem={({ item }) => (
-                        <TouchableOpacity onPress={() => navigation.navigate('WebViewScreen', { url: item.offerLink })}>
+                        <Pressable onPress={() => navigation.navigate('WebViewScreen', { url: item.offerLink })}>
                             <View style={[styles.categoryBox, borderRadius10]}>
                                 <Image source={{ uri: item.fileUrl }} style={[styles.categoryImage, resizeModeCover, borderRadius10]} />
                                 <View style={[styles.overlay, borderRadius10, alignJustifyCenter]}>
                                     <Text style={[styles.categoryLabel, textAlign, positionAbsolute, { fontSize: style.fontSizeSmall2x.fontSize, }]}>{item.name}</Text>
                                 </View>
                             </View>
-                        </TouchableOpacity>
+                        </Pressable>
                     )}
                 />
 
@@ -134,10 +134,10 @@ const OfferScreen = ({ navigation }) => {
                     contentContainerStyle={{ width: "100%" }}
                     showsHorizontalScrollIndicator={false}
                     renderItem={({ item }) => (
-                        <TouchableOpacity style={[{ width: "95%", height: hp(15), margin: spacings.large, alignItemsCenter, backgroundColor: "#2D2D27" }, borderRadius10]}
+                        <Pressable style={[{ width: "95%", height: hp(15), margin: spacings.large, alignItemsCenter, backgroundColor: "#2D2D27" }, borderRadius10]}
                             onPress={() => navigation.navigate('WebViewScreen', { url: item.offerLink })}>
                             <Image source={{ uri: item.fileUrl }} style={[{ width: "100%", height: hp(15) }, borderRadius10]} />
-                        </TouchableOpacity>
+                        </Pressable>
                     )}
                 />
                 {loading && (

@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { View, StyleSheet, FlatList, Text, Image, Pressable } from 'react-native';
+import { View, StyleSheet, FlatList, Text, Image, Pressable, ActivityIndicator } from 'react-native';
 import Header from '../components/Header';
 import { grayColor, whiteColor, blackColor, lightGrayColor, mediumGray } from '../constants/Color';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from '../utils';
@@ -17,6 +17,7 @@ import { addNotification } from '../redux/actions';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { saveOrderLength } from '../redux/orders/orderAction';
+import BiometricModal from '../components/modals/BiometricModal';
 const { flex, alignItemsCenter, flexDirectionRow, alignJustifyCenter, borderRadius10, resizeModeContain, resizeModeCover, positionAbsolute, justifyContentSpaceBetween, textAlign } = BaseStyle;
 
 const DashBoardScreen = ({ navigation }) => {
@@ -25,16 +26,18 @@ const DashBoardScreen = ({ navigation }) => {
     const [selectedData, setSelectedData] = useState(null);
     const [balancePoint, setBalancePoint] = useState(null);
     const [userName, setUserName] = useState("");
-    const [phoneNumber, setPhoneNumber] = useState(null);
-    const [tierStatus, setTierStatus] = useState(null);
+    const [userID, setUserID] = useState("");
+    const [phoneNumber, setPhoneNumber] = useState('');
+    const [tierStatus, setTierStatus] = useState('');
     const [expiryPointsData, setExpiryPointsData] = useState([]);
+    const [isBiometricModalVisible, setIsBiometricModalVisible] = useState(false);
     const dispatch = useDispatch();
 
     const data = [
         {
             id: '1',
             title: `${userName}`,
-            points: phoneNumber != null ? `${phoneNumber}` : '8580765445',
+            points: `${phoneNumber}`,
             backgroundColor: "#1c1c1c",
             textColor: whiteColor,
             subtextColor: whiteColor,
@@ -42,16 +45,6 @@ const DashBoardScreen = ({ navigation }) => {
             icon: CARD_IMAGE,
             name: `${userName}`
         },
-        // {
-        //     id: '2',
-        //     title: 'Points Earned',
-        //     points: '1000PT',
-        //     backgroundColor: "#f5f5f5",
-        //     textColor: blackColor,
-        //     subtextColor: mediumGray,
-        //     imageBackground: "#e6e6e6",
-        //     icon: SALARY_IMAGE,
-        // },
         {
             id: '2',
             title: 'Points Balance',
@@ -62,16 +55,6 @@ const DashBoardScreen = ({ navigation }) => {
             imageBackground: "#e6e6e6",
             icon: COIN_IMAGE,
         },
-        // {
-        //     id: '4',
-        //     title: 'Points Spent',
-        //     points: '400PT',
-        //     backgroundColor: "#f5f5f5",
-        //     textColor: blackColor,
-        //     subtextColor: mediumGray,
-        //     imageBackground: "#e6e6e6",
-        //     icon: STAR_IMAGE
-        // },
         {
             id: '3',
             title: 'Tier Status',
@@ -84,21 +67,26 @@ const DashBoardScreen = ({ navigation }) => {
         },
     ];
 
-    // const expirydata = [
-    //     { date: "20/12/2023", points: "5,00,000" },
-    //     { date: "02/02/2024", points: "10,00,000" },
-    //     { date: "05/06/2024", points: "20,000" },
-    //     { date: "20/12/2023", points: "5,00,000" },
-    //     { date: "20/12/2023", points: "5,00,000" },
-    //     { date: "20/12/2023", points: "5,00,000" },
-    //     { date: "20/12/2023", points: "5,00,000" },
-    //     { date: "20/12/2023", points: "5,00,000" },
-    //     { date: "20/12/2023", points: "5,00,000" },
-    //     { date: "20/12/2023", points: "5,00,000" },
-    //     { date: "20/12/2023", points: "5,00,000" },
-    // ];
- 
-    
+    useEffect(() => {
+        const checkFirstLaunch = async () => {
+            try {
+                const firstLoginCompleted = await AsyncStorage.getItem("firstLoginCompleted");
+
+                if (firstLoginCompleted === "true") {
+                    // Show biometric modal if it's the second launch
+                    setIsBiometricModalVisible(true);
+                } else {
+                    // If it's the first launch, set the flag to true
+                    await AsyncStorage.setItem("firstLoginCompleted", "true");
+                }
+            } catch (error) {
+                console.error("Error checking first launch:", error);
+            }
+        };
+
+        checkFirstLaunch();
+    }, []);
+
     const openModal = (item) => {
         setSelectedData(item);
         setIsbarCodeModalVisible(true);
@@ -163,6 +151,51 @@ const DashBoardScreen = ({ navigation }) => {
         }
     };
 
+    const sendNotificationData = async (token, userID, userName) => {
+        if (!token || !userID || !userName) {
+            console.log("Error", "Missing required data to send the notification.");
+            return;
+        }
+
+        try {
+            const formData = new FormData();
+            formData.append("userId", userID);
+            formData.append("userName", userName);
+            formData.append("fcmToken", token);
+
+            const requestOptions = {
+                method: "POST",
+                body: formData,
+                redirect: "follow",
+            };
+
+            const response = await fetch(
+                "https://rivo-admin-c5ddaab83d6b.herokuapp.com/api/notifications",
+                requestOptions
+            );
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const result = await response.text();
+            // console.log("Success", result);
+        } catch (error) {
+            console.error("Error:", error);
+        }
+    };
+
+    useEffect(() => {
+        const handleNotificationData = async () => {
+            const savedToken = await AsyncStorage.getItem('fcmToken');
+            if (savedToken && userID && userName) {
+                sendNotificationData(savedToken, userID, userName);
+            }
+        };
+
+        handleNotificationData();
+    }, [userID, userName]);
+
 
     useFocusEffect(
         useCallback(() => {
@@ -195,11 +228,13 @@ const DashBoardScreen = ({ navigation }) => {
             });
 
             if (response.data.success) {
+                // console.log("response.data?.data",response.data?.data?.uid)
                 const availablePoints = response.data?.data?.available_loyalty_points;
                 await AsyncStorage.setItem('currentPoints', String(availablePoints));
                 setBalancePoint(response.data?.data?.available_loyalty_points);
                 setUserName(response.data?.data?.full_name);
                 setPhoneNumber(response.data?.data?.phone);
+                setUserID(response.data?.data?.uid)
             } else {
                 throw new Error('Failed to fetch profile data');
             }
@@ -280,13 +315,13 @@ const DashBoardScreen = ({ navigation }) => {
             const to_date = "2024-12-15";
 
             const response = await fetch(
-                `https://publicapi.dev.saasintegrator.online/api/orders?page=1&per_page=25&from_date=${from_date}&to_date=${to_date}`,
+                `https://publicapi.dev.saasintegrator.online/api/orders?page=1&per_page=30&from_date=${from_date}&to_date=${to_date}`,
                 { method: "GET", headers: myHeaders }
             );
 
             const result = await response.json();
-            // console.log("result.data.data", result.data.data.length);
-            dispatch(saveOrderLength(result.data.data.length));
+            console.log("result.data.data", result.data.orders.length);
+            dispatch(saveOrderLength(result.data.orders.length));
         } catch (error) {
             console.error("Error fetching orders:", error.message);
         }
@@ -300,23 +335,54 @@ const DashBoardScreen = ({ navigation }) => {
             .join(" ");
     };
 
-    const renderItem = ({ item }) => (
-        <Pressable style={[styles.card, { backgroundColor: item.backgroundColor }, flexDirectionRow, alignItemsCenter, justifyContentSpaceBetween, borderRadius10]}
-            onPress={() => {
-                if (item.id === '1') {
-                    openModal(item)
-                }
-            }}
-        >
-            <View>
-                <Text style={[styles.pointsText, { color: item.textColor }]}>{item.points}</Text>
-                <Text style={[styles.subText, { color: item.subtextColor }]}>{capitalizeWords(item.title)}</Text>
-            </View>
-            <View style={[styles.iconBox, borderRadius10, { backgroundColor: item.imageBackground }, alignJustifyCenter]}>
-                <Image source={item.icon} style={[styles.icon, resizeModeContain]} />
-            </View>
-        </Pressable>
-    );
+    const renderItem = ({ item }) => {
+        // Only render the card if the item has a phone number (for id === '1') or points (for others)
+        if (item.id === '1' && !phoneNumber) {
+            return null; // Do not render the card if phone number is missing
+        }
+
+        return (
+            <Pressable
+                style={[
+                    styles.card,
+                    { backgroundColor: item.backgroundColor },
+                    flexDirectionRow,
+                    alignItemsCenter,
+                    justifyContentSpaceBetween,
+                    borderRadius10
+                ]}
+                onPress={() => {
+                    if (item.id === '1') {
+                        openModal(item);
+                    }
+                }}
+            >
+                <View>
+                    {item.points ? (
+                        <Text style={[styles.pointsText, { color: item.textColor }]}>
+                            {item.points}
+                        </Text>
+                    ) : (
+                        <ActivityIndicator size={"small"} color={item.textColor} />
+                    )}
+                    <Text style={[styles.subText, { color: item.subtextColor }]}>
+                        {capitalizeWords(item.title)}
+                    </Text>
+                </View>
+                <View
+                    style={[
+                        styles.iconBox,
+                        borderRadius10,
+                        { backgroundColor: item.imageBackground },
+                        alignJustifyCenter
+                    ]}
+                >
+                    <Image source={item.icon} style={[styles.icon, resizeModeContain]} />
+                </View>
+            </Pressable>
+        );
+    };
+
 
     return (
         <View style={[styles.container, flex]}>
@@ -338,16 +404,19 @@ const DashBoardScreen = ({ navigation }) => {
                 </View>
             </Pressable>
 
-            {modalVisible && <ExpirePointsModal
-                visible={modalVisible}
-                onClose={() => setModalVisible(false)}
-                data={expiryPointsData}
-            />}
-            {isbarCodeModalVisible && <BarcodeModal
-                isVisible={isbarCodeModalVisible}
-                data={selectedData}
-                onClose={closeModal}
-            />}
+            {modalVisible && !isbarCodeModalVisible &&
+                <ExpirePointsModal
+                    visible={modalVisible}
+                    onClose={() => setModalVisible(false)}
+                    data={expiryPointsData}
+                />}
+            {isbarCodeModalVisible && !modalVisible &&
+                <BarcodeModal
+                    isVisible={isbarCodeModalVisible}
+                    data={selectedData}
+                    onClose={closeModal}
+                />}
+            {isBiometricModalVisible && <BiometricModal />}
         </View>
     );
 };
@@ -399,7 +468,8 @@ const styles = StyleSheet.create({
         shadowRadius: 5,
         borderWidth: 5,
         borderColor: "#000",
-        padding: 2
+        padding: 2,
+        zIndex: 999
     },
     expirePointsText: {
         color: whiteColor,

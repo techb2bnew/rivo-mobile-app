@@ -84,6 +84,7 @@ const WalletScreen = ({ navigation }) => {
     setActiveTab(tab);
     const transactionType = tab === "All" ? "all" : tab === "Earned" ? "earned" : "spent";
     fetchWalletHistory("", "", transactionType);
+    setModalVisible(false);
   };
 
   const getWalletDetail = async (walletHistoryId) => {
@@ -121,7 +122,7 @@ const WalletScreen = ({ navigation }) => {
   };
 
   const openModal = async (item) => {
-    setLoading(true);
+    // setLoading(true);
     setModalVisible(false)
     try {
       const walletDetail = await getWalletDetail(item.id);
@@ -149,14 +150,29 @@ const WalletScreen = ({ navigation }) => {
       .join(" ");
   };
 
+  useEffect(() => {
+    console.log('loading:', loading);
+    console.log('showBarcodeModal:', modalVisible);
+}, [loading,modalVisible ]);
+
   const renderTransaction = ({ item }) => {
     // Function to format the date
     const formatDate = (isoDate) => {
       const date = new Date(isoDate);
-      const day = date.getDate().toString().padStart(2, '0'); // Ensures two digits
-      const month = date.toLocaleString("en-US", { month: "short" }); // Gets the short month name
+      const day = date.getDate().toString().padStart(2, '0'); // Two-digit day
+      const month = date.toLocaleString("en-US", { month: "short" }); // Short month name
       const year = date.getFullYear();
       return `${day} ${month}, ${year}`;
+    };
+
+    // Function to format the time
+    const formatTime = (isoDate) => {
+      const date = new Date(isoDate);
+      let hours = date.getHours();
+      const minutes = date.getMinutes().toString().padStart(2, '0');
+      const amPm = hours >= 12 ? 'PM' : 'AM'; // Determine AM or PM
+      hours = hours % 12 || 12; // Convert to 12-hour format, ensuring 12 for 0 hours
+      return `${hours}:${minutes} ${amPm}`; // 12-hour format with AM/PM
     };
 
     return (
@@ -177,7 +193,7 @@ const WalletScreen = ({ navigation }) => {
                 ? "Spent points on Feathers"
                 : "Transaction on Feathers"}
           </Text>
-          <Text style={styles.date}>{formatDate(item.created_at)}</Text>
+          <Text style={styles.date}>{`${formatDate(item.created_at)} ${formatTime(item.created_at)}`}</Text>
         </View>
         <Text
           style={[
@@ -253,10 +269,10 @@ const WalletScreen = ({ navigation }) => {
           showsVerticalScrollIndicator={false}
         />
       )}
-      {/* {loading && (
+      {loading && (
         <LoaderModal visible={loading} message="Please wait..." />
-      )} */}
-      {modalVisible && selectedTransaction!=null && (
+      )}
+      {modalVisible && selectedTransaction!=null && !loading && (
         <WalletModal
           visible={modalVisible}
           onClose={handleCloseModal}

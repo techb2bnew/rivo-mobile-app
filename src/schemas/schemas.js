@@ -16,6 +16,7 @@ const ItemSchema = {
   name: 'Item',
   properties: {
     id: 'string',
+    order_id:'string',
     name: 'string',
     price: 'double',
     quantity: 'int',

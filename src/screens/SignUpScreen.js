@@ -74,7 +74,9 @@ const SignUpScreen = ({ navigation }) => {
     if (inputValue.includes("@")) {
       contactData = inputValue;
     } else {
-      contactData = inputValue.startsWith('+') ? inputValue : `${countryCode}${inputValue}`;
+      contactData = inputValue.startsWith("+91")
+        ? inputValue
+        : `+91${inputValue}`;
     }
     setLoading(true);
     const myHeaders = new Headers();
@@ -143,7 +145,7 @@ const SignUpScreen = ({ navigation }) => {
           setLoading(false);
           // OTP verified successfully
           setIsSuccessModalVisible(true);
-          
+
           setErrorMessage('');
         } else {
           // OTP verification failed
@@ -176,83 +178,83 @@ const SignUpScreen = ({ navigation }) => {
 
   return (
     <KeyboardAvoidingView
-    style={{ flex: 1 }}
-    behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-  >
-    <View style={[styles.container, flex]}>
-      {!isOtpSent ? (
-        <View style={[flex, justifyContentCenter]}>
-          <Text style={[styles.title, textAlign]}>{ENTER_EMAIL_OR_PHONE}</Text>
-          <Text style={{ marginBottom: spacings.large, marginTop: spacings.ExtraLarge }}>{MOBILE_OR_EMAIL}</Text>
-          <View style={[styles.inputContainer, flexDirectionRow, alignItemsCenter, borderRadius10]}>
-            {/* <Text style={styles.countryCode}>+61</Text> */}
-            <TextInput
-              style={[styles.textInput, flex]}
-              placeholder={ENTER_EMAIL_OR_PHONE}
-              keyboardType="default"
-              value={inputValue}
-              onChangeText={setInputValue}
-              placeholderTextColor={grayColor}
-            />
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+    >
+      <View style={[styles.container, flex]}>
+        {!isOtpSent ? (
+          <View style={[flex, justifyContentCenter]}>
+            <Text style={[styles.title, textAlign]}>{ENTER_EMAIL_OR_PHONE}</Text>
+            <Text style={{ marginBottom: spacings.large, marginTop: spacings.ExtraLarge }}>{MOBILE_OR_EMAIL}</Text>
+            <View style={[styles.inputContainer, flexDirectionRow, alignItemsCenter, borderRadius10]}>
+              {/* <Text style={styles.countryCode}>+61</Text> */}
+              <TextInput
+                style={[styles.textInput, flex]}
+                placeholder={ENTER_EMAIL_OR_PHONE}
+                keyboardType="default"
+                value={inputValue}
+                onChangeText={setInputValue}
+                placeholderTextColor={grayColor}
+              />
+            </View>
+            {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
+            <View style={{ marginTop: 40 }}>
+              <CustomButton title={GENERATE_OTP} onPress={handleGenerateOtp} />
+            </View>
           </View>
-          {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
-          <View style={{ marginTop: 40 }}>
-            <CustomButton title={GENERATE_OTP} onPress={handleGenerateOtp} />
-          </View>
-        </View>
-      ) : (
-        <View style={[flex, justifyContentCenter]}>
-          <Text style={[styles.title, textAlign]}>{OTP_VERIFICATION}</Text>
-          <Text style={[styles.subtitle, textAlign, { width: wp(80) }]}>
-            {ENTER_THE_OTP_SEND_TO} {inputValue}
-          </Text>
-          <View style={[styles.otpContainer, alignItemsCenter]}>
-            <OTPTextInput
-              inputCount={4}
-              handleTextChange={setOtp}
-              containerStyle={[styles.otpWrapper, flexDirectionRow, justifyContentSpaceBetween]}
-              textInputStyle={[styles.otpInput, borderRadius10, textAlign]}
-              tintColor={blackColor}
-              offTintColor={grayColor}
-            />
-          </View>
-          {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
-          <View style={{ flexDirection: "row", alignSelf: 'center', marginTop: spacings.xxLarge }}>
-            <Text style={[styles.subtitle, textAlign, flexDirectionRow, { height: hp(3.5) }]}>
-              {OTP_NOT_RECEIVED} ?
+        ) : (
+          <View style={[flex, justifyContentCenter]}>
+            <Text style={[styles.title, textAlign]}>{OTP_VERIFICATION}</Text>
+            <Text style={[styles.subtitle, textAlign, { width: wp(80) }]}>
+              {ENTER_THE_OTP_SEND_TO} {inputValue}
             </Text>
-            {/* <Pressable onPress={onPressResendCode} style={{ height: hp(3) }} disabled={countdown > 0}>
+            <View style={[styles.otpContainer, alignItemsCenter]}>
+              <OTPTextInput
+                inputCount={4}
+                handleTextChange={setOtp}
+                containerStyle={[styles.otpWrapper, flexDirectionRow, justifyContentSpaceBetween]}
+                textInputStyle={[styles.otpInput, borderRadius10, textAlign]}
+                tintColor={blackColor}
+                offTintColor={grayColor}
+              />
+            </View>
+            {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
+            <View style={{ flexDirection: "row", alignSelf: 'center', marginTop: spacings.xxLarge }}>
+              <Text style={[styles.subtitle, textAlign, flexDirectionRow, { height: hp(3.5) }]}>
+                {OTP_NOT_RECEIVED} ?
+              </Text>
+              {/* <Pressable onPress={onPressResendCode} style={{ height: hp(3) }} disabled={countdown > 0}>
               <Text style={[styles.subtitle, textAlign, { color: blackColor, fontWeight: "800", textDecorationLine: "underline", }]}> {RESEND_CODE}
               </Text>
             </Pressable> */}
-            {countdown > 0 ? (
-              <Text style={styles.timerText}> Resend OTP in {countdown}s</Text>
-            ) : (
-              <Pressable onPress={onPressResendCode} disabled={!isResendEnabled}>
-                <Text style={[styles.subtitle, textAlign, { color: blackColor, fontWeight: "800", textDecorationLine: "underline", }]}>
-                  {RESEND_CODE}
-                </Text>
-              </Pressable>
-            )}
+              {countdown > 0 ? (
+                <Text style={styles.timerText}> Resend OTP in {countdown}s</Text>
+              ) : (
+                <Pressable onPress={onPressResendCode} disabled={!isResendEnabled}>
+                  <Text style={[styles.subtitle, textAlign, { color: blackColor, fontWeight: "800", textDecorationLine: "underline", }]}>
+                    {RESEND_CODE}
+                  </Text>
+                </Pressable>
+              )}
+            </View>
+            <View style={{ marginTop: spacings.ExtraLarge1x }}>
+              <CustomButton title="Submit" onPress={handleOtpSubmit} />
+            </View>
           </View>
-          <View style={{ marginTop: spacings.ExtraLarge1x }}>
-            <CustomButton title="Submit" onPress={handleOtpSubmit} />
-          </View>
-        </View>
-      )}
+        )}
 
-      {loading && (
-        <LoaderModal visible={loading} message="Please wait..." />
-      )}
-      <SuccesfullModal
-        visible={isSuccessModalVisible}
-        onClose={() => setIsSuccessModalVisible(false)}
-        title={SUCCESSFULLY}
-        message={VERIFICATION_SUCCESSFULL_MESSAGE}
-        buttonLabel={CONTINUE}
-        onButtonPress={handleContinue}
-      />
-    </View>
+        {loading && (
+          <LoaderModal visible={loading} message="Please wait..." />
+        )}
+        <SuccesfullModal
+          visible={isSuccessModalVisible}
+          onClose={() => setIsSuccessModalVisible(false)}
+          title={SUCCESSFULLY}
+          message={VERIFICATION_SUCCESSFULL_MESSAGE}
+          buttonLabel={CONTINUE}
+          onButtonPress={handleContinue}
+        />
+      </View>
     </KeyboardAvoidingView>
   );
 };

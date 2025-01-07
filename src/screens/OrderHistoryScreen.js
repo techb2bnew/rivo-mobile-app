@@ -20,238 +20,12 @@ import { saveOrderLength } from '../redux/orders/orderAction';
 
 const { flex, alignItemsCenter, alignItemsFlexStart, flexDirectionRow, textAlign, justifyContentSpaceBetween, borderRadius10, resizeModeContain, resizeModeCover, positionAbsolute, alignJustifyCenter } = BaseStyle;
 
-const orderdata = [
-  {
-    id: '12456',
-    points: 500,
-    date: ' Oct 20, 2024',
-    time: '06:00 PM',
-    status: 'Fulfilled',
-    location: '#2748 bottlebrush',
-    store: "online Store",
-    deliveryMethod: "Economy",
-    subtotal: "$48.00",
-    shipping: "$4.00",
-    items: [
-      {
-        id: 'uuid:5a780f5b-2435-4e43bb',
-        name: 'Selling Plans Ski Wax',
-        price: '$24.00',
-        quantity: 1,
-        image: 'https://dfstudio-d420.kxcdn.com/wordpress/wp-content/uploads/2019/06/digital_camera_photo-1080x675.jpg',
-      },
-      {
-        id: 'uuid:5a780f5b-2435-4e43bb',
-        name: 'Selling Plans Ski Wax',
-        price: '$24.00',
-        quantity: 1,
-        image: 'https://dfstudio-d420.kxcdn.com/wordpress/wp-content/uploads/2019/06/digital_camera_photo-1080x675.jpg',
-      },
-      {
-        id: 'uuid:5a780f5b-2435-4e43bb',
-        name: 'Selling Plans Ski Wax',
-        price: '$24.00',
-        quantity: 1,
-        image: 'https://dfstudio-d420.kxcdn.com/wordpress/wp-content/uploads/2019/06/digital_camera_photo-1080x675.jpg',
-      },
-    ],
-  },
-  {
-    id: '12458',
-    points: 400,
-    date: ' Oct 23, 2024',
-    time: '06:00 PM',
-    status: 'Pending',
-    location: '#2748 bottlebrush',
-    store: "online Store",
-    deliveryMethod: "Economy",
-    subtotal: "$48.00",
-    shipping: "$4.00",
-    items: [
-      {
-        id: '2',
-        name: 'Ski Wax Deluxe',
-        price: '$34.00',
-        quantity: 2,
-        image: 'https://dfstudio-d420.kxcdn.com/wordpress/wp-content/uploads/2019/06/digital_camera_photo-1080x675.jpg',
-      },
-    ],
-  },
-  {
-    id: '12459',
-    points: 250,
-    date: ' Oct 28, 2024',
-    time: '06:14 PM',
-    status: 'Fulfilled',
-    location: '#2748 bottlebrush',
-    store: "online Store",
-    deliveryMethod: "Economy",
-    subtotal: "$48.00",
-    shipping: "$4.00",
-    items: [
-      {
-        id: '2',
-        name: 'Ski Wax Deluxe',
-        price: '$34.00',
-        quantity: 2,
-        image: 'https://dfstudio-d420.kxcdn.com/wordpress/wp-content/uploads/2019/06/digital_camera_photo-1080x675.jpg',
-      },
-    ],
-  },
-  {
-    id: '12460',
-    points: 515,
-    date: ' Nov 20, 2024',
-    time: '06:10 PM',
-    status: 'Pending',
-    location: '#2748 bottlebrush',
-    store: "online Store",
-    deliveryMethod: "Economy",
-    subtotal: "$48.00",
-    shipping: "$4.00",
-    items: [
-      {
-        id: '2',
-        name: 'Ski Wax Deluxe',
-        price: '$34.00',
-        quantity: 2,
-        image: 'https://dfstudio-d420.kxcdn.com/wordpress/wp-content/uploads/2019/06/digital_camera_photo-1080x675.jpg',
-      },
-    ],
-  },
-  {
-    id: '12461',
-    points: 50,
-    date: ' Nov 22, 2024',
-    time: '06:03 PM',
-    status: 'Pending',
-    location: '#2748 bottlebrush',
-    store: "online Store",
-    deliveryMethod: "Economy",
-    subtotal: "$48.00",
-    shipping: "$4.00",
-    items: [
-      {
-        id: '2',
-        name: 'Ski Wax Deluxe',
-        price: '$34.00',
-        quantity: 2,
-        image: 'https://dfstudio-d420.kxcdn.com/wordpress/wp-content/uploads/2019/06/digital_camera_photo-1080x675.jpg',
-      },
-    ],
-  },
-  {
-    id: '12462',
-    points: 520,
-    date: ' Nov 24, 2024',
-    time: '06:10 PM',
-    status: 'Fulfilled',
-    location: '#2748 bottlebrush',
-    store: "online Store",
-    deliveryMethod: "Economy",
-    subtotal: "$48.00",
-    shipping: "",
-    items: [
-      {
-        id: '2',
-        name: 'Ski Wax Deluxe',
-        price: '$34.00',
-        quantity: 2,
-        image: 'https://dfstudio-d420.kxcdn.com/wordpress/wp-content/uploads/2019/06/digital_camera_photo-1080x675.jpg',
-      },
-    ],
-  },
-  {
-    id: '12463',
-    points: 450,
-    date: ' Nov 25, 2024',
-    time: '06:00 AM',
-    status: 'Fulfilled',
-    location: '#2748 bottlebrush',
-    store: "online Store",
-    deliveryMethod: "Economy",
-    subtotal: "$48.00",
-    shipping: "$4.00",
-    items: [
-      {
-        id: '2',
-        name: 'Ski Wax Deluxe',
-        price: '$34.00',
-        quantity: 2,
-        image: 'https://dfstudio-d420.kxcdn.com/wordpress/wp-content/uploads/2019/06/digital_camera_photo-1080x675.jpg',
-      },
-    ],
-  },
-  {
-    id: '12464',
-    points: 350,
-    date: ' Nov 27, 2024',
-    time: '03:00 PM',
-    status: 'Fulfilled',
-    location: '#2748 bottlebrush',
-    store: "online Store",
-    deliveryMethod: "Economy",
-    subtotal: "$48.00",
-    shipping: "$4.00",
-    items: [
-      {
-        id: '2',
-        name: 'Ski Wax Deluxe',
-        price: '$34.00',
-        quantity: 2,
-        image: 'https://dfstudio-d420.kxcdn.com/wordpress/wp-content/uploads/2019/06/digital_camera_photo-1080x675.jpg',
-      },
-    ],
-  },
-  {
-    id: '12465',
-    points: 430,
-    date: ' Nov 28, 2024',
-    time: '06:00 PM',
-    status: 'Fulfilled',
-    location: '#2748 bottlebrush',
-    store: "online Store",
-    deliveryMethod: "Economy",
-    subtotal: "$48.00",
-    shipping: "$4.00",
-    items: [
-      {
-        id: '2',
-        name: 'Ski Wax Deluxe',
-        price: '$34.00',
-        quantity: 2,
-        image: 'https://dfstudio-d420.kxcdn.com/wordpress/wp-content/uploads/2019/06/digital_camera_photo-1080x675.jpg',
-      },
-    ],
-  },
-  {
-    id: '12466',
-    points: 430,
-    date: ' Nov 29, 2024',
-    time: '06:00 PM',
-    status: 'Pending',
-    location: '#2748 bottlebrush',
-    store: "online Store",
-    deliveryMethod: "Economy",
-    subtotal: "$48.00",
-    shipping: "",
-    items: [
-      {
-        id: '2',
-        name: 'Ski Wax Deluxe',
-        price: '$34.00',
-        quantity: 2,
-        image: 'https://dfstudio-d420.kxcdn.com/wordpress/wp-content/uploads/2019/06/digital_camera_photo-1080x675.jpg',
-      },
-    ],
-  },
-];
-
 const OrderHistoryScreen = ({ navigation }) => {
   const dispatch = useDispatch();
   const [refreshing, setRefreshing] = useState(false);
   const [ordersData, setOrdersData] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [page, setpage] = useState(1);
 
   const fetchNotifications = () => {
     PushNotification.getDeliveredNotifications((deliveredNotifications) => {
@@ -299,20 +73,20 @@ const OrderHistoryScreen = ({ navigation }) => {
       const to_date = "2024-12-15";
 
       const response = await fetch(
-        `https://publicapi.dev.saasintegrator.online/api/orders?page=1&per_page=25&from_date=${from_date}&to_date=${to_date}`,
+        `https://publicapi.dev.saasintegrator.online/api/orders?page=${page}&per_page=30&from_date=${from_date}&to_date=${to_date}`,
         { method: "GET", headers: myHeaders }
       );
 
       const result = await response.json();
-      // console.log("result.data.data", result.data.data);
+      console.log("result.data.data", result.data);
 
-      if (result.data.data && result.data.data.length > 0) {
-        saveOrderToRealm(result.data.data);
-        fetchOrdersFromRealm();
-        setLoading(false);
-      }
+      // if (result.data.data && result.data.data.length > 0) {
+      saveOrderToRealm(result.data.orders);
+      fetchOrdersFromRealm();
+      setLoading(false);
+      // }
     } catch (error) {
-      console.error("Error fetching orders:", error.message);
+      console.error("Error fetching orders from api:", error.message);
       setLoading(false);
     }
   };
@@ -330,15 +104,16 @@ const OrderHistoryScreen = ({ navigation }) => {
     try {
       realm.write(() => {
         orderData.forEach((order) => {
-          const existingOrder = realm.objectForPrimaryKey('Order', order.id);
+          const existingOrder = realm.objectForPrimaryKey('Order', order.uid);
           if (!existingOrder) {
             realm.create('Order', {
-              id: order.id,
+              id: order.uid,
               points: Math.floor(convertToNumber(order.grand_total)),
               date: order.created_at,
               status: order.status,
               items: order.order_items.map((item) => ({
                 id: item.id,
+                order_id: item.order_id,
                 name: item.product?.name || 'Unknown Product',
                 price: convertToNumber(item.price),
                 quantity: Math.floor(convertToNumber(item.quantity_ordered)),
@@ -369,13 +144,14 @@ const OrderHistoryScreen = ({ navigation }) => {
       const orders = realm.objects('Order');
       // console.log('Fetched orders from Realm:', orders);
       setOrdersData(Array.from(orders).reverse());
-      dispatch(saveOrderLength(orders.length));
+      dispatch(saveOrderLength(orders?.length));
     } catch (error) {
       console.error('Error fetching orders from Realm:', error);
     }
   };
 
   const onRefresh = async () => {
+    setpage(page+1);
     setRefreshing(true);
 
     try {
@@ -398,16 +174,16 @@ const OrderHistoryScreen = ({ navigation }) => {
       const to_date = today;
 
       const response = await fetch(
-        `https://publicapi.dev.saasintegrator.online/api/orders?page=1&per_page=25&from_date=${from_date}&to_date=${to_date}`,
+        `https://publicapi.dev.saasintegrator.online/api/orders?page=${page}&per_page=30&from_date=${from_date}&to_date=${to_date}`,
         { method: "GET", headers: myHeaders }
       );
 
       const result = await response.json();
-      console.log("Fetched orders from API:", result.data.data);
+      console.log("Fetched orders from API:", result.data);
 
-      if (result.data.data && result.data.data.length > 0) {
+      if (result.data.orders && result.data.orders.length > 0) {
         // Save the new orders to Realm
-        saveOrderToRealm(result.data.data);
+        saveOrderToRealm(result.data.orders);
 
         // Fetch all orders from Realm (including the new ones)
         fetchOrdersFromRealm();
@@ -434,6 +210,14 @@ const OrderHistoryScreen = ({ navigation }) => {
     initializeOrders();
   }, []);
 
+  const capitalizeWords = (str) => {
+    if (!str) return "";
+    return str
+      .split(" ")
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(" ");
+  };
+
   const renderOrderItem = ({ item }) => {
     const formatDate = (isoDate) => {
       const date = new Date(isoDate);
@@ -446,9 +230,11 @@ const OrderHistoryScreen = ({ navigation }) => {
     // Function to format the time
     const formatTime = (isoDate) => {
       const date = new Date(isoDate);
-      const hours = date.getHours().toString().padStart(2, '0');
+      let hours = date.getHours();
       const minutes = date.getMinutes().toString().padStart(2, '0');
-      return `${hours}:${minutes}`; // 24-hour format
+      const amPm = hours >= 12 ? 'PM' : 'AM'; // Determine AM or PM
+      hours = hours % 12 || 12; // Convert to 12-hour format, ensuring 12 for 0 hours
+      return `${hours}:${minutes} ${amPm}`; // 12-hour format with AM/PM
     };
 
     const formattedDate = formatDate(item.date);
@@ -457,17 +243,17 @@ const OrderHistoryScreen = ({ navigation }) => {
     return (
       <Pressable
         style={styles.orderContainer}
-        onPress={() => navigation.navigate('OrderDetails', { order: item })}
+        onPress={() => navigation.navigate('OrderDetails', { connectionId: item.items[0].order_id })}
       >
         <View style={[flexDirectionRow, justifyContentSpaceBetween, alignItemsCenter]}>
-          <Text style={styles.orderId}>Order #{item.id}</Text>
+          <Text style={styles.orderId}>Order {item.id}</Text>
           <Text
             style={[
               styles.status,
               { color: item.status === "Pending" ? goldColor : greenColor }
             ]}
           >
-            {item.status}
+            {capitalizeWords(item.status)}
           </Text>
         </View>
         <View
@@ -499,22 +285,29 @@ const OrderHistoryScreen = ({ navigation }) => {
       <Header navigation={navigation} />
       <View style={styles.separator} />
       <View style={{ height: Platform.OS === "android" ? hp(88) : hp(78) }}>
-        <Text style={[styles.title, { padding: spacings.large }]}>{ALL_ORDERS}</Text>
-        <FlatList
-          data={ordersData}
-          renderItem={renderOrderItem}
-          contentContainerStyle={{ paddingBottom: 20 }}
-          showsVerticalScrollIndicator={false}
-          keyExtractor={(item) => item?.id?.toString()}
-          refreshControl={
-            <RefreshControl
-              refreshing={refreshing}
-              onRefresh={onRefresh}
-              colors={["#42A5F5"]}
-              tintColor="#42A5F5"
+        {/* {ordersData.length === 0 ?
+          <View style={{ height: Platform.OS === "android" ? hp(88) : hp(78), alignItems: "center", justifyContent: "center" }}>
+            <Text style={styles.noOrderText}>No order available</Text>
+          </View>
+          : */}
+          {/* <> */}
+            <Text style={[styles.title, { padding: spacings.large }]}>{ALL_ORDERS}</Text>
+            <FlatList
+              data={ordersData}
+              renderItem={renderOrderItem}
+              contentContainerStyle={{ paddingBottom: 20 }}
+              showsVerticalScrollIndicator={false}
+              keyExtractor={(item) => item?.id?.toString()}
+              refreshControl={
+                <RefreshControl
+                  refreshing={refreshing}
+                  onRefresh={onRefresh}
+                  colors={["#42A5F5"]}
+                  tintColor="#42A5F5"
+                />
+              }
             />
-          }
-        />
+          {/* </>} */}
         {loading && (
           <LoaderModal visible={loading} message="Please wait..." />
         )}
@@ -595,6 +388,13 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: "#d9d9d9",
     marginBottom: spacings.large,
+  },
+  noOrderText: {
+    fontSize: style.fontSizeNormal1x.fontSize,
+    fontWeight: style.fontWeightMedium.fontWeight,
+    color: blackColor, // or use any other color you prefer
+    textAlign: 'center',
+    paddingVertical: spacings.large,
   },
 
 });

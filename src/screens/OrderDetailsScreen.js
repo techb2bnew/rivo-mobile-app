@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, Pressable } from 'react-native';
 import { blackColor, grayColor, whiteColor, lightGrayColor } from '../constants/Color';
 import { spacings, style } from '../constants/Fonts';
@@ -7,11 +7,59 @@ import Ionicons from 'react-native-vector-icons/dist/Ionicons';
 import CustomButton from '../components/CustomButton';
 import { BaseStyle } from '../constants/Style';
 import { DELIVERY_METHOD, LOCATION, PRICE_DETAILS, SHIPPING, SUBTOTAL, TOTAL } from '../constants/Constants';
+import LoaderModal from '../components/modals/LoaderModal';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 const { flex, alignItemsCenter, alignItemsFlexStart, flexDirectionRow, textAlign, justifyContentSpaceBetween, borderRadius10, resizeModeContain, resizeModeCover, positionAbsolute, alignJustifyCenter } = BaseStyle;
 
 const OrderDetailsScreen = ({ route, navigation }) => {
-    const { order } = route.params;
-   
+    const { connectionId } = route.params;
+    const [orderDetails, setOrderDetails] = useState(null);
+    const [loading, setLoading] = useState(false);
+    useEffect(() => {
+        if (connectionId) {
+            fetchOrderDetails(connectionId);
+        } else {
+            console.error("Invalid connectionId:", connectionId);
+        }
+    }, [connectionId]);
+
+    const fetchOrderDetails = async (connectionId) => {
+        const url = `https://publicapi.dev.saasintegrator.online/api/order-detail/${connectionId}`;
+        // const token = "145|q6QFYNtXokrba3jWLFliTtGI2waQWxk0fXcXQ9WV5cf8d4a7";
+
+        try {
+            const token = await AsyncStorage.getItem('userToken');
+            if (!token) {
+                console.log('No authentication token found');
+                return;
+            }
+            setLoading(true)
+            const response = await fetch(url, {
+                method: "GET",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            const responseText = await response.text();
+            const result = JSON.parse(responseText);
+            // console.log("fetching order details:", result.data.order_items);
+            setOrderDetails(result.data);
+            setLoading(false);
+        } catch (error) {
+            setLoading(false)
+            console.error("Error fetching order details:", error);
+        }
+    };
+
+
+    const capitalizeWords = (str) => {
+        if (!str) return "";
+        return str
+            .split(" ")
+            .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+            .join(" ");
+    };
+
     const formatDate = (isoDate) => {
         const date = new Date(isoDate);
         const day = date.getDate().toString().padStart(2, '0'); // Two-digit day
@@ -23,14 +71,16 @@ const OrderDetailsScreen = ({ route, navigation }) => {
     // Function to format the time
     const formatTime = (isoDate) => {
         const date = new Date(isoDate);
-        const hours = date.getHours().toString().padStart(2, '0');
+        let hours = date.getHours();
         const minutes = date.getMinutes().toString().padStart(2, '0');
-        return `${hours}:${minutes}`; // 24-hour format
+        const amPm = hours >= 12 ? 'PM' : 'AM'; // Determine AM or PM
+        hours = hours % 12 || 12; // Convert to 12-hour format, ensuring 12 for 0 hours
+        return `${hours}:${minutes} ${amPm}`; // 12-hour format with AM/PM
     };
 
-    const formattedDate = formatDate(order.date);
-    const formattedTime = formatTime(order.date);
-    // console.log(order.items)
+    const formattedDate = formatDate(orderDetails?.order_created_at);
+    const formattedTime = formatTime(orderDetails?.order_created_at);
+
     return (
         <View style={[styles.container, flex]}>
             <View style={{ width: wp(100), height: "auto", padding: spacings.large }}>
@@ -38,64 +88,80 @@ const OrderDetailsScreen = ({ route, navigation }) => {
                     <Ionicons name="arrow-back" size={30} color={blackColor} />
                 </Pressable>
             </View>
-            <ScrollView contentContainerStyle={styles.scrollContainer}>
-                <Text style={styles.title}>Order ID: #{order.id}</Text>
+            {loading ? (
+                <LoaderModal visible={loading} message="Please wait..." />
+            ) :
+                <ScrollView contentContainerStyle={styles.scrollContainer}>
+                    <Text style={styles.title}>Order ID: {orderDetails?.uid}</Text>
 
-                <Text style={styles.orderDate}>
-                    {formattedDate} at {formattedTime}
-                </Text>
+                    <Text style={styles.orderDate}>
+                        {formattedDate} at {formattedTime}
+                    </Text>
 
-                <View style={styles.separator} />
-                <View style={styles.infoContainer}>
-                    <Text style={styles.infoTitle}>{"Status"}</Text>
-                    <Text style={styles.infoText}>{order.status}</Text>
-                </View>
+                    <View style={styles.separator} />
+                    <View style={styles.infoContainer}>
+                        <Text style={styles.infoTitle}>{"Status"}</Text>
+                        <Text style={styles.infoText}>{capitalizeWords(orderDetails?.status)}</Text>
+                    </View>
 
-                {/* <View style={styles.separator} />
-                <View style={styles.infoContainer}>
-                    <Text style={styles.infoTitle}>{DELIVERY_METHOD}</Text>
-                    <Text style={styles.infoText}>{order.deliveryMethod}</Text>
-                </View> */}
-
-                <View style={styles.separator} />
-                {order.items.map((item) => (
-                    <>
-                        <View key={item.id} style={[styles.productContainer, flexDirectionRow, alignItemsCenter]}>
-                            {/* <Image source={{ uri: item.image }} style={styles.productImage} /> */}
-                            <View style={styles.productDetails}>
-                                <Text style={styles.productName}>Name : {item.name}</Text>
-                                <Text style={styles.productInfo}>id - {item.id}</Text>
-                                <Text style={[styles.productInfo, { color: blackColor, fontWeight: style.fontWeightThin1x.fontWeight, marginTop: 2 }]}>Qty: {item.quantity}</Text>
-                            </View>
-                            <View style={{ height: "100%" }}>
-                                <Text style={styles.productPrice}>${item.price}</Text>
-                            </View>
+                    <View style={styles.separator} />
+                    {orderDetails?.order_payment_methods[0]?.payment_method_name && <>
+                        <View style={styles.infoContainer}>
+                            <Text style={styles.infoTitle}>{DELIVERY_METHOD}</Text>
+                            <Text style={styles.infoText}>{orderDetails?.order_payment_methods[0]?.payment_method_name}</Text>
                         </View>
                         <View style={styles.separator} />
-                    </>
-                ))}
-                <View style={styles.priceDetails}>
-                    <Text style={[styles.priceHeader, justifyContentSpaceBetween, flexDirectionRow]}>{PRICE_DETAILS} ({order.items.length} Items)</Text>
+                    </>}
 
-                    {order.items.map((item) => (
-                        <>
-                            <View style={[styles.priceRow, flexDirectionRow, justifyContentSpaceBetween]}>
-                                <Text style={styles.priceLabel}>Price</Text>
-                                <Text style={styles.priceValue}>${item.price}</Text>
+                    {orderDetails?.order_items.map((item) => (
+                        <React.Fragment key={item.id}>
+                            <View style={[styles.productContainer, flexDirectionRow, alignItemsCenter]}>
+                                <Image
+                                    source={{
+                                        uri:
+                                            item.product?.images?.[0]?.url ||
+                                            "https://cdn.shopify.com/s/files/1/0890/4035/5626/files/GiftCard_1__Image_e6c0e644-0a85-4d79-95ed-85d2d4e00da3.jpg?v=1729670332",
+                                    }}
+                                    style={styles.productImage}
+                                />
+                                <View style={styles.productDetails}>
+                                    <Text style={styles.productName}>Name : {item.product?.name}</Text>
+                                    <Text style={styles.productInfo}>id - {item.product?.sku}</Text>
+                                    <Text
+                                        style={[
+                                            styles.productInfo,
+                                            { color: blackColor, fontWeight: style.fontWeightThin1x.fontWeight, marginTop: 2 },
+                                        ]}
+                                    >
+                                        Qty: {item.quantity_ordered}
+                                    </Text>
+                                </View>
+                                <View style={{ height: "100%", width: "20%" }}>
+                                    <Text style={styles.productPrice}>${item.price}</Text>
+                                </View>
                             </View>
-                            <View style={[styles.priceRow, flexDirectionRow, justifyContentSpaceBetween]}>
-                                <Text style={styles.priceLabel}>Quantity</Text>
-                                <Text style={styles.priceValue}>{item.quantity}</Text>
-                            </View>
-                        </>
+                            <View style={styles.separator} />
+                        </React.Fragment>
                     ))}
-                    <View style={[styles.priceRow, flexDirectionRow, justifyContentSpaceBetween]}>
-                        <Text style={styles.priceLabelTotal}>{TOTAL} Amount</Text>
-                        <Text style={styles.priceValueTotal}>${order?.points}</Text>
-                    </View>
-                </View>
 
-            </ScrollView>
+                    <View style={styles.priceDetails}>
+                        <Text style={[styles.priceHeader, justifyContentSpaceBetween, flexDirectionRow]}>{PRICE_DETAILS} ({orderDetails?.order_items?.length} Items)</Text>
+                        <View style={[styles.priceRow, flexDirectionRow, justifyContentSpaceBetween]}>
+                            <Text style={styles.priceLabel}>Subtotal</Text>
+                            <Text style={styles.priceValue}>${orderDetails?.subtotal}</Text>
+                        </View>
+                        <View style={[styles.priceRow, flexDirectionRow, justifyContentSpaceBetween]}>
+                            <Text style={styles.priceLabel}>Shipping Amount</Text>
+                            <Text style={styles.priceValue}>{orderDetails?.shipping_amount}</Text>
+                        </View>
+                        <View style={[styles.priceRow, flexDirectionRow, justifyContentSpaceBetween]}>
+                            <Text style={styles.priceLabelTotal}>{TOTAL} Amount</Text>
+                            <Text style={styles.priceValueTotal}>${orderDetails?.grand_total}</Text>
+                        </View>
+                    </View>
+
+                </ScrollView>
+            }
         </View>
     );
 };
