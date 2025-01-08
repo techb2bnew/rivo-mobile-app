@@ -70,7 +70,7 @@ const OrderHistoryScreen = ({ navigation }) => {
       myHeaders.append("Accept", "application/json");
 
       const from_date = "2023-12-1";
-      const to_date = "2024-12-15";
+      const to_date = "2024-12-30";
 
       const response = await fetch(
         `https://publicapi.dev.saasintegrator.online/api/orders?page=${page}&per_page=30&from_date=${from_date}&to_date=${to_date}`,
@@ -170,7 +170,7 @@ const OrderHistoryScreen = ({ navigation }) => {
       myHeaders.append("Authorization", `Bearer ${token}`);
       myHeaders.append("Accept", "application/json");
 
-      const from_date = "2024-12-15";
+      const from_date = "2024-12-30";
       const to_date = today;
 
       const response = await fetch(

@@ -12,7 +12,7 @@
 		13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
-		4EA964432D0AA362007CE923 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 4EA964422D0AA362007CE923 /* GoogleService-Info.plist */; };
+		4E5D1A392D2E60650060F070 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 4E5D1A382D2E60650060F070 /* GoogleService-Info.plist */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		BD27F1574BA968AFB71C8E91 /* Pods_feathers_feathersTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7BF5752BB00907B5900F1812 /* Pods_feathers_feathersTests.framework */; };
 		EFB970EE679114C0D930E5F8 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */; };
@@ -40,7 +40,7 @@
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = feathers/main.m; sourceTree = "<group>"; };
 		13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = PrivacyInfo.xcprivacy; path = feathers/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		3B4392A12AC88292D35C810B /* Pods-feathers.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-feathers.debug.xcconfig"; path = "Target Support Files/Pods-feathers/Pods-feathers.debug.xcconfig"; sourceTree = "<group>"; };
-		4EA964422D0AA362007CE923 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "feathers/GoogleService-Info.plist"; sourceTree = "<group>"; };
+		4E5D1A382D2E60650060F070 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../../Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		4EF1E9562D09534800C6C972 /* feathers.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = feathers.entitlements; path = feathers/feathers.entitlements; sourceTree = "<group>"; };
 		5709B34CF0A7D63546082F79 /* Pods-feathers.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-feathers.release.xcconfig"; path = "Target Support Files/Pods-feathers/Pods-feathers.release.xcconfig"; sourceTree = "<group>"; };
 		5B7EB9410499542E8C5724F5 /* Pods-feathers-feathersTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-feathers-feathersTests.debug.xcconfig"; path = "Target Support Files/Pods-feathers-feathersTests/Pods-feathers-feathersTests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -123,7 +123,7 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
-				4EA964422D0AA362007CE923 /* GoogleService-Info.plist */,
+				4E5D1A382D2E60650060F070 /* GoogleService-Info.plist */,
 				13B07FAE1A68108700A75B9A /* feathers */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				00E356EF1AD99517003FC87E /* feathersTests */,
@@ -251,7 +251,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
-				4EA964432D0AA362007CE923 /* GoogleService-Info.plist in Resources */,
+				4E5D1A392D2E60650060F070 /* GoogleService-Info.plist in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				EFB970EE679114C0D930E5F8 /* PrivacyInfo.xcprivacy in Resources */,
 			);
@@ -624,10 +624,7 @@
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
 				);
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
@@ -707,10 +704,7 @@
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
 				);
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				USE_HERMES = true;

@@ -17,6 +17,7 @@ const OrderDetailsScreen = ({ route, navigation }) => {
     const [loading, setLoading] = useState(false);
     useEffect(() => {
         if (connectionId) {
+            console.log("connectionId:", connectionId);
             fetchOrderDetails(connectionId);
         } else {
             console.error("Invalid connectionId:", connectionId);
@@ -42,7 +43,7 @@ const OrderDetailsScreen = ({ route, navigation }) => {
             });
             const responseText = await response.text();
             const result = JSON.parse(responseText);
-            // console.log("fetching order details:", result.data.order_items);
+            console.log("fetching order details:", result.data.order_items);
             setOrderDetails(result.data);
             setLoading(false);
         } catch (error) {
@@ -113,7 +114,7 @@ const OrderDetailsScreen = ({ route, navigation }) => {
                         <View style={styles.separator} />
                     </>}
 
-                    {orderDetails?.order_items.map((item) => (
+                    {/* {orderDetails?.order_items.map((item) => (
                         <React.Fragment key={item.id}>
                             <View style={[styles.productContainer, flexDirectionRow, alignItemsCenter]}>
                                 <Image
@@ -142,18 +143,52 @@ const OrderDetailsScreen = ({ route, navigation }) => {
                             </View>
                             <View style={styles.separator} />
                         </React.Fragment>
-                    ))}
+                    ))} */}
+
+                    {orderDetails?.order_items
+                        ?.filter((item) => item.product) // Only include items with a product
+                        .map((item) => (
+                            <React.Fragment key={item.id}>
+                                <View style={[styles.productContainer, flexDirectionRow, alignItemsCenter]}>
+                                    <Image
+                                        source={{
+                                            uri:
+                                                item.product?.images?.[0]?.url ||
+                                                "https://cdn.shopify.com/s/files/1/0890/4035/5626/files/GiftCard_1__Image_e6c0e644-0a85-4d79-95ed-85d2d4e00da3.jpg?v=1729670332",
+                                        }}
+                                        style={styles.productImage}
+                                    />
+                                    <View style={styles.productDetails}>
+                                        <Text style={styles.productName}>Name : {item?.product?.name}</Text>
+                                        <Text style={styles.productInfo}>id - {item?.product?.sku}</Text>
+                                        <Text
+                                            style={[
+                                                styles.productInfo,
+                                                { color: blackColor, fontWeight: style.fontWeightThin1x.fontWeight, marginTop: 2 },
+                                            ]}
+                                        >
+                                            Qty: {item?.quantity_ordered}
+                                        </Text>
+                                    </View>
+                                    <View style={{ height: "100%", width: "20%" }}>
+                                        <Text style={styles.productPrice}>${item.price}</Text>
+                                    </View>
+                                </View>
+                                <View style={styles.separator} />
+                            </React.Fragment>
+                        ))}
+
 
                     <View style={styles.priceDetails}>
-                        <Text style={[styles.priceHeader, justifyContentSpaceBetween, flexDirectionRow]}>{PRICE_DETAILS} ({orderDetails?.order_items?.length} Items)</Text>
-                        <View style={[styles.priceRow, flexDirectionRow, justifyContentSpaceBetween]}>
+                        {orderDetails?.order_items[0]?.product && <Text style={[styles.priceHeader, justifyContentSpaceBetween, flexDirectionRow]}>{PRICE_DETAILS} ({orderDetails?.order_items?.length} Items)</Text>}
+                        {orderDetails?.order_items[0]?.product && <View style={[styles.priceRow, flexDirectionRow, justifyContentSpaceBetween]}>
                             <Text style={styles.priceLabel}>Subtotal</Text>
                             <Text style={styles.priceValue}>${orderDetails?.subtotal}</Text>
-                        </View>
-                        <View style={[styles.priceRow, flexDirectionRow, justifyContentSpaceBetween]}>
+                        </View>}
+                        {orderDetails?.order_items[0]?.product && <View style={[styles.priceRow, flexDirectionRow, justifyContentSpaceBetween]}>
                             <Text style={styles.priceLabel}>Shipping Amount</Text>
                             <Text style={styles.priceValue}>{orderDetails?.shipping_amount}</Text>
-                        </View>
+                        </View>}
                         <View style={[styles.priceRow, flexDirectionRow, justifyContentSpaceBetween]}>
                             <Text style={styles.priceLabelTotal}>{TOTAL} Amount</Text>
                             <Text style={styles.priceValueTotal}>${orderDetails?.grand_total}</Text>

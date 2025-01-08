@@ -179,7 +179,7 @@ const DashBoardScreen = ({ navigation }) => {
             }
 
             const result = await response.text();
-            // console.log("Success", result);
+            console.log("Success", result);
         } catch (error) {
             console.error("Error:", error);
         }
@@ -312,7 +312,7 @@ const DashBoardScreen = ({ navigation }) => {
             myHeaders.append("Accept", "application/json");
 
             const from_date = "2023-12-1";
-            const to_date = "2024-12-15";
+            const to_date = "2024-12-30";
 
             const response = await fetch(
                 `https://publicapi.dev.saasintegrator.online/api/orders?page=1&per_page=30&from_date=${from_date}&to_date=${to_date}`,
