@@ -95,7 +95,7 @@ android {
         release {
           storeFile file('feather.keystore')
           storePassword '12345678'
-          keyAlias 'feather__alias'
+          keyAlias 'feather_key_alias'
           keyPassword '12345678'
         }
     }
