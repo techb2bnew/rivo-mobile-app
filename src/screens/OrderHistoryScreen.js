@@ -24,6 +24,7 @@ const OrderHistoryScreen = ({ navigation }) => {
   const dispatch = useDispatch();
   const [refreshing, setRefreshing] = useState(false);
   const [ordersData, setOrdersData] = useState([]);
+  const [ordersFromLocalStorage, setOrdersFromLocalStorage] = useState([]);
   const [loading, setLoading] = useState(false);
   const [page, setpage] = useState(1);
 
@@ -57,6 +58,12 @@ const OrderHistoryScreen = ({ navigation }) => {
     }, [])
   );
 
+  useFocusEffect(
+    useCallback(() => {
+        fetchOrdersFromLocalStorage();
+    }, []) 
+  );
+
   const fetchOrdersFromAPI = async () => {
     try {
       const token = await AsyncStorage.getItem('userToken');
@@ -69,8 +76,8 @@ const OrderHistoryScreen = ({ navigation }) => {
       myHeaders.append("Authorization", `Bearer ${token}`);
       myHeaders.append("Accept", "application/json");
 
-      const from_date = "2023-12-1";
-      const to_date = "2024-12-30";
+      const from_date = "";
+      const to_date = "";
 
       const response = await fetch(
         `https://publicapi.dev.saasintegrator.online/api/orders?page=${page}&per_page=30&from_date=${from_date}&to_date=${to_date}`,
@@ -78,13 +85,20 @@ const OrderHistoryScreen = ({ navigation }) => {
       );
 
       const result = await response.json();
-      console.log("result.data.data", result.data);
+      // console.log("result.data.data", result.data);
 
-      // if (result.data.data && result.data.data.length > 0) {
-      saveOrderToRealm(result.data.orders);
-      fetchOrdersFromRealm();
-      setLoading(false);
-      // }
+      if (result.data.orders && result.data.orders.length > 0) {
+        if (Platform.OS === "android") {
+          await AsyncStorage.setItem("LocalorderData", JSON.stringify(result.data.orders))
+        }
+        if (Platform.OS === "ios") {
+          saveOrderToRealm(result.data.orders);
+          fetchOrdersFromRealm();
+        } else {
+          fetchOrdersFromLocalStorage();
+        }
+        setLoading(false);
+      }
     } catch (error) {
       console.error("Error fetching orders from api:", error.message);
       setLoading(false);
@@ -151,7 +165,7 @@ const OrderHistoryScreen = ({ navigation }) => {
   };
 
   const onRefresh = async () => {
-    setpage(page+1);
+    setpage(page + 1);
     setRefreshing(true);
 
     try {
@@ -170,8 +184,8 @@ const OrderHistoryScreen = ({ navigation }) => {
       myHeaders.append("Authorization", `Bearer ${token}`);
       myHeaders.append("Accept", "application/json");
 
-      const from_date = "2024-12-30";
-      const to_date = today;
+      const from_date = "";
+      const to_date = "";
 
       const response = await fetch(
         `https://publicapi.dev.saasintegrator.online/api/orders?page=${page}&per_page=30&from_date=${from_date}&to_date=${to_date}`,
@@ -179,7 +193,7 @@ const OrderHistoryScreen = ({ navigation }) => {
       );
 
       const result = await response.json();
-      console.log("Fetched orders from API:", result.data);
+      // console.log("Fetched orders from API:", result.data);
 
       if (result.data.orders && result.data.orders.length > 0) {
         // Save the new orders to Realm
@@ -194,8 +208,7 @@ const OrderHistoryScreen = ({ navigation }) => {
       setRefreshing(false);
     }
   };
-
-
+ 
   const initializeOrders = async () => {
     const isFirstInstall = await AsyncStorage.getItem('hasFetchedOrders');
     if (!isFirstInstall) {
@@ -203,6 +216,17 @@ const OrderHistoryScreen = ({ navigation }) => {
       await AsyncStorage.setItem('hasFetchedOrders', 'true');
     } else {
       fetchOrdersFromRealm(); // Fetch from Realm if already initialized
+    }
+  };
+
+  const fetchOrdersFromLocalStorage = async () => {
+    try {
+      const localData = await AsyncStorage.getItem('LocalorderData');
+      // console.log("localData", localData);
+      const parsedData = JSON.parse(localData);
+      setOrdersFromLocalStorage(parsedData.reverse());
+    } catch (error) {
+      console.error("Error fetching orders from local storage:", error.message);
     }
   };
 
@@ -237,16 +261,16 @@ const OrderHistoryScreen = ({ navigation }) => {
       return `${hours}:${minutes} ${amPm}`; // 12-hour format with AM/PM
     };
 
-    const formattedDate = formatDate(item.date);
-    const formattedTime = formatTime(item.date);
+    const formattedDate = formatDate(item.date ?? item.created_at);
+    const formattedTime = formatTime(item.date ?? item.created_at);
 
     return (
       <Pressable
         style={styles.orderContainer}
-        onPress={() => navigation.navigate('OrderDetails', { connectionId: item.items[0].order_id })}
+        onPress={() => navigation.navigate('OrderDetails', { connectionId: item?.order_items?.[0]?.order_id ?? item.items[0].order_id })}
       >
         <View style={[flexDirectionRow, justifyContentSpaceBetween, alignItemsCenter]}>
-          <Text style={styles.orderId}>Order {item.id}</Text>
+          <Text style={styles.orderId}>Order {item.uid ?? item.id}</Text>
           <Text
             style={[
               styles.status,
@@ -266,7 +290,7 @@ const OrderHistoryScreen = ({ navigation }) => {
         >
           <View style={[{ width: wp(50) }, flexDirectionRow]}>
             <Text style={[styles.details, { color: blackColor, fontWeight: style.fontWeightThin1x.fontWeight }]}>
-              RP - {item.points} |
+              RP - {item.grand_total ?? item.points} |
             </Text>
             <Text style={[styles.details]}>
               {formattedDate} at {formattedTime}
@@ -290,24 +314,24 @@ const OrderHistoryScreen = ({ navigation }) => {
             <Text style={styles.noOrderText}>No order available</Text>
           </View>
           : */}
-          {/* <> */}
-            <Text style={[styles.title, { padding: spacings.large }]}>{ALL_ORDERS}</Text>
-            <FlatList
-              data={ordersData}
-              renderItem={renderOrderItem}
-              contentContainerStyle={{ paddingBottom: 20 }}
-              showsVerticalScrollIndicator={false}
-              keyExtractor={(item) => item?.id?.toString()}
-              refreshControl={
-                <RefreshControl
-                  refreshing={refreshing}
-                  onRefresh={onRefresh}
-                  colors={["#42A5F5"]}
-                  tintColor="#42A5F5"
-                />
-              }
+        {/* <> */}
+        <Text style={[styles.title, { padding: spacings.large }]}>{ALL_ORDERS}</Text>
+        <FlatList
+          data={ordersData.length > 0 ? ordersData : ordersFromLocalStorage}
+          renderItem={renderOrderItem}
+          contentContainerStyle={{ paddingBottom: 20 }}
+          showsVerticalScrollIndicator={false}
+          keyExtractor={(item) => item?.id?.toString()}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              colors={["#42A5F5"]}
+              tintColor="#42A5F5"
             />
-          {/* </>} */}
+          }
+        />
+        {/* </>} */}
         {loading && (
           <LoaderModal visible={loading} message="Please wait..." />
         )}

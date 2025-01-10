@@ -48,11 +48,11 @@ const TabNavigator = () => {
         },
       })}
     >
-      <Tab.Screen name="Dashboard" component={DashboardStack} />
-      <Tab.Screen name="Offers" component={OfferStack} />
-      <Tab.Screen name="Tier" component={TierStack} />
-      <Tab.Screen name="OrderHistory" component={OrderStack} />
-      <Tab.Screen name="Profile" component={ProfileStack} />
+      <Tab.Screen name="Dashboard" component={DashboardStack}  options={{ unmountOnBlur: true }}/>
+      <Tab.Screen name="Offers" component={OfferStack}  options={{ unmountOnBlur: true }}/>
+      <Tab.Screen name="Tier" component={TierStack}  options={{ unmountOnBlur: true }}/>
+      <Tab.Screen name="OrderHistory" component={OrderStack}  options={{ unmountOnBlur: true }}/>
+      <Tab.Screen name="Profile" component={ProfileStack}  options={{ unmountOnBlur: true }}/>
     </Tab.Navigator>
   );
 };

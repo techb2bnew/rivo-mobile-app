@@ -67,25 +67,25 @@ const DashBoardScreen = ({ navigation }) => {
         },
     ];
 
-    useEffect(() => {
-        const checkFirstLaunch = async () => {
-            try {
-                const firstLoginCompleted = await AsyncStorage.getItem("firstLoginCompleted");
+    // useEffect(() => {
+    //     const checkFirstLaunch = async () => {
+    //         try {
+    //             const firstLoginCompleted = await AsyncStorage.getItem("firstLoginCompleted");
 
-                if (firstLoginCompleted === "true") {
-                    // Show biometric modal if it's the second launch
-                    setIsBiometricModalVisible(true);
-                } else {
-                    // If it's the first launch, set the flag to true
-                    await AsyncStorage.setItem("firstLoginCompleted", "true");
-                }
-            } catch (error) {
-                console.error("Error checking first launch:", error);
-            }
-        };
+    //             if (firstLoginCompleted === "true") {
+    //                 // Show biometric modal if it's the second launch
+    //                 setIsBiometricModalVisible(true);
+    //             } else {
+    //                 // If it's the first launch, set the flag to true
+    //                 await AsyncStorage.setItem("firstLoginCompleted", "true");
+    //             }
+    //         } catch (error) {
+    //             console.error("Error checking first launch:", error);
+    //         }
+    //     };
 
-        checkFirstLaunch();
-    }, []);
+    //     checkFirstLaunch();
+    // }, []);
 
     const openModal = (item) => {
         setSelectedData(item);
@@ -311,8 +311,8 @@ const DashBoardScreen = ({ navigation }) => {
             myHeaders.append("Authorization", `Bearer ${token}`);
             myHeaders.append("Accept", "application/json");
 
-            const from_date = "2023-12-1";
-            const to_date = "2024-12-30";
+            const from_date = "";
+            const to_date = "";
 
             const response = await fetch(
                 `https://publicapi.dev.saasintegrator.online/api/orders?page=1&per_page=30&from_date=${from_date}&to_date=${to_date}`,
