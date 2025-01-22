@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Pressable, Alert, ActivityIndicator, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Pressable, Alert, ActivityIndicator, KeyboardAvoidingView, Platform, Keyboard } from 'react-native';
 import CustomButton from '../components/CustomButton';
 import SuccesfullModal from '../components/modals/SuccesfullModal';
 import { blackColor, grayColor, whiteColor } from '../constants/Color';
@@ -19,6 +19,7 @@ const SignUpScreen = ({ navigation }) => {
   const [isSuccessModalVisible, setIsSuccessModalVisible] = useState(false);
   const [otp, setOtp] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const [authtoken, setAuthToken] = useState('');
   const [token, setToken] = useState('');
   const [loading, setLoading] = useState(false);
   const [countdown, setCountdown] = useState(0); // Countdown state
@@ -57,53 +58,62 @@ const SignUpScreen = ({ navigation }) => {
   };
 
   const validateOtp = () => {
-    if (!otp || otp.length < 4) {
-      setErrorMessage('Please enter a valid 4-digit OTP.');
+    if (!otp || otp.length < 6) {
+      setErrorMessage('Please enter a valid 6-digit OTP.');
       return false;
     }
     return true;
   };
-
 
   const handleGenerateOtp = () => {
     // Validate the input value before proceeding
     if (!validateInputValue()) {
       return; // Exit if validation fails
     }
-    let contactData;
+
+    let payload = {
+      email: null,
+      phoneNumber: null,
+      deliveryMethod: null,
+    };
+
+    // Determine whether the input is an email or phone number
     if (inputValue.includes("@")) {
-      contactData = inputValue;
+      payload.email = inputValue.trim();
+      payload.deliveryMethod = "email";
     } else {
-      contactData = inputValue.startsWith("+91")
-        ? inputValue
-        : `+91${inputValue}`;
+      payload.phoneNumber = inputValue.startsWith("+91")
+        ? inputValue.trim()
+        : `+91${inputValue.trim()}`;
+      payload.deliveryMethod = "sms";
     }
+
     setLoading(true);
+
+    // Prepare headers for the API request
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
 
-    const raw = JSON.stringify({
-      contact: contactData.trim(),
-      connection_id: CONNECTION_ID,
-    });
-
+    // Create request options
     const requestOptions = {
       method: "POST",
       headers: myHeaders,
-      body: raw,
+      body: JSON.stringify(payload),
       redirect: "follow",
     };
+    console.log("payload", JSON.stringify(payload));
 
-    fetch("https://publicapi.dev.saasintegrator.online/api/check-contact", requestOptions)
+    // Send the OTP request
+    fetch("https://rivo-admin-c5ddaab83d6b.herokuapp.com/api/sendOtp", requestOptions)
       .then((response) => response.json())
       .then((result) => {
         setLoading(false);
+        console.log("result::", result);
         if (result.success) {
           setIsOtpSent(true);
           setErrorMessage("");
-          setToken(result.data.token);
+          setAuthToken(result.authToken);
           console.log("OTP sent successfully:", result);
-
         } else {
           setErrorMessage(result.message || "Failed to send OTP.");
         }
@@ -115,50 +125,147 @@ const SignUpScreen = ({ navigation }) => {
       });
   };
 
+  // const handleGenerateOtp = () => {
+  //   // Validate the input value before proceeding
+  //   if (!validateInputValue()) {
+  //     return; // Exit if validation fails
+  //   }
+  //   let contactData;
+  //   if (inputValue.includes("@")) {
+  //     contactData = inputValue;
+  //   } else {
+  //     contactData = inputValue.startsWith("+91")
+  //       ? inputValue
+  //       : `+91${inputValue}`;
+  //   }
+  //   setLoading(true);
+  //   const myHeaders = new Headers();
+  //   myHeaders.append("Content-Type", "application/json");
+
+  //   const raw = JSON.stringify({
+  //     contact: contactData.trim(),
+  //     connection_id: CONNECTION_ID,
+  //   });
+
+  //   const requestOptions = {
+  //     method: "POST",
+  //     headers: myHeaders,
+  //     body: raw,
+  //     redirect: "follow",
+  //   };
+
+  //   fetch("https://publicapi.dev.saasintegrator.online/api/check-contact", requestOptions)
+  //     .then((response) => response.json())
+  //     .then((result) => {
+  //       setLoading(false);
+  //       if (result.success) {
+  //         setIsOtpSent(true);
+  //         setErrorMessage("");
+  //         setToken(result.data.token);
+  //         console.log("OTP sent successfully:", result);
+
+  //       } else {
+  //         setErrorMessage(result.message || "Failed to send OTP.");
+  //       }
+  //     })
+  //     .catch((error) => {
+  //       setLoading(false);
+  //       console.error("Error generating OTP:", error);
+  //       setErrorMessage("An error occurred while sending OTP.");
+  //     });
+  // };
+
+  // const handleOtpSubmit = async () => {
+  //   // Validate OTP first
+  //   if (validateOtp()) {
+  //     setLoading(true);
+  //     console.log("otpinputValue", otp);
+
+  //     // Use the API to verify OTP
+  //     const myHeaders = new Headers();
+  //     myHeaders.append("Authorization", `Bearer ${authtoken}`);
+  //     myHeaders.append("Content-Type", "application/json");
+
+  //     const raw = JSON.stringify({
+  //       otp: otp, // Use OTP entered by user
+  //     });
+
+  //     const requestOptions = {
+  //       method: "POST",
+  //       headers: myHeaders,
+  //       body: raw,
+  //       redirect: "follow",
+  //     };
+
+  //     try {
+  //       const response = await fetch("https://publicapi.dev.saasintegrator.online/api/verify-otp", requestOptions);
+  //       const result = await response.json();
+
+  //       if (result.success) {
+  //         setLoading(false);
+  //         // OTP verified successfully
+  //         setIsSuccessModalVisible(true);
+
+  //         setErrorMessage('');
+  //       } else {
+  //         // OTP verification failed
+  //         setLoading(false);
+  //         setErrorMessage(result.message || 'Failed to verify OTP.');
+  //       }
+  //     } catch (error) {
+  //       setLoading(false);
+  //       console.error("Error verifying OTP:", error);
+  //       setErrorMessage("An error occurred while verifying OTP.");
+  //     }
+  //   }
+  // };
+
+
   const handleOtpSubmit = async () => {
-    // Validate OTP first
-    if (validateOtp()) {
-      setLoading(true);
-      console.log("otpinputValue", otp);
+    if (!validateOtp()) {
+      return; // Exit if validation fails
+    }
 
-      // Use the API to verify OTP
-      const myHeaders = new Headers();
-      myHeaders.append("Authorization", `Bearer ${token}`);
-      myHeaders.append("Content-Type", "application/json");
+    setLoading(true);
 
-      const raw = JSON.stringify({
-        otp: otp, // Use OTP entered by user
-      });
+    const myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
 
-      const requestOptions = {
-        method: "POST",
-        headers: myHeaders,
-        body: raw,
-        redirect: "follow",
-      };
+    const payload = {
+      authToken: authtoken,
+      otp: otp.trim(),
+    };
 
-      try {
-        const response = await fetch("https://publicapi.dev.saasintegrator.online/api/verify-otp", requestOptions);
-        const result = await response.json();
+    const requestOptions = {
+      method: "POST",
+      headers: myHeaders,
+      body: JSON.stringify(payload),
+      redirect: "follow",
+    };
 
-        if (result.success) {
-          setLoading(false);
-          // OTP verified successfully
-          setIsSuccessModalVisible(true);
-
-          setErrorMessage('');
-        } else {
-          // OTP verification failed
-          setLoading(false);
-          setErrorMessage(result.message || 'Failed to verify OTP.');
-        }
-      } catch (error) {
-        setLoading(false);
-        console.error("Error verifying OTP:", error);
-        setErrorMessage("An error occurred while verifying OTP.");
+    try {
+      const response = await fetch("https://rivo-admin-c5ddaab83d6b.herokuapp.com/api/verifyOtp", requestOptions);
+      const result = await response.json();
+      setLoading(false);
+      if (result.apiData.success) {
+        Keyboard.dismiss();
+        setIsSuccessModalVisible(true);
+        setToken(result.apiData.data.token);
+        setErrorMessage("");
+        console.log("OTP verification successful:", result);
+      } else {
+        setErrorMessage(result.apiData.message || "Failed to verify OTP. Please try again.");
       }
+    } catch (error) {
+      setLoading(false);
+      console.error("Error verifying OTP:", error);
+      setErrorMessage("Failed to verify OTP. Please try again.");
     }
   };
+
+  useEffect(() => {
+    console.log("isSuccessModalVisible updated:", isSuccessModalVisible);
+  }, [isSuccessModalVisible]);
 
 
   const handleContinue = async () => {
@@ -210,7 +317,7 @@ const SignUpScreen = ({ navigation }) => {
             </Text>
             <View style={[styles.otpContainer, alignItemsCenter]}>
               <OTPTextInput
-                inputCount={4}
+                inputCount={6}
                 handleTextChange={setOtp}
                 containerStyle={[styles.otpWrapper, flexDirectionRow, justifyContentSpaceBetween]}
                 textInputStyle={[styles.otpInput, borderRadius10, textAlign]}
@@ -223,10 +330,6 @@ const SignUpScreen = ({ navigation }) => {
               <Text style={[styles.subtitle, textAlign, flexDirectionRow, { height: hp(3.5) }]}>
                 {OTP_NOT_RECEIVED} ?
               </Text>
-              {/* <Pressable onPress={onPressResendCode} style={{ height: hp(3) }} disabled={countdown > 0}>
-              <Text style={[styles.subtitle, textAlign, { color: blackColor, fontWeight: "800", textDecorationLine: "underline", }]}> {RESEND_CODE}
-              </Text>
-            </Pressable> */}
               {countdown > 0 ? (
                 <Text style={styles.timerText}> Resend OTP in {countdown}s</Text>
               ) : (
@@ -242,9 +345,36 @@ const SignUpScreen = ({ navigation }) => {
             </View>
           </View>
         )}
-
         {loading && (
-          <LoaderModal visible={loading} message="Please wait..." />
+          <View style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 9999,
+          }}>
+            <View style={{
+              width: 150,
+              padding: 20,
+              backgroundColor: "#fff",
+              borderRadius: 10,
+              alignItems: "center",
+              justifyContent: "center",
+            }}>
+              <Text style={{
+                marginBottom: 10,
+                fontSize: 16,
+                color: "#000",
+              }}>
+                Please wait...
+              </Text>
+              <ActivityIndicator size="large" color={"#42A5F5"} />
+            </View>
+          </View>
         )}
         <SuccesfullModal
           visible={isSuccessModalVisible}
@@ -255,6 +385,7 @@ const SignUpScreen = ({ navigation }) => {
           onButtonPress={handleContinue}
         />
       </View>
+
     </KeyboardAvoidingView>
   );
 };
@@ -297,8 +428,8 @@ const styles = StyleSheet.create({
     marginTop: spacings.large,
   },
   otpInput: {
-    width: wp(15),
-    height: wp(15),
+    width: wp(13),
+    height: wp(13),
     fontSize: style.fontSizeLarge.fontSize,
     borderWidth: 1,
     borderColor: blackColor,

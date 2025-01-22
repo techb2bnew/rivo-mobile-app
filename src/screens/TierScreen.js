@@ -100,7 +100,7 @@ const TierScreen = ({ navigation }) => {
         return achieved ? SILVER_DARK_IMAGE : SILVER_LIGHT_IMAGE;
       case "gold":
         return achieved ? GOLD_DARK_IMAGE : GOLD_LIGHT_IMAGE;
-      case "diamond":
+      case "vip black":
         return achieved ? DIAMOND_DARK_IMAGE : DIAMOND_LIGHT_IMAGE;
       case "retailer":
         return achieved ? RETAILER_DARK_IMAGE : RETAILER_LIGHT_IMAGE;

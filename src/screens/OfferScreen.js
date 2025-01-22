@@ -91,55 +91,64 @@ const OfferScreen = ({ navigation }) => {
         <View style={[styles.container, flex]}>
             <Header navigation={navigation} />
             <ScrollView showsVerticalScrollIndicator={false}>
-                <View style={{ marginVertical: spacings.large }}>
-                    <Carousel
-                        data={offers?.slice(1, 4)}
-                        renderItem={renderCarouselItem}
-                        sliderWidth={wp(100)}
-                        itemWidth={wp(100)}
-                        onSnapToItem={(index) => setActiveSlide(index)}
-                    />
-                    <Pagination
-                        dotsLength={3}
-                        activeDotIndex={activeSlide}
-                        containerStyle={styles.paginationContainer}
-                        dotStyle={styles.dotStyle}
-                        inactiveDotOpacity={0.4}
-                        inactiveDotScale={0.6}
-                    />
-                </View>
-                <Text style={[styles.sectionHeader, textAlign]}>Luxury In Layers</Text>
-                <FlatList
-                    data={offers}
-                    horizontal
-                    // keyExtractor={(item) => item.id}
-                    contentContainerStyle={styles.categories}
-                    showsHorizontalScrollIndicator={false}
-                    renderItem={({ item }) => (
-                        <Pressable onPress={() => navigation.navigate('WebViewScreen', { url: item.offerLink })}>
-                            <View style={[styles.categoryBox, borderRadius10]}>
-                                <Image source={{ uri: item.fileUrl }} style={[styles.categoryImage, resizeModeCover, borderRadius10]} />
-                                <View style={[styles.overlay, borderRadius10, alignJustifyCenter]}>
-                                    <Text style={[styles.categoryLabel, textAlign, positionAbsolute, { fontSize: style.fontSizeSmall2x.fontSize, }]}>{item.name}</Text>
-                                </View>
-                            </View>
-                        </Pressable>
-                    )}
-                />
+                {offers?.length > 0 ? (
+                    <>
+                        <View style={{ marginVertical: spacings.large }}>
+                            <Carousel
+                                data={offers?.slice(1, 4)}
+                                renderItem={renderCarouselItem}
+                                sliderWidth={wp(100)}
+                                itemWidth={wp(100)}
+                                onSnapToItem={(index) => setActiveSlide(index)}
+                            />
+                            <Pagination
+                                dotsLength={3}
+                                activeDotIndex={activeSlide}
+                                containerStyle={styles.paginationContainer}
+                                dotStyle={styles.dotStyle}
+                                inactiveDotOpacity={0.4}
+                                inactiveDotScale={0.6}
+                            />
+                        </View>
+                        <Text style={[styles.sectionHeader, textAlign]}>Luxury In Layers</Text>
+                        <FlatList
+                            data={offers}
+                            horizontal
+                            // keyExtractor={(item) => item.id}
+                            contentContainerStyle={styles.categories}
+                            showsHorizontalScrollIndicator={false}
+                            renderItem={({ item }) => (
+                                <Pressable onPress={() => navigation.navigate('WebViewScreen', { url: item.offerLink })}>
+                                    <View style={[styles.categoryBox, borderRadius10]}>
+                                        <Image source={{ uri: item.fileUrl }} style={[styles.categoryImage, resizeModeCover, borderRadius10]} />
+                                        <View style={[styles.overlay, borderRadius10, alignJustifyCenter]}>
+                                            <Text style={[styles.categoryLabel, textAlign, positionAbsolute, { fontSize: style.fontSizeSmall2x.fontSize, }]}>{item.name}</Text>
+                                        </View>
+                                    </View>
+                                </Pressable>
+                            )}
+                        />
 
-                <FlatList
-                    data={offers?.slice(0, 1)}
-                    horizontal
-                    // keyExtractor={(item) => item.id}
-                    contentContainerStyle={{ width: "100%" }}
-                    showsHorizontalScrollIndicator={false}
-                    renderItem={({ item }) => (
-                        <Pressable style={[{ width: "95%", height: hp(15), margin: spacings.large, alignItemsCenter, backgroundColor: "#2D2D27" }, borderRadius10]}
-                            onPress={() => navigation.navigate('WebViewScreen', { url: item.offerLink })}>
-                            <Image source={{ uri: item.fileUrl }} style={[{ width: "100%", height: hp(15) }, borderRadius10]} />
-                        </Pressable>
-                    )}
-                />
+                        <FlatList
+                            data={offers?.slice(0, 1)}
+                            horizontal
+                            // keyExtractor={(item) => item.id}
+                            contentContainerStyle={{ width: "100%" }}
+                            showsHorizontalScrollIndicator={false}
+                            renderItem={({ item }) => (
+                                <Pressable style={[{ width: "95%", height: hp(15), margin: spacings.large, alignItemsCenter, backgroundColor: "#2D2D27" }, borderRadius10]}
+                                    onPress={() => navigation.navigate('WebViewScreen', { url: item.offerLink })}>
+                                    <Image source={{ uri: item.fileUrl }} style={[{ width: "100%", height: hp(15) }, borderRadius10]} />
+                                </Pressable>
+                            )}
+                        />
+                    </>
+                ) : (
+                    <View style={{ alignItems: "center", justifyContent: "center", margin: spacings.xLarge, backgroundColor: whiteColor }}>
+                        <Text style={{ fontSize: 18, color: grayColor, textAlign: "center" }}>No offers available at the moment. Please check back later.
+                        </Text>
+                    </View>
+                )}
                 {loading && (
                     <LoaderModal visible={loading} message="Please wait..." />
                 )}

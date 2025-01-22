@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { View, StyleSheet, Text, Image, Pressable, ActivityIndicator } from 'react-native';
 import { grayColor, whiteColor, blackColor, redColor } from '../constants/Color';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from '../utils';
@@ -12,6 +12,7 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import LoaderModal from '../components/modals/LoaderModal';
 import { useSelector } from 'react-redux';
+import { useFocusEffect } from '@react-navigation/native';
 const { flex, flexDirectionRow, alignJustifyCenter, resizeModeContain, resizeModeCover, justifyContentSpaceBetween, justifyContentCenter } = BaseStyle;
 
 const ProfileScreen = ({ navigation }) => {
@@ -19,41 +20,75 @@ const ProfileScreen = ({ navigation }) => {
   const [loading, setLoading] = useState(true);
   const orderLength = useSelector((state) => state.order.orderLength);
 
-  useEffect(() => {
-    const fetchProfileData = async () => {
-      try {
-        const token = await AsyncStorage.getItem('userToken');
-        console.log(token)
-        if (!token) {
-          setError('Token not found');
+  // useEffect(() => {
+  //   const fetchProfileData = async () => {
+  //     try {
+  //       const token = await AsyncStorage.getItem('userToken');
+  //       console.log(token)
+  //       if (!token) {
+  //         setError('Token not found');
+  //         setLoading(false);
+  //         return;
+  //       }
+  //       // Make the API call with the token
+  //       const response = await axios.get('https://publicapi.dev.saasintegrator.online/api/profile', {
+  //         headers: {
+  //           'Accept': 'application/json',
+  //           'Authorization': `Bearer ${token}`, // Pass token in Authorization header
+  //         },
+  //       });
+  //       if (response.data.success) {
+  //         // console.log("profiledata", response.data)
+  //         setProfileData(response.data)
+  //         await AsyncStorage.setItem('currentPoints', profileData?.data?.available_loyalty_points);
+  //       } else {
+  //         setError('Failed to fetch data');
+  //       }
+  //     } catch (err) {
+  //       setError('Error fetching data');
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+  //   fetchProfileData();
+  // }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      const fetchProfileData = async () => {
+        try {
+          const token = await AsyncStorage.getItem('userToken');
+          console.log("working use Focus Effect",token);
+          if (!token) {
+            setError('Token not found');
+            setLoading(false);
+            return;
+          }
+
+          // Make the API call with the token
+          const response = await axios.get('https://publicapi.dev.saasintegrator.online/api/profile', {
+            headers: {
+              Accept: 'application/json',
+              Authorization: `Bearer ${token}`, 
+            },
+          });
+
+          if (response.data.success) {
+            setProfileData(response.data);
+            await AsyncStorage.setItem('currentPoints', response.data?.data?.available_loyalty_points.toString());
+          } else {
+            setError('Failed to fetch data');
+          }
+        } catch (err) {
+          setError('Error fetching data');
+        } finally {
           setLoading(false);
-          return;
         }
+      };
 
-        // Make the API call with the token
-        const response = await axios.get('https://publicapi.dev.saasintegrator.online/api/profile', {
-          headers: {
-            'Accept': 'application/json',
-            'Authorization': `Bearer ${token}`, // Pass token in Authorization header
-          },
-        });
-
-        if (response.data.success) {
-          // console.log("profiledata", response.data)
-          setProfileData(response.data)
-          await AsyncStorage.setItem('currentPoints', profileData?.data?.available_loyalty_points);
-        } else {
-          setError('Failed to fetch data');
-        }
-      } catch (err) {
-        setError('Error fetching data');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProfileData();
-  }, []);
+      fetchProfileData();
+    }, []) 
+  );
 
   const renderAvatar = profileData?.data?.photo ? (
     <Image source={{ uri: profileData?.data?.photo }} style={[{ width: wp(23), height: "100%", borderRadius: 50 }]} />
