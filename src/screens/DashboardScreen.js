@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { View, StyleSheet, FlatList, Text, Image, Pressable, ActivityIndicator } from 'react-native';
+import { View, StyleSheet, FlatList, Text, Image, Pressable, ActivityIndicator, TouchableOpacity } from 'react-native';
 import Header from '../components/Header';
 import { grayColor, whiteColor, blackColor, lightGrayColor, mediumGray } from '../constants/Color';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from '../utils';
@@ -18,6 +18,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { saveOrderLength } from '../redux/orders/orderAction';
 import BiometricModal from '../components/modals/BiometricModal';
+import Icon from 'react-native-vector-icons/Ionicons';
+
 const { flex, alignItemsCenter, flexDirectionRow, alignJustifyCenter, borderRadius10, resizeModeContain, resizeModeCover, positionAbsolute, justifyContentSpaceBetween, textAlign } = BaseStyle;
 
 const DashBoardScreen = ({ navigation }) => {
@@ -67,25 +69,25 @@ const DashBoardScreen = ({ navigation }) => {
         },
     ];
 
-    // useEffect(() => {
-    //     const checkFirstLaunch = async () => {
-    //         try {
-    //             const firstLoginCompleted = await AsyncStorage.getItem("firstLoginCompleted");
+    useEffect(() => {
+        const checkFirstLaunch = async () => {
+            try {
+                const firstLoginCompleted = await AsyncStorage.getItem("firstLoginCompleted");
 
-    //             if (firstLoginCompleted === "true") {
-    //                 // Show biometric modal if it's the second launch
-    //                 setIsBiometricModalVisible(true);
-    //             } else {
-    //                 // If it's the first launch, set the flag to true
-    //                 await AsyncStorage.setItem("firstLoginCompleted", "true");
-    //             }
-    //         } catch (error) {
-    //             console.error("Error checking first launch:", error);
-    //         }
-    //     };
+                if (firstLoginCompleted === "true") {
+                    // Show biometric modal if it's the second launch
+                    setIsBiometricModalVisible(true);
+                } else {
+                    // If it's the first launch, set the flag to true
+                    await AsyncStorage.setItem("firstLoginCompleted", "true");
+                }
+            } catch (error) {
+                console.error("Error checking first launch:", error);
+            }
+        };
 
-    //     checkFirstLaunch();
-    // }, []);
+        checkFirstLaunch();
+    }, []);
 
     const openModal = (item) => {
         setSelectedData(item);
@@ -335,6 +337,10 @@ const DashBoardScreen = ({ navigation }) => {
             .join(" ");
     };
 
+    const navigateToFAQ = () => {
+        navigation.navigate('FAQ');  
+    };
+
     const renderItem = ({ item }) => {
         // Only render the card if the item has a phone number (for id === '1') or points (for others)
         if (item.id === '1' && !phoneNumber) {
@@ -404,6 +410,10 @@ const DashBoardScreen = ({ navigation }) => {
                 </View>
             </Pressable>
 
+            <TouchableOpacity onPress={navigateToFAQ} style={[styles.faqButton, positionAbsolute]}>
+                <Icon name="help-circle-outline" size={50} color="#fff" />
+            </TouchableOpacity>
+
             {modalVisible && !isbarCodeModalVisible &&
                 <ExpirePointsModal
                     visible={modalVisible}
@@ -455,11 +465,11 @@ const styles = StyleSheet.create({
         height: hp(7)
     },
     expirePointsButton: {
-        width: wp(20),
-        height: wp(20),
+        width: wp(18),
+        height: wp(18),
         borderRadius: 50,
         backgroundColor: whiteColor,
-        bottom: hp(5),
+        bottom: hp(15),
         right: wp(5),
         elevation: 5,
         shadowColor: '#000',
@@ -473,8 +483,23 @@ const styles = StyleSheet.create({
     },
     expirePointsText: {
         color: whiteColor,
-        fontSize: 14,
+        fontSize: 12,
         fontWeight: '600'
+    },
+    faqButton: {
+        width: wp(18),
+        height: wp(18),
+        borderRadius: 50,
+        backgroundColor: "#1c1c1c",
+        justifyContent: 'center',
+        alignItems: 'center',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 3 },
+        shadowOpacity: 0.1,
+        shadowRadius: 6,
+        elevation: 4,
+        bottom: hp(5),
+        right: wp(5),
     },
 });
 
