@@ -209,11 +209,11 @@ const DashBoardScreen = ({ navigation }) => {
         }, [])
     );
 
-    useEffect(() => {
-        if (balancePoint !== null) {
-            fetchTiers(balancePoint);
-        }
-    }, [balancePoint]);
+    // useEffect(() => {
+    //     if (balancePoint !== null) {
+    //         fetchTiers(balancePoint);
+    //     }
+    // }, [balancePoint]);
 
     const fetchProfileData = async () => {
         try {
@@ -230,9 +230,11 @@ const DashBoardScreen = ({ navigation }) => {
             });
 
             if (response.data.success) {
-                // console.log("response.data?.data",response.data?.data?.uid)
+                console.log("response.data?.data",response.data?.data.tier_groups?.[0]?.name)
                 const availablePoints = response.data?.data?.available_loyalty_points;
                 await AsyncStorage.setItem('currentPoints', String(availablePoints));
+                await AsyncStorage.setItem('currentTier', response.data?.data.tier_groups?.[0]?.name);
+                setTierStatus(response.data?.data.tier_groups?.[0]?.name)
                 setBalancePoint(response.data?.data?.available_loyalty_points);
                 setUserName(response.data?.data?.full_name);
                 setPhoneNumber(response.data?.data?.phone);
@@ -245,62 +247,62 @@ const DashBoardScreen = ({ navigation }) => {
         }
     };
 
-    const fetchTiers = async (balancePoint) => {
-        try {
-            const token = await AsyncStorage.getItem("userToken");
-            if (!token) {
-                console.warn("Token missing in AsyncStorage");
-                return;
-            }
-            const url = `https://publicapi.dev.saasintegrator.online/api/vip-tiers?plugin_id=${PLUGGIN_ID}`;
-            const myHeaders = new Headers();
-            myHeaders.append("Authorization", `Bearer ${token}`);
-            myHeaders.append("Content-Type", "application/json");
+    // const fetchTiers = async (balancePoint) => {
+    //     try {
+    //         const token = await AsyncStorage.getItem("userToken");
+    //         if (!token) {
+    //             console.warn("Token missing in AsyncStorage");
+    //             return;
+    //         }
+    //         const url = `https://publicapi.dev.saasintegrator.online/api/vip-tiers?plugin_id=${PLUGGIN_ID}`;
+    //         const myHeaders = new Headers();
+    //         myHeaders.append("Authorization", `Bearer ${token}`);
+    //         myHeaders.append("Content-Type", "application/json");
 
-            const requestOptions = {
-                method: "GET",
-                headers: myHeaders,
-                redirect: "follow",
-            };
+    //         const requestOptions = {
+    //             method: "GET",
+    //             headers: myHeaders,
+    //             redirect: "follow",
+    //         };
 
-            const response = await fetch(url, requestOptions);
-            const result = await response.json();
+    //         const response = await fetch(url, requestOptions);
+    //         const result = await response.json();
 
-            if (result.success && result.data) {
-                const tiers = result.data;
+    //         if (result.success && result.data) {
+    //             const tiers = result.data;
 
-                const tierNamesAndThresholds = tiers.map(tier => ({
-                    threshold: tier.threshold,
-                    name: tier.name,
-                }));
+    //             const tierNamesAndThresholds = tiers.map(tier => ({
+    //                 threshold: tier.threshold,
+    //                 name: tier.name,
+    //             }));
 
-                tierNamesAndThresholds.sort((a, b) => a.threshold - b.threshold);
+    //             tierNamesAndThresholds.sort((a, b) => a.threshold - b.threshold);
 
-                let selectedTier = null;
+    //             let selectedTier = null;
 
-                for (let i = 0; i < tierNamesAndThresholds.length; i++) {
-                    const tier = tierNamesAndThresholds[i];
+    //             for (let i = 0; i < tierNamesAndThresholds.length; i++) {
+    //                 const tier = tierNamesAndThresholds[i];
 
-                    if (balancePoint >= tier.threshold) {
-                        selectedTier = tier.name;
-                    } else {
-                        break;
-                    }
-                }
-                if (selectedTier) {
-                    // console.log("Selected Tier:", selectedTier);
-                    setTierStatus(selectedTier);
-                } else {
-                    console.log("No tier found for the balance point.");
-                    setTierStatus(null);
-                }
-            } else {
-                console.error("Failed to fetch tiers:", result.message);
-            }
-        } catch (error) {
-            console.error("Error fetching tiers:", error);
-        }
-    };
+    //                 if (balancePoint >= tier.threshold) {
+    //                     selectedTier = tier.name;
+    //                 } else {
+    //                     break;
+    //                 }
+    //             }
+    //             if (selectedTier) {
+    //                 // console.log("Selected Tier:", selectedTier);
+    //                 setTierStatus(selectedTier);
+    //             } else {
+    //                 console.log("No tier found for the balance point.");
+    //                 setTierStatus(null);
+    //             }
+    //         } else {
+    //             console.error("Failed to fetch tiers:", result.message);
+    //         }
+    //     } catch (error) {
+    //         console.error("Error fetching tiers:", error);
+    //     }
+    // };
 
     const fetchOrdersFromAPI = async () => {
         try {
@@ -338,7 +340,7 @@ const DashBoardScreen = ({ navigation }) => {
     };
 
     const navigateToFAQ = () => {
-        navigation.navigate('FAQ');  
+        navigation.navigate('FAQ');
     };
 
     const renderItem = ({ item }) => {
@@ -410,9 +412,9 @@ const DashBoardScreen = ({ navigation }) => {
                 </View>
             </Pressable>
 
-            <TouchableOpacity onPress={navigateToFAQ} style={[styles.faqButton, positionAbsolute]}>
+            {/* <TouchableOpacity onPress={navigateToFAQ} style={[styles.faqButton, positionAbsolute]}>
                 <Icon name="help-circle-outline" size={50} color="#fff" />
-            </TouchableOpacity>
+            </TouchableOpacity> */}
 
             {modalVisible && !isbarCodeModalVisible &&
                 <ExpirePointsModal
@@ -500,6 +502,7 @@ const styles = StyleSheet.create({
         elevation: 4,
         bottom: hp(5),
         right: wp(5),
+        zIndex: 999
     },
 });
 

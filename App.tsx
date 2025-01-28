@@ -11,6 +11,7 @@ import PushNotification from 'react-native-push-notification';
 import messaging from '@react-native-firebase/messaging';
 import { Provider} from 'react-redux';
 import store from './src/redux/store';
+import FAQScreen from './src/screens/FAQScreen';
 
 function App(): React.JSX.Element {
   const [showSplash, setShowSplash] = useState(true);
@@ -118,6 +119,7 @@ function App(): React.JSX.Element {
         ) : (
           <AuthNavigator screen="SignUp" />
         )}
+        {/* <FAQScreen/> */}
       </NavigationContainer>
       <Toast message={toastMessage} visible={toastVisible} />
       </Provider>
