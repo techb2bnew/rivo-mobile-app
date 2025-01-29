@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, FlatList } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { blackColor } from '../constants/Color';
+import { blackColor, whiteColor } from '../constants/Color';
 
 const FAQScreen = ({ navigation }) => {
     const [visibleAnswers, setVisibleAnswers] = useState({});
@@ -36,7 +36,7 @@ const FAQScreen = ({ navigation }) => {
     );
 
     return (
-        <>
+        < View style={styles.container}>
             <View style={styles.header}>
                 <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
                     <Icon name="arrow-back" size={24} color={blackColor} />
@@ -49,13 +49,15 @@ const FAQScreen = ({ navigation }) => {
                 keyExtractor={(item) => item.id}
                 contentContainerStyle={{ padding: 15, }}
             />
-        </>
+        </View>
     );
 };
 
 const styles = StyleSheet.create({
     container: {
-        padding: 10,
+        // padding: 10,
+        backgroundColor: whiteColor,
+        flex:1
     },
     faqItem: {
         marginBottom: 10,

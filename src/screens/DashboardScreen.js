@@ -412,9 +412,9 @@ const DashBoardScreen = ({ navigation }) => {
                 </View>
             </Pressable>
 
-            {/* <TouchableOpacity onPress={navigateToFAQ} style={[styles.faqButton, positionAbsolute]}>
+            <TouchableOpacity onPress={navigateToFAQ} style={[styles.faqButton, positionAbsolute]}>
                 <Icon name="help-circle-outline" size={50} color="#fff" />
-            </TouchableOpacity> */}
+            </TouchableOpacity>
 
             {modalVisible && !isbarCodeModalVisible &&
                 <ExpirePointsModal

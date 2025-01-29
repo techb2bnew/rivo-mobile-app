@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Image, FlatList, TouchableOpacity, Pressable } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Image, FlatList, TouchableOpacity, Pressable, ActivityIndicator } from 'react-native';
 import Header from '../components/Header';
 import { blackColor, grayColor, whiteColor } from '../constants/Color';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from '../utils';
@@ -95,14 +95,14 @@ const OfferScreen = ({ navigation }) => {
                     <>
                         <View style={{ marginVertical: spacings.large }}>
                             <Carousel
-                                data={offers?.slice(1, 4)}
+                                data={offers?.slice(0, 4)}
                                 renderItem={renderCarouselItem}
                                 sliderWidth={wp(100)}
                                 itemWidth={wp(100)}
                                 onSnapToItem={(index) => setActiveSlide(index)}
                             />
                             <Pagination
-                                dotsLength={3}
+                                dotsLength={offers?.slice(0, 4).length}
                                 activeDotIndex={activeSlide}
                                 containerStyle={styles.paginationContainer}
                                 dotStyle={styles.dotStyle}
@@ -130,7 +130,7 @@ const OfferScreen = ({ navigation }) => {
                         />
 
                         <FlatList
-                            data={offers?.slice(0, 1)}
+                            data={offers?.slice(4, 5)}
                             horizontal
                             // keyExtractor={(item) => item.id}
                             contentContainerStyle={{ width: "100%" }}
@@ -144,13 +144,44 @@ const OfferScreen = ({ navigation }) => {
                         />
                     </>
                 ) : (
-                    <View style={{ alignItems: "center", justifyContent: "center", margin: spacings.xLarge, backgroundColor: whiteColor }}>
+                    <View style={{ alignItems: "center", justifyContent: "center", margin: spacings.xLarge, backgroundColor: whiteColor, height: hp(80) }}>
                         <Text style={{ fontSize: 18, color: grayColor, textAlign: "center" }}>No offers available at the moment. Please check back later.
                         </Text>
                     </View>
                 )}
-                {loading && (
+                {/* {loading && (
                     <LoaderModal visible={loading} message="Please wait..." />
+                )} */}
+                {loading && (
+                    <View style={{
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        backgroundColor: "rgba(0, 0, 0, 0.5)",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        zIndex: 9999,
+                    }}>
+                        <View style={{
+                            width: 150,
+                            padding: 20,
+                            backgroundColor: "#fff",
+                            borderRadius: 10,
+                            alignItems: "center",
+                            justifyContent: "center",
+                        }}>
+                            <Text style={{
+                                marginBottom: 10,
+                                fontSize: 16,
+                                color: "#000",
+                            }}>
+                                Please wait...
+                            </Text>
+                            <ActivityIndicator size="large" color={"#42A5F5"} />
+                        </View>
+                    </View>
                 )}
             </ScrollView>
         </View>

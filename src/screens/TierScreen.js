@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Image, FlatList } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Image, FlatList, ActivityIndicator } from 'react-native';
 import Header from '../components/Header';
 import { blackColor, grayColor, mediumGray, whiteColor } from '../constants/Color';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from '../utils';
@@ -92,31 +92,31 @@ const TierScreen = ({ navigation }) => {
   //     setLoading(false);
   //   }
   // };
-  
+
   const fetchTiers = async () => {
     setLoading(true);
     try {
       // Retrieve token and other data from AsyncStorage
       const token = await AsyncStorage.getItem("userToken");
       const currentTier = await AsyncStorage.getItem("currentTier");
-  
+
       if (!token) {
         console.warn("Token missing in AsyncStorage");
         setLoading(false);
         return;
       }
-  
+
       if (!currentTier) {
         console.warn("Current tier missing in AsyncStorage");
         setLoading(false);
         return;
       }
-  
+
       // Prepare headers
       const myHeaders = new Headers();
       myHeaders.append("Authorization", `Bearer ${token}`);
       myHeaders.append("Content-Type", "application/json");
-  
+
       // API URL and request options
       const url = `https://publicapi.dev.saasintegrator.online/api/vip-tiers?plugin_id=${PLUGGIN_ID}`;
       const requestOptions = {
@@ -124,20 +124,20 @@ const TierScreen = ({ navigation }) => {
         headers: myHeaders,
         redirect: "follow",
       };
-  
+
       // Fetch data from API
       const response = await fetch(url, requestOptions);
       const result = await response.json();
-  
+
       if (result.success) {
         const sortedTiers = result.data.sort((a, b) => a.threshold - b.threshold);
         let levels = [];
         let foundCurrentTier = false;
-  
+
         sortedTiers.forEach((item, index) => {
           const achieved = !foundCurrentTier && item.name === currentTier;
           const isInProgress = foundCurrentTier && !levels.some(level => level.isInProgress);
-  
+
           levels.push({
             id: item.id.toString(),
             name: item.name,
@@ -146,12 +146,12 @@ const TierScreen = ({ navigation }) => {
             isInProgress: isInProgress,
             icon: getTierIcon(item.name, achieved),
           });
-  
+
           if (item.name === currentTier) {
             foundCurrentTier = true;
           }
         });
-  
+
         // Update state with levels array
         setLevels(levels);
         // console.log("Processed Levels:", levels);
@@ -164,7 +164,7 @@ const TierScreen = ({ navigation }) => {
       setLoading(false);
     }
   };
-  
+
   const getTierIcon = (name, achieved) => {
     switch (name.toLowerCase()) {
       case "bronze":
@@ -267,7 +267,38 @@ const TierScreen = ({ navigation }) => {
       <Header navigation={navigation} />
       <View style={styles.separator} />
       {loading ? (
-        <LoaderModal visible={loading} message="Loading tiers..." />
+        // <LoaderModal visible={loading} message="Loading tiers..." />
+
+        <View style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: "rgba(0, 0, 0, 0.5)",
+          alignItems: "center",
+          justifyContent: "center",
+          zIndex: 9999,
+        }}>
+          <View style={{
+            width: 150,
+            padding: 20,
+            backgroundColor: "#fff",
+            borderRadius: 10,
+            alignItems: "center",
+            justifyContent: "center",
+          }}>
+            <Text style={{
+              marginBottom: 10,
+              fontSize: 16,
+              color: "#000",
+            }}>
+              Please wait...
+            </Text>
+            <ActivityIndicator size="large" color={"#42A5F5"} />
+          </View>
+        </View>
+
       ) : (<FlatList
         data={reversedData}
         keyExtractor={(item) => item.id}

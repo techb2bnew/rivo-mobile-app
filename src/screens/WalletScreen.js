@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, Text, Image, Pressable, Modal, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, Text, Image, Pressable, Modal, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { grayColor, whiteColor, blackColor, mediumGray, redColor } from '../constants/Color';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from '../utils';
 import { spacings, style } from '../constants/Fonts';
@@ -153,7 +153,7 @@ const WalletScreen = ({ navigation }) => {
   useEffect(() => {
     console.log('loading:', loading);
     console.log('showBarcodeModal:', modalVisible);
-}, [loading,modalVisible ]);
+  }, [loading, modalVisible]);
 
   const renderTransaction = ({ item }) => {
     // Function to format the date
@@ -208,7 +208,7 @@ const WalletScreen = ({ navigation }) => {
   };
 
   return (
-    
+
     <View style={[styles.container, flex]}>
       <View style={[{ width: "100%", height: "auto", padding: 16 }, flexDirectionRow]}>
         <Pressable onPress={() => navigation.goBack()}>
@@ -269,10 +269,41 @@ const WalletScreen = ({ navigation }) => {
           showsVerticalScrollIndicator={false}
         />
       )}
-      {loading && (
+      {/* {loading && (
         <LoaderModal visible={loading} message="Please wait..." />
+      )} */}
+      {loading && (
+        <View style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: "rgba(0, 0, 0, 0.5)",
+          alignItems: "center",
+          justifyContent: "center",
+          zIndex: 9999,
+        }}>
+          <View style={{
+            width: 150,
+            padding: 20,
+            backgroundColor: "#fff",
+            borderRadius: 10,
+            alignItems: "center",
+            justifyContent: "center",
+          }}>
+            <Text style={{
+              marginBottom: 10,
+              fontSize: 16,
+              color: "#000",
+            }}>
+              Please wait...
+            </Text>
+            <ActivityIndicator size="large" color={"#42A5F5"} />
+          </View>
+        </View>
       )}
-      {modalVisible && selectedTransaction!=null && !loading && (
+      {modalVisible && selectedTransaction != null && !loading && (
         <WalletModal
           visible={modalVisible}
           onClose={handleCloseModal}

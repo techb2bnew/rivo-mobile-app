@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, RefreshControl, Platform, Pressable } from 'react-native';
+import { View, Text, StyleSheet, FlatList, RefreshControl, Platform, Pressable, ActivityIndicator } from 'react-native';
 import Header from '../components/Header';
 import { blackColor, goldColor, grayColor, mediumGray, whiteColor, greenColor } from '../constants/Color';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from '../utils';
@@ -332,9 +332,40 @@ const OrderHistoryScreen = ({ navigation }) => {
           }
         />
         {/* </>} */}
-        {loading && (
+        {/* {loading && (
           <LoaderModal visible={loading} message="Please wait..." />
-        )}
+        )} */}
+         {loading && (
+                  <View style={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    backgroundColor: "rgba(0, 0, 0, 0.5)",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    zIndex: 9999,
+                  }}>
+                    <View style={{
+                      width: 150,
+                      padding: 20,
+                      backgroundColor: "#fff",
+                      borderRadius: 10,
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}>
+                      <Text style={{
+                        marginBottom: 10,
+                        fontSize: 16,
+                        color: "#000",
+                      }}>
+                        Please wait...
+                      </Text>
+                      <ActivityIndicator size="large" color={"#42A5F5"} />
+                    </View>
+                  </View>
+                )}
       </View>
     </View>
   );

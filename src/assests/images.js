@@ -36,3 +36,5 @@ export const WHOLESALE_DARK_IMAGE = require('./wholesaleDark.png');
 export const WHOLESALE_LIGHT_IMAGE = require('./wholesaleLight.png');
 export const RETAILER_DARK_IMAGE = require('./retailerDark.png');
 export const RETAILER_LIGHT_IMAGE = require('./retailerLight.png');
+
+export const FACE_ID_IMAGE = require('./faceID.png');

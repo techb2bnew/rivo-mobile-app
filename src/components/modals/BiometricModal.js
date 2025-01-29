@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, Image, Pressable, Modal, StyleSheet, Alert } from "react-native";
+import { View, Text, Image, Pressable, Modal, StyleSheet, Alert, Platform } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from '../../utils';
 import { spacings, style } from '../../constants/Fonts';
 import { blackColor, blackOpacity7, whiteColor } from "../../constants/Color";
-import { FINGERPRINT_IMAGE } from "../../assests/images";
+import { FACE_ID_IMAGE, FINGERPRINT_IMAGE } from "../../assests/images";
 import ReactNativeBiometrics from 'react-native-biometrics';
 
 const BiometricModal = () => {
@@ -37,7 +37,7 @@ const BiometricModal = () => {
             });
 
             if (result.success) {
-                setIsModalVisible(false); 
+                setIsModalVisible(false);
             } else {
                 Alert.alert('Failed', 'Biometric authentication failed');
             }
@@ -57,7 +57,7 @@ const BiometricModal = () => {
                     <View style={styles.modalContent}>
                         <Pressable onPress={handleBiometricAuthentication}>
                             <Image
-                                source={FINGERPRINT_IMAGE}
+                                source={Platform.OS === "android" ? FINGERPRINT_IMAGE : FACE_ID_IMAGE}
                                 style={styles.biometricIcon}
                             />
                         </Pressable>
