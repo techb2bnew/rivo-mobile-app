@@ -32,7 +32,7 @@
 		<true/>
 	</dict>
 	<key>NSFaceIDUsageDescription</key>
-	<string>We need access to Face ID for authentication</string>
+<string>We use Face ID to authenticate you securely</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string></string>
 	<key>UIAppFonts</key>

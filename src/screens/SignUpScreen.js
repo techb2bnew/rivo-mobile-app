@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Pressable, Alert, ActivityIndicator, KeyboardAvoidingView, Platform, Keyboard } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Pressable, Alert, ActivityIndicator, KeyboardAvoidingView, Platform, Keyboard, Linking } from 'react-native';
 import CustomButton from '../components/CustomButton';
 import SuccesfullModal from '../components/modals/SuccesfullModal';
-import { blackColor, grayColor, whiteColor } from '../constants/Color';
+import { blackColor, grayColor, lightBlueColor, whiteColor } from '../constants/Color';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp, } from '../utils';
 import { spacings, style } from '../constants/Fonts';
 import { BaseStyle } from '../constants/Style';
@@ -11,6 +11,8 @@ import { CONTINUE, ENTER_EMAIL_OR_PHONE, ENTER_THE_OTP_SEND_TO, GENERATE_OTP, MO
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { triggerLocalNotification } from '../notificationService';
 import LoaderModal from '../components/modals/LoaderModal';
+import Ionicons from 'react-native-vector-icons/dist/Ionicons';
+
 const { flex, alignItemsCenter, flexDirectionRow, textAlign, justifyContentCenter, borderRadius10, justifyContentSpaceBetween } = BaseStyle;
 
 const SignUpScreen = ({ navigation }) => {
@@ -115,7 +117,7 @@ const SignUpScreen = ({ navigation }) => {
           setAuthToken(result.authToken);
           console.log("OTP sent successfully:", result);
         } else {
-          setErrorMessage(result.message || "Failed to send OTP.");
+          setErrorMessage(result.message === 'User not found' && "User not found. Please register on website First." || "Failed to send OTP.");
         }
       })
       .catch((error) => {
@@ -124,102 +126,6 @@ const SignUpScreen = ({ navigation }) => {
         setErrorMessage("An error occurred while sending OTP.");
       });
   };
-
-  // const handleGenerateOtp = () => {
-  //   // Validate the input value before proceeding
-  //   if (!validateInputValue()) {
-  //     return; // Exit if validation fails
-  //   }
-  //   let contactData;
-  //   if (inputValue.includes("@")) {
-  //     contactData = inputValue;
-  //   } else {
-  //     contactData = inputValue.startsWith("+91")
-  //       ? inputValue
-  //       : `+91${inputValue}`;
-  //   }
-  //   setLoading(true);
-  //   const myHeaders = new Headers();
-  //   myHeaders.append("Content-Type", "application/json");
-
-  //   const raw = JSON.stringify({
-  //     contact: contactData.trim(),
-  //     connection_id: CONNECTION_ID,
-  //   });
-
-  //   const requestOptions = {
-  //     method: "POST",
-  //     headers: myHeaders,
-  //     body: raw,
-  //     redirect: "follow",
-  //   };
-
-  //   fetch("https://publicapi.dev.saasintegrator.online/api/check-contact", requestOptions)
-  //     .then((response) => response.json())
-  //     .then((result) => {
-  //       setLoading(false);
-  //       if (result.success) {
-  //         setIsOtpSent(true);
-  //         setErrorMessage("");
-  //         setToken(result.data.token);
-  //         console.log("OTP sent successfully:", result);
-
-  //       } else {
-  //         setErrorMessage(result.message || "Failed to send OTP.");
-  //       }
-  //     })
-  //     .catch((error) => {
-  //       setLoading(false);
-  //       console.error("Error generating OTP:", error);
-  //       setErrorMessage("An error occurred while sending OTP.");
-  //     });
-  // };
-
-  // const handleOtpSubmit = async () => {
-  //   // Validate OTP first
-  //   if (validateOtp()) {
-  //     setLoading(true);
-  //     console.log("otpinputValue", otp);
-
-  //     // Use the API to verify OTP
-  //     const myHeaders = new Headers();
-  //     myHeaders.append("Authorization", `Bearer ${authtoken}`);
-  //     myHeaders.append("Content-Type", "application/json");
-
-  //     const raw = JSON.stringify({
-  //       otp: otp, // Use OTP entered by user
-  //     });
-
-  //     const requestOptions = {
-  //       method: "POST",
-  //       headers: myHeaders,
-  //       body: raw,
-  //       redirect: "follow",
-  //     };
-
-  //     try {
-  //       const response = await fetch("https://publicapi.dev.saasintegrator.online/api/verify-otp", requestOptions);
-  //       const result = await response.json();
-
-  //       if (result.success) {
-  //         setLoading(false);
-  //         // OTP verified successfully
-  //         setIsSuccessModalVisible(true);
-
-  //         setErrorMessage('');
-  //       } else {
-  //         // OTP verification failed
-  //         setLoading(false);
-  //         setErrorMessage(result.message || 'Failed to verify OTP.');
-  //       }
-  //     } catch (error) {
-  //       setLoading(false);
-  //       console.error("Error verifying OTP:", error);
-  //       setErrorMessage("An error occurred while verifying OTP.");
-  //     }
-  //   }
-  // };
-
 
   const handleOtpSubmit = async () => {
     if (!validateOtp()) {
@@ -247,10 +153,11 @@ const SignUpScreen = ({ navigation }) => {
       const response = await fetch("https://rivo-admin-c5ddaab83d6b.herokuapp.com/api/verifyOtp", requestOptions);
       const result = await response.json();
       setLoading(false);
-      if (result.apiData.success) {
+      console.log("result.apiData.success", result)
+      if (result.success) {
         Keyboard.dismiss();
         setIsSuccessModalVisible(true);
-        setToken(result.apiData.data.token);
+        setToken(result.data.token);
         setErrorMessage("");
         console.log("OTP verification successful:", result);
       } else {
@@ -300,17 +207,25 @@ const SignUpScreen = ({ navigation }) => {
                 placeholder={ENTER_EMAIL_OR_PHONE}
                 keyboardType="default"
                 value={inputValue}
-                onChangeText={setInputValue}
+                onChangeText={(text) => setInputValue(text.toLowerCase())}
                 placeholderTextColor={grayColor}
               />
             </View>
             {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
+            {errorMessage === "User not found. Please register on website First." && (
+              <TouchableOpacity onPress={() => Linking.openURL("https://saasintegration.myshopify.com/account/register")}>
+                <Text style={styles.registerLink}>Click here to register</Text>
+              </TouchableOpacity>
+            )}
             <View style={{ marginTop: 40 }}>
-              <CustomButton title={GENERATE_OTP} onPress={handleGenerateOtp} />
+              <CustomButton title={GENERATE_OTP} onPress={handleGenerateOtp} isLoading={loading}/>
             </View>
           </View>
         ) : (
           <View style={[flex, justifyContentCenter]}>
+            <TouchableOpacity onPress={() => { setIsOtpSent(false), setErrorMessage("") }} style={{ position: 'absolute', top: 20, left: 0 }}>
+              <Ionicons name="arrow-back" size={30} color={blackColor} />;
+            </TouchableOpacity>
             <Text style={[styles.title, textAlign]}>{OTP_VERIFICATION}</Text>
             <Text style={[styles.subtitle, textAlign, { width: wp(80) }]}>
               {ENTER_THE_OTP_SEND_TO} {inputValue}
@@ -341,11 +256,11 @@ const SignUpScreen = ({ navigation }) => {
               )}
             </View>
             <View style={{ marginTop: spacings.ExtraLarge1x }}>
-              <CustomButton title="Submit" onPress={handleOtpSubmit} />
+              <CustomButton title="Submit" onPress={handleOtpSubmit} isLoading={loading} />
             </View>
           </View>
         )}
-        {loading && (
+        {/* {loading && (
           <View style={{
             position: "absolute",
             top: 0,
@@ -375,7 +290,7 @@ const SignUpScreen = ({ navigation }) => {
               <ActivityIndicator size="large" color={"#42A5F5"} />
             </View>
           </View>
-        )}
+        )} */}
         <SuccesfullModal
           visible={isSuccessModalVisible}
           onClose={() => setIsSuccessModalVisible(false)}
@@ -438,7 +353,13 @@ const styles = StyleSheet.create({
   errorText: {
     color: 'red',
     fontSize: style.fontSizeNormal.fontSize,
-  }
+  },
+  registerLink: {
+    color: "#1E88E6",  // Customize with your preferred color
+    fontWeight: '600',
+    textDecorationLine: 'underline',
+    marginTop: 5,
+  },
 });
 
 export default SignUpScreen;

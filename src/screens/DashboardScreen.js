@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { View, StyleSheet, FlatList, Text, Image, Pressable, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, FlatList, Text, Image, Pressable, ActivityIndicator, TouchableOpacity, RefreshControl } from 'react-native';
 import Header from '../components/Header';
 import { grayColor, whiteColor, blackColor, lightGrayColor, mediumGray } from '../constants/Color';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from '../utils';
@@ -19,6 +19,7 @@ import axios from 'axios';
 import { saveOrderLength } from '../redux/orders/orderAction';
 import BiometricModal from '../components/modals/BiometricModal';
 import Icon from 'react-native-vector-icons/Ionicons';
+import ContentLoader, { Rect, Circle } from 'react-content-loader/native';
 
 const { flex, alignItemsCenter, flexDirectionRow, alignJustifyCenter, borderRadius10, resizeModeContain, resizeModeCover, positionAbsolute, justifyContentSpaceBetween, textAlign } = BaseStyle;
 
@@ -33,6 +34,7 @@ const DashBoardScreen = ({ navigation }) => {
     const [tierStatus, setTierStatus] = useState('');
     const [expiryPointsData, setExpiryPointsData] = useState([]);
     const [isBiometricModalVisible, setIsBiometricModalVisible] = useState(false);
+    const [refreshing, setRefreshing] = useState(false);
     const dispatch = useDispatch();
 
     const data = [
@@ -70,15 +72,16 @@ const DashBoardScreen = ({ navigation }) => {
     ];
 
     useEffect(() => {
+        console.log("isBiometricModalVisible", isBiometricModalVisible);
+
         const checkFirstLaunch = async () => {
             try {
                 const firstLoginCompleted = await AsyncStorage.getItem("firstLoginCompleted");
+                const userToken = await AsyncStorage.getItem('userToken');
 
-                if (firstLoginCompleted === "true") {
-                    // Show biometric modal if it's the second launch
+                if (firstLoginCompleted == "true" && userToken) {
                     setIsBiometricModalVisible(true);
                 } else {
-                    // If it's the first launch, set the flag to true
                     await AsyncStorage.setItem("firstLoginCompleted", "true");
                 }
             } catch (error) {
@@ -194,7 +197,6 @@ const DashBoardScreen = ({ navigation }) => {
                 sendNotificationData(savedToken, userID, userName);
             }
         };
-
         handleNotificationData();
     }, [userID, userName]);
 
@@ -208,12 +210,6 @@ const DashBoardScreen = ({ navigation }) => {
             fetchExpPoints();
         }, [])
     );
-
-    // useEffect(() => {
-    //     if (balancePoint !== null) {
-    //         fetchTiers(balancePoint);
-    //     }
-    // }, [balancePoint]);
 
     const fetchProfileData = async () => {
         try {
@@ -230,14 +226,14 @@ const DashBoardScreen = ({ navigation }) => {
             });
 
             if (response.data.success) {
-                console.log("response.data?.data",response.data?.data.tier_groups?.[0]?.name)
+                console.log("response.data?.data", response.data?.data)
                 const availablePoints = response.data?.data?.available_loyalty_points;
                 await AsyncStorage.setItem('currentPoints', String(availablePoints));
                 await AsyncStorage.setItem('currentTier', response.data?.data.tier_groups?.[0]?.name);
                 setTierStatus(response.data?.data.tier_groups?.[0]?.name)
                 setBalancePoint(response.data?.data?.available_loyalty_points);
                 setUserName(response.data?.data?.full_name);
-                setPhoneNumber(response.data?.data?.phone);
+                setPhoneNumber(response.data?.data?.uids?.['o360-retail-express']);
                 setUserID(response.data?.data?.uid)
             } else {
                 throw new Error('Failed to fetch profile data');
@@ -246,63 +242,6 @@ const DashBoardScreen = ({ navigation }) => {
             console.error('Error fetching profile data:', err.message || err);
         }
     };
-
-    // const fetchTiers = async (balancePoint) => {
-    //     try {
-    //         const token = await AsyncStorage.getItem("userToken");
-    //         if (!token) {
-    //             console.warn("Token missing in AsyncStorage");
-    //             return;
-    //         }
-    //         const url = `https://publicapi.dev.saasintegrator.online/api/vip-tiers?plugin_id=${PLUGGIN_ID}`;
-    //         const myHeaders = new Headers();
-    //         myHeaders.append("Authorization", `Bearer ${token}`);
-    //         myHeaders.append("Content-Type", "application/json");
-
-    //         const requestOptions = {
-    //             method: "GET",
-    //             headers: myHeaders,
-    //             redirect: "follow",
-    //         };
-
-    //         const response = await fetch(url, requestOptions);
-    //         const result = await response.json();
-
-    //         if (result.success && result.data) {
-    //             const tiers = result.data;
-
-    //             const tierNamesAndThresholds = tiers.map(tier => ({
-    //                 threshold: tier.threshold,
-    //                 name: tier.name,
-    //             }));
-
-    //             tierNamesAndThresholds.sort((a, b) => a.threshold - b.threshold);
-
-    //             let selectedTier = null;
-
-    //             for (let i = 0; i < tierNamesAndThresholds.length; i++) {
-    //                 const tier = tierNamesAndThresholds[i];
-
-    //                 if (balancePoint >= tier.threshold) {
-    //                     selectedTier = tier.name;
-    //                 } else {
-    //                     break;
-    //                 }
-    //             }
-    //             if (selectedTier) {
-    //                 // console.log("Selected Tier:", selectedTier);
-    //                 setTierStatus(selectedTier);
-    //             } else {
-    //                 console.log("No tier found for the balance point.");
-    //                 setTierStatus(null);
-    //             }
-    //         } else {
-    //             console.error("Failed to fetch tiers:", result.message);
-    //         }
-    //     } catch (error) {
-    //         console.error("Error fetching tiers:", error);
-    //     }
-    // };
 
     const fetchOrdersFromAPI = async () => {
         try {
@@ -343,17 +282,58 @@ const DashBoardScreen = ({ navigation }) => {
         navigation.navigate('FAQ');
     };
 
+    // const renderItem = ({ item }) => {
+    //     return (
+    //         <Pressable
+    //             style={[
+    //                 styles.card,
+    //                 { backgroundColor: item.backgroundColor },
+    //                 flexDirectionRow,
+    //                 alignItemsCenter,
+    //                 justifyContentSpaceBetween,
+    //                 borderRadius10
+    //             ]}
+    //             onPress={() => {
+    //                 if (item.id === '1') {
+    //                     openModal(item);
+    //                 }
+    //             }}
+    //         >
+    //             <View>
+    //                 {item.points ? (
+    //                     <Text style={[styles.pointsText, { color: item.textColor }]}>
+    //                         {item.points}
+    //                     </Text>
+    //                 ) : (
+    //                     <ActivityIndicator size={"small"} color={item.textColor} />
+    //                 )}
+    //                 <Text style={[styles.subText, { color: item.subtextColor }]}>
+    //                     {capitalizeWords(item.title)}
+    //                 </Text>
+    //             </View>
+    //             <View
+    //                 style={[
+    //                     styles.iconBox,
+    //                     borderRadius10,
+    //                     { backgroundColor: item.imageBackground },
+    //                     alignJustifyCenter
+    //                 ]}
+    //             >
+    //                 <Image source={item.icon} style={[styles.icon, resizeModeContain]} />
+    //             </View>
+    //         </Pressable>
+    //     );
+    // };
+
     const renderItem = ({ item }) => {
-        // Only render the card if the item has a phone number (for id === '1') or points (for others)
-        if (item.id === '1' && !phoneNumber) {
-            return null; // Do not render the card if phone number is missing
-        }
+        // Check if item data is not available (you can adjust this condition based on your data structure)
+        const isLoading = !item.points || !balancePoint;
 
         return (
             <Pressable
                 style={[
                     styles.card,
-                    { backgroundColor: item.backgroundColor },
+                    { backgroundColor: isLoading ? lightGrayColor : item.backgroundColor },
                     flexDirectionRow,
                     alignItemsCenter,
                     justifyContentSpaceBetween,
@@ -365,32 +345,52 @@ const DashBoardScreen = ({ navigation }) => {
                     }
                 }}
             >
-                <View>
-                    {item.points ? (
-                        <Text style={[styles.pointsText, { color: item.textColor }]}>
-                            {item.points}
-                        </Text>
-                    ) : (
-                        <ActivityIndicator size={"small"} color={item.textColor} />
-                    )}
-                    <Text style={[styles.subText, { color: item.subtextColor }]}>
-                        {capitalizeWords(item.title)}
-                    </Text>
-                </View>
-                <View
-                    style={[
-                        styles.iconBox,
-                        borderRadius10,
-                        { backgroundColor: item.imageBackground },
-                        alignJustifyCenter
-                    ]}
-                >
-                    <Image source={item.icon} style={[styles.icon, resizeModeContain]} />
-                </View>
+                {isLoading ? (
+                    <ContentLoader
+                        speed={2}
+                        width={wp(90)} // Adjust the width according to your design
+                        height={80} // Adjust the height
+                        // viewBox="0 0 290 80"
+                        backgroundColor="#f0f0f0"
+                        foregroundColor={grayColor}
+                    >
+                        {/* Skeleton for the text */}
+                        <Rect x="10" y="10" rx="4" ry="4" width="100" height="20" />
+                        <Rect x="10" y="40" rx="4" ry="4" width="150" height="20" />
+                        <Rect x={wp(70)} y="5" rx="8" ry="8" width="66" height="66" />
+                    </ContentLoader>
+                ) : (
+                    <>
+                        <View>
+                            <Text style={[styles.pointsText, { color: item.textColor }]}>
+                                {item.points}
+                            </Text>
+                            <Text style={[styles.subText, { color: item.subtextColor }]}>
+                                {capitalizeWords(item.title)}
+                            </Text>
+                        </View>
+                        <View
+                            style={[
+                                styles.iconBox,
+                                borderRadius10,
+                                { backgroundColor: item.imageBackground },
+                                alignJustifyCenter
+                            ]}
+                        >
+                            <Image source={item.icon} style={[styles.icon, resizeModeContain]} />
+                        </View>
+                    </>
+                )}
             </Pressable>
         );
     };
 
+
+    const onRefresh = async () => {
+        setRefreshing(true);
+        fetchProfileData();
+        setRefreshing(false);
+    };
 
     return (
         <View style={[styles.container, flex]}>
@@ -402,6 +402,14 @@ const DashBoardScreen = ({ navigation }) => {
                 keyExtractor={(item) => item.id}
                 contentContainerStyle={styles.content}
                 showsVerticalScrollIndicator={false}
+                refreshControl={
+                    <RefreshControl
+                        refreshing={refreshing}
+                        onRefresh={onRefresh}
+                        colors={["#42A5F5"]}
+                        tintColor="#42A5F5"
+                    />
+                }
             />
             <Pressable
                 style={[styles.expirePointsButton, alignJustifyCenter, positionAbsolute]}
@@ -428,7 +436,9 @@ const DashBoardScreen = ({ navigation }) => {
                     data={selectedData}
                     onClose={closeModal}
                 />}
-            {isBiometricModalVisible && <BiometricModal />}
+            {/* {isBiometricModalVisible && <BiometricModal />} */}
+
+            {isBiometricModalVisible && <BiometricModal isBiometricModalVisible={isBiometricModalVisible} setIsBiometricModalVisible={setIsBiometricModalVisible} />}
         </View>
     );
 };
@@ -485,7 +495,7 @@ const styles = StyleSheet.create({
     },
     expirePointsText: {
         color: whiteColor,
-        fontSize: 12,
+        fontSize: 10,
         fontWeight: '600'
     },
     faqButton: {

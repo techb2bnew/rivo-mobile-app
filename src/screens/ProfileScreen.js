@@ -13,6 +13,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import LoaderModal from '../components/modals/LoaderModal';
 import { useSelector } from 'react-redux';
 import { useFocusEffect } from '@react-navigation/native';
+import ContentLoader, { Rect, Circle } from 'react-content-loader/native';
+
 const { flex, flexDirectionRow, alignJustifyCenter, resizeModeContain, resizeModeCover, justifyContentSpaceBetween, justifyContentCenter } = BaseStyle;
 
 const ProfileScreen = ({ navigation }) => {
@@ -58,7 +60,7 @@ const ProfileScreen = ({ navigation }) => {
       const fetchProfileData = async () => {
         try {
           const token = await AsyncStorage.getItem('userToken');
-          console.log("working use Focus Effect",token);
+          console.log("working use Focus Effect", token);
           if (!token) {
             setError('Token not found');
             setLoading(false);
@@ -69,7 +71,7 @@ const ProfileScreen = ({ navigation }) => {
           const response = await axios.get('https://publicapi.dev.saasintegrator.online/api/profile', {
             headers: {
               Accept: 'application/json',
-              Authorization: `Bearer ${token}`, 
+              Authorization: `Bearer ${token}`,
             },
           });
 
@@ -87,7 +89,7 @@ const ProfileScreen = ({ navigation }) => {
       };
 
       fetchProfileData();
-    }, []) 
+    }, [])
   );
 
   const renderAvatar = profileData?.data?.photo ? (
@@ -107,111 +109,225 @@ const ProfileScreen = ({ navigation }) => {
   };
 
   return (
-    <View style={[styles.container, flex]}>
+    // <View style={[styles.container, flex]}>
+    //   <View style={{ width: wp(100), height: "auto", padding: spacings.large }}>
+    //     <Pressable onPress={() => { navigation.goBack(); }}>
+    //       <Ionicons name="arrow-back" size={30} color={blackColor} />
+    //     </Pressable>
+    //   </View>
 
+    //   <View style={[{ width: wp(100), height: hp(15), padding: spacings.xxLarge }, flexDirectionRow]}>
+    //     <View style={[, alignJustifyCenter]}>
+    //       {renderAvatar}
+    //     </View>
+    //     <View style={[{ width: "100%", height: hp(11.5) }, justifyContentCenter]}>
+    //       <Text style={styles.text}>{capitalizeWords(profileData?.data?.full_name)}</Text>
+    //     </View>
+    //   </View>
+
+    //   {profileData?.data?.phone != null && <View style={[{ width: wp(100), height: 'auto' }, flexDirectionRow]}>
+    //     <View style={{ paddingLeft: spacings.xxLarge, paddingVertical: spacings.xLarge }}>
+    //       <Feather name="phone" size={25} color={blackColor} />
+    //     </View>
+    //     <View style={{ paddingVertical: spacings.xxLarge }}>
+    //       <Text style={[styles.text, { fontSize: style.fontSizeNormal.fontSize, paddingTop: 5 }]}>{profileData?.data?.phone}</Text>
+    //     </View>
+    //   </View>}
+
+    //   {profileData?.data?.email != null && <View style={[{ width: wp(100), height: 'auto' }, flexDirectionRow]}>
+    //     <View style={{ paddingLeft: spacings.xxLarge }}>
+    //       <Fontisto name="email" size={25} color={blackColor} />
+    //     </View>
+    //     <View>
+    //       <Text style={[styles.text, { fontSize: style.fontSizeNormal.fontSize, paddingTop: 5 }]}>{profileData?.data?.email}</Text>
+    //     </View>
+    //   </View>}
+
+    //   <View style={[styles.pointBox, flexDirectionRow]}>
+    //     {profileData?.data?.available_loyalty_points && <View style={[{ width: wp(50), height: "100%", borderRightColor: "#d9d9d9", borderRightWidth: 1 }, alignJustifyCenter]}>
+    //       <Text style={[styles.text, { lineHeight: 20, fontSize: style.fontSizeLarge.fontSize }]}>{profileData?.data?.available_loyalty_points}</Text>
+    //       <Text style={[styles.text, { fontSize: style.fontSizeNormal.fontSize, color: grayColor, fontWeight: style.fontWeightThin1x.fontWeight }]}>{POINTS}</Text>
+    //     </View>}
+
+    //     <View style={[{ width: wp(50), height: "100%" }, alignJustifyCenter]}>
+    //       <Text style={[styles.text, { lineHeight: 20, fontSize: style.fontSizeLarge.fontSize }]}>{orderLength}</Text>
+    //       <Text style={[styles.text, { fontSize: style.fontSizeNormal.fontSize, color: grayColor, fontWeight: style.fontWeightThin1x.fontWeight }]}>{ORDERS}</Text>
+    //     </View>
+    //   </View>
+
+    //   {profileData?.data?.birthday && <View style={[{ width: wp(100), height: 'auto', padding: spacings.xxLarge, borderBottomWidth: 1, borderBottomColor: "#d9d9d9" }, flexDirectionRow, justifyContentSpaceBetween]}>
+    //     <View>
+    //       <Text style={[styles.text]}>{DOB}</Text>
+    //     </View>
+    //     <View>
+    //       <Text style={[styles.text, { fontSize: style.fontSizeNormal.fontSize, color: grayColor, fontWeight: style.fontWeightThin1x.fontWeight }]}>{profileData?.data?.birthday}</Text>
+    //     </View>
+    //   </View>}
+
+    //   {profileData?.data?.date_of_anniversary && <View style={[{ width: wp(100), height: 'auto', padding: spacings.xxLarge, borderBottomWidth: 1, borderBottomColor: "#d9d9d9" }, flexDirectionRow, justifyContentSpaceBetween]}>
+    //     <View>
+    //       <Text style={[styles.text,]}>{DOA}</Text>
+    //     </View>
+    //     <View>
+    //       <Text style={[styles.text, { fontSize: style.fontSizeNormal.fontSize, color: grayColor, fontWeight: style.fontWeightThin1x.fontWeight }]}>{profileData?.data?.date_of_anniversary}</Text>
+    //     </View>
+    //   </View>}
+    //    {loading && (
+    //             <View style={{
+    //               position: "absolute",
+    //               top: 0,
+    //               left: 0,
+    //               right: 0,
+    //               bottom: 0,
+    //               backgroundColor: "rgba(0, 0, 0, 0.5)",
+    //               alignItems: "center",
+    //               justifyContent: "center",
+    //               zIndex: 9999,
+    //             }}>
+    //               <View style={{
+    //                 width: 150,
+    //                 padding: 20,
+    //                 backgroundColor: "#fff",
+    //                 borderRadius: 10,
+    //                 alignItems: "center",
+    //                 justifyContent: "center",
+    //               }}>
+    //                 <Text style={{
+    //                   marginBottom: 10,
+    //                   fontSize: 16,
+    //                   color: "#000",
+    //                 }}>
+    //                   Please wait...
+    //                 </Text>
+    //                 <ActivityIndicator size="large" color={"#42A5F5"} />
+    //               </View>
+    //             </View>
+    //           )}
+    // </View>
+    <View style={[styles.container, flex]}>
       <View style={{ width: wp(100), height: "auto", padding: spacings.large }}>
         <Pressable onPress={() => { navigation.goBack(); }}>
           <Ionicons name="arrow-back" size={30} color={blackColor} />
         </Pressable>
       </View>
 
-      <View style={[{ width: wp(100), height: hp(15), padding: spacings.xxLarge }, flexDirectionRow]}>
-        <View style={[, alignJustifyCenter]}>
-          {/* <Image
-            source={{ uri: imageUrl }}
-            style={[{ width: wp(23), height: "100%", borderRadius: 50 }]}
-          /> */}
-          {renderAvatar}
+      {loading ? (
+        // Skeleton Loader for Profile Avatar & Name
+        <View style={[{ width: wp(100), height: hp(15), padding: spacings.xxLarge }, flexDirectionRow]}>
+          <View style={[alignJustifyCenter]}>
+            <ContentLoader width={wp(20)} height={hp(10)} speed={1.2} backgroundColor="#f0f0f0" foregroundColor={grayColor}>
+              <Circle cx="38" cy="40" r="40" />
+            </ContentLoader>
+          </View>
+          <View style={[{ width: "100%", height: hp(11.5) }, justifyContentCenter]}>
+            <ContentLoader width={wp(50)} height={hp(3)} speed={1.2} backgroundColor="#f0f0f0" foregroundColor={grayColor}>
+              <Rect x="40" y="0" rx="4" ry="4" width="100%" height="20" />
+            </ContentLoader>
+          </View>
+        </View>
+      ) : (
+        <View style={[{ width: wp(100), height: hp(15), padding: spacings.xxLarge }, flexDirectionRow]}>
+          <View style={[alignJustifyCenter]}>
+            {renderAvatar}
+          </View>
+          <View style={[{ width: "100%", height: hp(11.5) }, justifyContentCenter]}>
+            <Text style={styles.text}>{capitalizeWords(profileData?.data?.full_name)}</Text>
+          </View>
+        </View>
+      )}
 
+      {profileData?.data?.phone != null && !loading && (
+        <View style={[{ width: wp(100), height: 'auto' }, flexDirectionRow]}>
+          <View style={{ paddingLeft: spacings.xxLarge, paddingVertical: spacings.xLarge }}>
+            <Feather name="phone" size={25} color={blackColor} />
+          </View>
+          <View style={{ paddingVertical: spacings.xxLarge }}>
+            <Text style={[styles.text, { fontSize: style.fontSizeNormal.fontSize, paddingTop: 5 }]}>{profileData?.data?.phone}</Text>
+          </View>
         </View>
-        <View style={[{ width: "100%", height: hp(11.5) }, justifyContentCenter]}>
-          <Text style={styles.text}>{capitalizeWords(profileData?.data?.full_name)}</Text>
-        </View>
-      </View>
+      )}
 
-      {profileData?.data?.phone != null && <View style={[{ width: wp(100), height: 'auto' }, flexDirectionRow]}>
-        <View style={{ paddingLeft: spacings.xxLarge, paddingVertical: spacings.xLarge }}>
-          <Feather name="phone" size={25} color={blackColor} />
+      {loading && (
+        <View style={{ width: wp(100), height: "auto", flexDirectionRow }}>
+          <ContentLoader width={wp(100)} height={hp(8)} speed={1.2} backgroundColor="#f0f0f0" foregroundColor={grayColor}>
+            <Rect x="30" y="0" rx="4" ry="4" width="70%" height="30" />
+          </ContentLoader>
         </View>
-        <View style={{ paddingVertical: spacings.xxLarge }}>
-          <Text style={[styles.text, { fontSize: style.fontSizeNormal.fontSize, paddingTop: 5 }]}>{profileData?.data?.phone}</Text>
-        </View>
-      </View>}
+      )}
 
-      {profileData?.data?.email != null && <View style={[{ width: wp(100), height: 'auto' }, flexDirectionRow]}>
-        <View style={{ paddingLeft: spacings.xxLarge }}>
-          <Fontisto name="email" size={25} color={blackColor} />
+      {profileData?.data?.email != null && !loading && (
+        <View style={[{ width: wp(100), height: 'auto' }, flexDirectionRow]}>
+          <View style={{ paddingLeft: spacings.xxLarge }}>
+            <Fontisto name="email" size={25} color={blackColor} />
+          </View>
+          <View>
+            <Text style={[styles.text, { fontSize: style.fontSizeNormal.fontSize, paddingTop: 5 }]}>{profileData?.data?.email}</Text>
+          </View>
         </View>
-        <View>
-          <Text style={[styles.text, { fontSize: style.fontSizeNormal.fontSize, paddingTop: 5 }]}>{profileData?.data?.email}</Text>
+      )}
+
+      {loading && (
+        <View style={{ width: wp(100), height: "auto", flexDirectionRow }}>
+          <ContentLoader width={wp(100)} height={hp(8)} speed={1.2} backgroundColor="#f0f0f0" foregroundColor={grayColor}>
+            <Rect x="30" y="0" rx="4" ry="4" width="70%" height="30" />
+          </ContentLoader>
         </View>
-      </View>}
+      )}
 
       <View style={[styles.pointBox, flexDirectionRow]}>
-        {profileData?.data?.available_loyalty_points && <View style={[{ width: wp(50), height: "100%", borderRightColor: "#d9d9d9", borderRightWidth: 1 }, alignJustifyCenter]}>
-          <Text style={[styles.text, { lineHeight: 20, fontSize: style.fontSizeLarge.fontSize }]}>{profileData?.data?.available_loyalty_points}</Text>
-          <Text style={[styles.text, { fontSize: style.fontSizeNormal.fontSize, color: grayColor, fontWeight: style.fontWeightThin1x.fontWeight }]}>{POINTS}</Text>
-        </View>}
+        {loading ? (
+          <View style={{ width: wp(50), height: "100%" }}>
+            <ContentLoader width={wp(50)} height={hp(7)} speed={1.2} backgroundColor="#f0f0f0" foregroundColor={grayColor}>
+              <Rect x="20" y="30" rx="4" ry="2" width="60%" height="50" />
+            </ContentLoader>
+          </View>
+        ) : (
+          profileData?.data?.available_loyalty_points && (
+            <View style={[{ width: wp(50), height: "100%", borderRightColor: "#d9d9d9", borderRightWidth: 1 }, alignJustifyCenter]}>
+              <Text style={[styles.text, { lineHeight: 20, fontSize: style.fontSizeLarge.fontSize }]}>{profileData?.data?.available_loyalty_points}</Text>
+              <Text style={[styles.text, { fontSize: style.fontSizeNormal.fontSize, color: grayColor, fontWeight: style.fontWeightThin1x.fontWeight }]}>{POINTS}</Text>
+            </View>
+          )
+        )}
 
-        <View style={[{ width: wp(50), height: "100%" }, alignJustifyCenter]}>
-          <Text style={[styles.text, { lineHeight: 20, fontSize: style.fontSizeLarge.fontSize }]}>{orderLength}</Text>
-          <Text style={[styles.text, { fontSize: style.fontSizeNormal.fontSize, color: grayColor, fontWeight: style.fontWeightThin1x.fontWeight }]}>{ORDERS}</Text>
-        </View>
+        {loading ? (
+          <View style={{ width: wp(50), height: "100%" }}>
+           <View style={{ width: wp(50), height: "100%" }}>
+            <ContentLoader width={wp(50)} height={hp(7)} speed={1.2} backgroundColor="#f0f0f0" foregroundColor={grayColor}>
+              <Rect x="40" y="30" rx="4" ry="2" width="60%" height="50" />
+            </ContentLoader>
+          </View>
+          </View>
+        ) : (
+          <View style={[{ width: wp(50), height: "100%" }, alignJustifyCenter]}>
+            <Text style={[styles.text, { lineHeight: 20, fontSize: style.fontSizeLarge.fontSize }]}>{orderLength}</Text>
+            <Text style={[styles.text, { fontSize: style.fontSizeNormal.fontSize, color: grayColor, fontWeight: style.fontWeightThin1x.fontWeight }]}>{ORDERS}</Text>
+          </View>
+        )}
       </View>
 
-      {profileData?.data?.birthday && <View style={[{ width: wp(100), height: 'auto', padding: spacings.xxLarge, borderBottomWidth: 1, borderBottomColor: "#d9d9d9" }, flexDirectionRow, justifyContentSpaceBetween]}>
-        <View>
-          <Text style={[styles.text]}>{DOB}</Text>
+      {profileData?.data?.birthday && !loading && (
+        <View style={[{ width: wp(100), height: 'auto', padding: spacings.xxLarge, borderBottomWidth: 1, borderBottomColor: "#d9d9d9" }, flexDirectionRow, justifyContentSpaceBetween]}>
+          <View>
+            <Text style={[styles.text]}>{DOB}</Text>
+          </View>
+          <View>
+            <Text style={[styles.text, { fontSize: style.fontSizeNormal.fontSize, color: grayColor, fontWeight: style.fontWeightThin1x.fontWeight }]}>{profileData?.data?.birthday}</Text>
+          </View>
         </View>
-        <View>
-          <Text style={[styles.text, { fontSize: style.fontSizeNormal.fontSize, color: grayColor, fontWeight: style.fontWeightThin1x.fontWeight }]}>{profileData?.data?.birthday}</Text>
-        </View>
-      </View>}
+      )}
 
-      {profileData?.data?.date_of_anniversary && <View style={[{ width: wp(100), height: 'auto', padding: spacings.xxLarge, borderBottomWidth: 1, borderBottomColor: "#d9d9d9" }, flexDirectionRow, justifyContentSpaceBetween]}>
-        <View>
-          <Text style={[styles.text,]}>{DOA}</Text>
+      {profileData?.data?.date_of_anniversary && !loading && (
+        <View style={[{ width: wp(100), height: 'auto', padding: spacings.xxLarge, borderBottomWidth: 1, borderBottomColor: "#d9d9d9" }, flexDirectionRow, justifyContentSpaceBetween]}>
+          <View>
+            <Text style={[styles.text,]}>{DOA}</Text>
+          </View>
+          <View>
+            <Text style={[styles.text, { fontSize: style.fontSizeNormal.fontSize, color: grayColor, fontWeight: style.fontWeightThin1x.fontWeight }]}>{profileData?.data?.date_of_anniversary}</Text>
+          </View>
         </View>
-        <View>
-          <Text style={[styles.text, { fontSize: style.fontSizeNormal.fontSize, color: grayColor, fontWeight: style.fontWeightThin1x.fontWeight }]}>{profileData?.data?.date_of_anniversary}</Text>
-        </View>
-      </View>}
-      {/* {loading && (
-        <LoaderModal visible={loading} message="Please wait..." />
-      )} */}
-       {loading && (
-                <View style={{
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  backgroundColor: "rgba(0, 0, 0, 0.5)",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  zIndex: 9999,
-                }}>
-                  <View style={{
-                    width: 150,
-                    padding: 20,
-                    backgroundColor: "#fff",
-                    borderRadius: 10,
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}>
-                    <Text style={{
-                      marginBottom: 10,
-                      fontSize: 16,
-                      color: "#000",
-                    }}>
-                      Please wait...
-                    </Text>
-                    <ActivityIndicator size="large" color={"#42A5F5"} />
-                  </View>
-                </View>
-              )}
+      )}
     </View>
-
   );
 };
 

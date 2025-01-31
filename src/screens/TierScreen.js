@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Image, FlatList, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Image, FlatList, ActivityIndicator, RefreshControl } from 'react-native';
 import Header from '../components/Header';
 import { blackColor, grayColor, mediumGray, whiteColor } from '../constants/Color';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from '../utils';
@@ -15,12 +15,14 @@ import { addNotification } from '../redux/actions';
 import LoaderModal from '../components/modals/LoaderModal';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { PLUGGIN_ID } from '../constants/Constants';
+import ContentLoader, { Rect, Circle } from 'react-content-loader/native'; // Import the ContentLoader for React Native
 const { flex, alignItemsCenter, alignItemsFlexStart, flexDirectionRow, textAlign, justifyContentCenter, borderRadius10, resizeModeContain, resizeModeCover, positionAbsolute, alignJustifyCenter } = BaseStyle;
 
 const TierScreen = ({ navigation }) => {
   const dispatch = useDispatch();
   const [levels, setLevels] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const reversedData = [...levels].reverse();
 
   // const fetchTiers = async () => {
@@ -214,7 +216,11 @@ const TierScreen = ({ navigation }) => {
       listenForPushNotifications();
     }, [])
   );
-
+  const onRefresh = async () => {
+    setRefreshing(true);
+    fetchTiers();
+    setRefreshing(false);
+};
 
   const renderItem = ({ item, index }) => {
     // console.log("item:::", item)
@@ -261,49 +267,50 @@ const TierScreen = ({ navigation }) => {
       </View>
     );
   };
+  const Loader = () => {
+    const loaderArray = new Array(4).fill(null); // Create an array with 4 elements
+
+    return (
+      <View>
+        {loaderArray.map((_, index) => (
+          <ContentLoader
+            key={index}
+            speed={1.2}
+            width={wp(95)}
+            height={100}
+            viewBox="0 0 300 90"
+            backgroundColor="#f0f0f0"
+            foregroundColor={grayColor}
+          >
+            <Circle cx="45" cy="45" r="40" />
+            <Rect x="100" y="10" rx="4" ry="4" width="130" height="20" />
+            <Rect x="100" y="40" rx="4" ry="4" width="160" height="20" />
+            <Rect x={wp(72)} y="30" rx="10" ry="10" width="15" height="15" />
+          </ContentLoader>
+        ))}
+      </View>
+    );
+  };
 
   return (
     <View style={[styles.container, flex]}>
       <Header navigation={navigation} />
       <View style={styles.separator} />
       {loading ? (
-        // <LoaderModal visible={loading} message="Loading tiers..." />
-
-        <View style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: "rgba(0, 0, 0, 0.5)",
-          alignItems: "center",
-          justifyContent: "center",
-          zIndex: 9999,
-        }}>
-          <View style={{
-            width: 150,
-            padding: 20,
-            backgroundColor: "#fff",
-            borderRadius: 10,
-            alignItems: "center",
-            justifyContent: "center",
-          }}>
-            <Text style={{
-              marginBottom: 10,
-              fontSize: 16,
-              color: "#000",
-            }}>
-              Please wait...
-            </Text>
-            <ActivityIndicator size="large" color={"#42A5F5"} />
-          </View>
-        </View>
-
+        <Loader />
       ) : (<FlatList
         data={reversedData}
         keyExtractor={(item) => item.id}
         renderItem={renderItem}
         contentContainerStyle={styles.listContainer}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={["#42A5F5"]}
+            tintColor="#42A5F5"
+          />
+        }
       />)}
     </View>
   );

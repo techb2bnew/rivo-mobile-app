@@ -17,6 +17,8 @@ import { addNotification } from '../redux/actions';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import LoaderModal from '../components/modals/LoaderModal';
 import { saveOrderLength } from '../redux/orders/orderAction';
+import ContentLoader, { Rect, Circle } from 'react-content-loader/native';
+
 
 const { flex, alignItemsCenter, alignItemsFlexStart, flexDirectionRow, textAlign, justifyContentSpaceBetween, borderRadius10, resizeModeContain, resizeModeCover, positionAbsolute, alignJustifyCenter } = BaseStyle;
 
@@ -60,8 +62,8 @@ const OrderHistoryScreen = ({ navigation }) => {
 
   useFocusEffect(
     useCallback(() => {
-        fetchOrdersFromLocalStorage();
-    }, []) 
+      fetchOrdersFromLocalStorage();
+    }, [])
   );
 
   const fetchOrdersFromAPI = async () => {
@@ -85,7 +87,7 @@ const OrderHistoryScreen = ({ navigation }) => {
       );
 
       const result = await response.json();
-      // console.log("result.data.data", result.data);
+      console.log("result.data.data", result.data);
 
       if (result.data.orders && result.data.orders.length > 0) {
         if (Platform.OS === "android") {
@@ -102,6 +104,8 @@ const OrderHistoryScreen = ({ navigation }) => {
     } catch (error) {
       console.error("Error fetching orders from api:", error.message);
       setLoading(false);
+    } finally {
+      setLoading(false); // Ensure loading is false in all cases
     }
   };
 
@@ -193,7 +197,7 @@ const OrderHistoryScreen = ({ navigation }) => {
       );
 
       const result = await response.json();
-      // console.log("Fetched orders from API:", result.data);
+      console.log("Fetched orders from API:", result.data);
 
       if (result.data.orders && result.data.orders.length > 0) {
         // Save the new orders to Realm
@@ -208,7 +212,7 @@ const OrderHistoryScreen = ({ navigation }) => {
       setRefreshing(false);
     }
   };
- 
+
   const initializeOrders = async () => {
     const isFirstInstall = await AsyncStorage.getItem('hasFetchedOrders');
     if (!isFirstInstall) {
@@ -224,7 +228,7 @@ const OrderHistoryScreen = ({ navigation }) => {
       const localData = await AsyncStorage.getItem('LocalorderData');
       // console.log("localData", localData);
       const parsedData = JSON.parse(localData);
-      setOrdersFromLocalStorage(parsedData.reverse());
+      setOrdersFromLocalStorage(parsedData?.reverse());
     } catch (error) {
       console.error("Error fetching orders from local storage:", error.message);
     }
@@ -304,70 +308,110 @@ const OrderHistoryScreen = ({ navigation }) => {
     );
   };
 
+  const OrderItemLoader = () => {
+    return (
+      <ContentLoader
+        speed={1.2}
+        width={wp(100)} // Full width of the container
+        height={100}
+        viewBox="0 0 300 100"
+        backgroundColor="#f0f0f0"
+        foregroundColor={grayColor}
+      >
+        {/* Skeleton for the Order ID */}
+        <Rect x="0" y="10" rx="4" ry="4" width="100" height="20" />
+
+        {/* Skeleton for the Status */}
+        <Rect x="220" y="10" rx="4" ry="4" width="100" height="20" />
+
+        {/* Skeleton for the Details */}
+        <Rect x="0" y="40" rx="4" ry="4" width="220" height="20" />
+
+        {/* Skeleton for the Expand Icon */}
+        <Circle cx="290" cy="50" r="10" />
+      </ContentLoader>
+    );
+  };
+
+  useEffect(() => {
+    console.log("loading", loading)
+  }, [loading])
+
+
   return (
     <View style={[styles.container, flex]}>
       <Header navigation={navigation} />
       <View style={styles.separator} />
-      <View style={{ height: Platform.OS === "android" ? hp(88) : hp(78) }}>
-        {/* {ordersData.length === 0 ?
-          <View style={{ height: Platform.OS === "android" ? hp(88) : hp(78), alignItems: "center", justifyContent: "center" }}>
-            <Text style={styles.noOrderText}>No order available</Text>
+      <View style={[{ height: Platform.OS === "android" ? hp(88) : hp(78), width: wp(100) }]}>
+        {/* {loading ? (
+          <View>
+            {new Array(4).fill(null).map((_, index) => (
+              <OrderItemLoader key={index} />
+            ))}
           </View>
-          : */}
-        {/* <> */}
-        <Text style={[styles.title, { padding: spacings.large }]}>{ALL_ORDERS}</Text>
-        <FlatList
-          data={ordersData.length > 0 ? ordersData : ordersFromLocalStorage}
-          renderItem={renderOrderItem}
-          contentContainerStyle={{ paddingBottom: 20 }}
-          showsVerticalScrollIndicator={false}
-          keyExtractor={(item) => item?.id?.toString()}
-          refreshControl={
-            <RefreshControl
-              refreshing={refreshing}
-              onRefresh={onRefresh}
-              colors={["#42A5F5"]}
-              tintColor="#42A5F5"
+        ) : (
+          <View>
+            {(ordersData?.length > 0 || ordersFromLocalStorage?.length > 0) && (
+              <Text style={[styles.title, { padding: spacings.large }]}>{ALL_ORDERS}</Text>
+            )}
+            <FlatList
+              data={ordersData.length > 0 ? ordersData : ordersFromLocalStorage}
+              renderItem={renderOrderItem}
+              contentContainerStyle={{ paddingBottom: 20 }}
+              showsVerticalScrollIndicator={false}
+              keyExtractor={(item) => item?.id?.toString()}
+              refreshControl={
+                <RefreshControl
+                  refreshing={refreshing}
+                  onRefresh={onRefresh}
+                  colors={["#42A5F5"]}
+                  tintColor="#42A5F5"
+                />
+              }
             />
-          }
-        />
-        {/* </>} */}
-        {/* {loading && (
-          <LoaderModal visible={loading} message="Please wait..." />
-        )} */}
-         {loading && (
-                  <View style={{
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    backgroundColor: "rgba(0, 0, 0, 0.5)",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    zIndex: 9999,
-                  }}>
-                    <View style={{
-                      width: 150,
-                      padding: 20,
-                      backgroundColor: "#fff",
-                      borderRadius: 10,
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}>
-                      <Text style={{
-                        marginBottom: 10,
-                        fontSize: 16,
-                        color: "#000",
-                      }}>
-                        Please wait...
-                      </Text>
-                      <ActivityIndicator size="large" color={"#42A5F5"} />
-                    </View>
-                  </View>
-                )}
+
+          </View>)} */}
+        {loading && (
+          <View>
+            {new Array(4).fill(null).map((_, index) => (
+              <OrderItemLoader key={index} />
+            ))}
+          </View>
+        )}
+        {!loading && (
+          <View>
+            {(ordersData?.length > 0 || ordersFromLocalStorage?.length > 0) && (
+              <Text style={[styles.title, { padding: spacings.large }]}>{ALL_ORDERS}</Text>
+            )}
+            <FlatList
+              data={ordersData.length > 0 ? ordersData : ordersFromLocalStorage}
+              renderItem={renderOrderItem}
+              contentContainerStyle={{ flexGrow: 1, paddingBottom: 20 }}
+              showsVerticalScrollIndicator={false}
+              keyExtractor={(item) => item?.id?.toString()}
+              ListEmptyComponent={
+                <View style={{ width:wp(100),height:hp(50), justifyContent: "center", alignItems: "center", marginTop: 20 }}>
+                  <Text style={{ color: "#646E77", fontSize: 16, fontWeight: "bold" }}>
+                    No orders yet!
+                  </Text>
+                  <Text style={{ color: "#808080", fontSize: 14, marginTop: 5 }}>
+                    Your recent orders will appear here.
+                  </Text>
+                </View>
+              }
+              refreshControl={
+                <RefreshControl
+                  refreshing={refreshing}
+                  onRefresh={onRefresh}
+                  colors={["#42A5F5"]}
+                  tintColor="#42A5F5"
+                />
+              }
+            />
+          </View>
+        )}
       </View>
-    </View>
+    </View >
   );
 };
 

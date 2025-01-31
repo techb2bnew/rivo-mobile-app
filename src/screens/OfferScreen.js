@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Image, FlatList, TouchableOpacity, Pressable, ActivityIndicator } from 'react-native';
 import Header from '../components/Header';
-import { blackColor, grayColor, whiteColor } from '../constants/Color';
+import { blackColor, grayColor, lightGrayColor, lightShadeBlue, mediumGray, whiteColor } from '../constants/Color';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from '../utils';
 import { spacings, style } from '../constants/Fonts';
 import { BaseStyle } from '../constants/Style';
@@ -14,6 +14,8 @@ import { useFocusEffect } from '@react-navigation/native';
 import { addNotification } from '../redux/actions';
 import { triggerLocalNotification } from '../notificationService';
 import LoaderModal from '../components/modals/LoaderModal';
+import ContentLoader, { Rect, Circle } from 'react-content-loader/native';
+
 const { flex, alignItemsCenter, flexDirectionRow, textAlign, alignJustifyCenter, borderRadius10, resizeModeContain, resizeModeCover, positionAbsolute } = BaseStyle;
 
 const OfferScreen = ({ navigation }) => {
@@ -149,37 +151,40 @@ const OfferScreen = ({ navigation }) => {
                         </Text>
                     </View>
                 )}
-                {/* {loading && (
-                    <LoaderModal visible={loading} message="Please wait..." />
-                )} */}
                 {loading && (
-                    <View style={{
-                        position: "absolute",
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        backgroundColor: "rgba(0, 0, 0, 0.5)",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        zIndex: 9999,
-                    }}>
-                        <View style={{
-                            width: 150,
-                            padding: 20,
-                            backgroundColor: "#fff",
-                            borderRadius: 10,
-                            alignItems: "center",
-                            justifyContent: "center",
-                        }}>
-                            <Text style={{
-                                marginBottom: 10,
-                                fontSize: 16,
-                                color: "#000",
-                            }}>
-                                Please wait...
-                            </Text>
-                            <ActivityIndicator size="large" color={"#42A5F5"} />
+                    <View
+                        style={{
+                            position: "absolute",
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            bottom: 0,
+                            backgroundColor: lightGrayColor,
+                            // alignItems: "center",
+                            // justifyContent: "center",
+                            zIndex: 9999,
+                        }}
+                    >
+                        <View>
+                            {/* Carousel Loader */}
+                            <ContentLoader width={"100%"} height={400} speed={1.5} foregroundColor={lightShadeBlue}>
+                                <Rect x="0" y="0" rx="10" ry="10" width="100%" height="400" />
+                            </ContentLoader>
+
+                            {/* Categories Loader */}
+                            <FlatList
+                                data={[1, 2, 3, 4]}
+                                horizontal
+                                renderItem={() => (
+                                    <ContentLoader width={100} height={120} margin={10} speed={1.5} foregroundColor={lightShadeBlue}>
+                                        <Rect x="0" y="0" rx="10" ry="10" width="100" height="120" />
+                                    </ContentLoader>
+                                )}
+                            />
+
+                            <ContentLoader width={"100%"} height={100} speed={1.5} foregroundColor={lightShadeBlue}>
+                                <Rect x="10" y="0" rx="10" ry="10" width="95%" height="130" />
+                            </ContentLoader>
                         </View>
                     </View>
                 )}

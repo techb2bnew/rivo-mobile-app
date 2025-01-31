@@ -9,6 +9,8 @@ import { BaseStyle } from '../constants/Style';
 import { DELIVERY_METHOD, LOCATION, PRICE_DETAILS, SHIPPING, SUBTOTAL, TOTAL } from '../constants/Constants';
 import LoaderModal from '../components/modals/LoaderModal';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import ContentLoader, { Rect, Circle } from 'react-content-loader/native';
+
 const { flex, alignItemsCenter, alignItemsFlexStart, flexDirectionRow, textAlign, justifyContentSpaceBetween, borderRadius10, resizeModeContain, resizeModeCover, positionAbsolute, alignJustifyCenter } = BaseStyle;
 
 const OrderDetailsScreen = ({ route, navigation }) => {
@@ -90,7 +92,40 @@ const OrderDetailsScreen = ({ route, navigation }) => {
                 </Pressable>
             </View>
             {loading ? (
-                <LoaderModal visible={loading} message="Please wait..." />
+                // <LoaderModal visible={loading} message="Please wait..." />
+                <ContentLoader height={950} width="100%" speed={1.5} backgroundColor="#f3f3f3" foregroundColor={grayColor}>
+                    {/* Top section - Order ID and Date */}
+                    <Rect x="10" y="20" width="70%" height="30" /> {/* Order ID */}
+                    <Rect x="10" y="60" width="50%" height="20" /> {/* Order Date */}
+
+                    {/* Separator */}
+                    <Rect x="0" y="90" width="100%" height="1" />
+
+                    {/* Status and Payment Method */}
+                    <Rect x="10" y="100" width="60%" height="25" /> {/* Status */}
+                    <Rect x="10" y="135" width="70%" height="25" /> {/* Payment Method */}
+
+                    {/* Separator */}
+                    {/* <Rect x="0" y="170" width="100%" height="1" /> */}
+
+                    {/* Product details - Assuming 2 products for loader */}
+                    <Rect x="15" y="180" width="90%" height="20" />
+                    <Rect x="15" y="210" width="90%" height="15" />
+                    <Rect x="15" y="230" width="90%" height="15" />
+                    {/* <Rect x="10" y="180" width="90%" height="25" />  */}
+
+                    {/* Separator */}
+                    <Rect x="0" y="265" width="100%" height="1" />
+
+                    {/* Price Details */}
+                    <Rect x="10" y="275" width="90%" height="25" /> {/* Subtotal */}
+                    <Rect x="10" y="310" width="90%" height="25" /> {/* Shipping Amount */}
+                    <Rect x="10" y="345" width="90%" height="25" /> {/* Total Amount */}
+
+                    {/* Separator */}
+                    <Rect x="0" y="380" width="100%" height="1" />
+
+                </ContentLoader>
             ) :
                 <ScrollView contentContainerStyle={styles.scrollContainer}>
                     <Text style={styles.title}>Order ID: {orderDetails?.uid}</Text>
@@ -105,6 +140,7 @@ const OrderDetailsScreen = ({ route, navigation }) => {
                         <Text style={styles.infoText}>{capitalizeWords(orderDetails?.status)}</Text>
                     </View>
 
+
                     <View style={styles.separator} />
                     {orderDetails?.order_payment_methods[0]?.payment_method_name && <>
                         <View style={styles.infoContainer}>
@@ -114,36 +150,25 @@ const OrderDetailsScreen = ({ route, navigation }) => {
                         <View style={styles.separator} />
                     </>}
 
-                    {/* {orderDetails?.order_items.map((item) => (
-                        <React.Fragment key={item.id}>
-                            <View style={[styles.productContainer, flexDirectionRow, alignItemsCenter]}>
-                                <Image
-                                    source={{
-                                        uri:
-                                            item.product?.images?.[0]?.url ||
-                                            "https://cdn.shopify.com/s/files/1/0890/4035/5626/files/GiftCard_1__Image_e6c0e644-0a85-4d79-95ed-85d2d4e00da3.jpg?v=1729670332",
-                                    }}
-                                    style={styles.productImage}
-                                />
-                                <View style={styles.productDetails}>
-                                    <Text style={styles.productName}>Name : {item.product?.name}</Text>
-                                    <Text style={styles.productInfo}>id - {item.product?.sku}</Text>
-                                    <Text
-                                        style={[
-                                            styles.productInfo,
-                                            { color: blackColor, fontWeight: style.fontWeightThin1x.fontWeight, marginTop: 2 },
-                                        ]}
-                                    >
-                                        Qty: {item.quantity_ordered}
-                                    </Text>
-                                </View>
-                                <View style={{ height: "100%", width: "20%" }}>
-                                    <Text style={styles.productPrice}>${item.price}</Text>
-                                </View>
+                    {orderDetails?.loyalty_points_earned != null && (
+                        <>
+                            <View style={styles.infoContainer}>
+                                <Text style={styles.infoTitle}>Earned Points</Text>
+                                <Text style={styles.infoText}>{capitalizeWords(orderDetails?.loyalty_points_earned)}</Text>
                             </View>
                             <View style={styles.separator} />
-                        </React.Fragment>
-                    ))} */}
+                        </>
+                    )}
+
+                    {orderDetails?.loyalty_points_redeemed != null && (
+                        <>
+                            <View style={styles.infoContainer}>
+                                <Text style={styles.infoTitle}>Redeemed Points</Text>
+                                <Text style={styles.infoText}>{capitalizeWords(orderDetails?.loyalty_points_redeemed)}</Text>
+                            </View>
+                            <View style={styles.separator} />
+                        </>
+                    )}
 
                     {orderDetails?.order_items
                         ?.filter((item) => item.product) // Only include items with a product

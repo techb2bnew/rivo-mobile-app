@@ -119,7 +119,6 @@ function App(): React.JSX.Element {
         ) : (
           <AuthNavigator screen="SignUp" />
         )}
-        {/* <FAQScreen/> */}
       </NavigationContainer>
       <Toast message={toastMessage} visible={toastVisible} />
       </Provider>

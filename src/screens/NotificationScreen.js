@@ -1,13 +1,13 @@
 import { FlatList, Pressable, StyleSheet, Text, View, Image } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import { blackColor, grayColor, mediumGray, whiteColor } from '../constants/Color';
+import { blackColor, grayColor, lightGrayColor, mediumGray, whiteColor } from '../constants/Color';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from '../utils';
 import { spacings, style } from '../constants/Fonts';
 import { BaseStyle } from '../constants/Style';
 import Ionicons from 'react-native-vector-icons/dist/Ionicons';
 import { NOTIFICATIOS } from '../constants/Constants';
 import PushNotification from 'react-native-push-notification';
-import { NO_NOTIFICTION_IMG } from '../assests/images';
+import { APP_LOGO, NO_NOTIFICTION_IMG } from '../assests/images';
 import { GestureHandlerRootView, Swipeable } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import messaging from '@react-native-firebase/messaging';
@@ -17,7 +17,7 @@ import { resetNotificationCount } from '../redux/actions';
 const { flex, flexDirectionRow } = BaseStyle;
 
 const NotificationScreen = ({ navigation }) => {
-  // const notifications = [
+  // const notifications1 = [
   //   { id: '1', title: '30% Special Discount!', description: 'Special promotion only valid today.' },
   //   { id: '2', title: 'Top Up E-wallet Successfully!', description: 'You have top up your e-wallet.' },
   //   { id: '3', title: 'New Service Available!', description: 'Now you can track order in real-time.' },
@@ -40,7 +40,7 @@ const NotificationScreen = ({ navigation }) => {
       setNotifications(remoteMessage);
     });
   };
-  
+
   useEffect(() => {
     fetchNotifications();
     listenForPushNotifications();
@@ -66,13 +66,16 @@ const NotificationScreen = ({ navigation }) => {
         </View>
       )}
     >
-      <View style={[styles.notificationItem, { backgroundColor: whiteColor, flexDirection: "row" }]}>
-        <View style={{ width: wp(16), height: hp(8) }}>
-          <Image source={NO_NOTIFICTION_IMG} style={{ width: "100%", height: "100%", resizeMode: "cover", borderRadius: 10 }} />
+      <View style={styles.notificationItemContainer}>
+        <View style={styles.notificationImageWrapper}>
+          <Image
+            source={APP_LOGO}
+            style={styles.notificationImage}
+          />
         </View>
-        <View style={{ width: "90%", paddingLeft: spacings.large, height: "100%" }}>
-          <Text style={[styles.notificationTitle, { color: blackColor }]}>{item.title }</Text>
-          <Text style={[styles.notificationMessage, { color: blackColor }]}>{item.body}</Text>
+        <View style={styles.notificationTextWrapper}>
+          <Text style={styles.notificationTitle}>{item.title}</Text>
+          <Text style={styles.notificationMessage}>{item.body}</Text>
         </View>
       </View>
     </Swipeable>
@@ -80,8 +83,8 @@ const NotificationScreen = ({ navigation }) => {
 
   return (
     <GestureHandlerRootView style={[styles.container, flex]}>
-      <View style={[{ width: wp(100), height: "auto", padding: spacings.large }, flexDirectionRow]}>
-        <Pressable onPress={() => { navigation.goBack(); }}>
+      <View style={[{ width: wp(100), height: "auto", padding: spacings.large,alignItems:"center" }, flexDirectionRow]}>
+        <Pressable onPress={() => { navigation.goBack() }} style={[{ width: wp(10) }]}>
           <Ionicons name="arrow-back" size={30} color={blackColor} />
         </Pressable>
         <Text style={styles.headerText}>
@@ -124,21 +127,17 @@ const styles = StyleSheet.create({
   notificationList: {
     paddingHorizontal: spacings.large,
     paddingBottom: spacings.medium,
+    backgroundColor: 'red'
   },
   notificationItem: {
     padding: 16,
-    marginVertical: 8,
+    // marginVertical: 8,
     borderRadius: 8,
     elevation: 2,
     borderColor: "#d9d9d9",
     borderWidth: .5,
   },
-  notificationTitle: {
-    fontSize: style.fontSizeNormal2x.fontSize,
-    fontWeight: style.fontWeightMedium.fontWeight,
-    color: blackColor,
-    marginBottom: 4,
-  },
+
   notificationDescription: {
     fontSize: style.fontSizeNormal.fontSize,
     fontWeight: style.fontWeightThin.fontWeight,
@@ -151,12 +150,53 @@ const styles = StyleSheet.create({
     marginBottom: spacings.large,
   },
   swipeAction: {
+    backgroundColor: lightGrayColor,
     justifyContent: 'center',
     alignItems: 'center',
-    // backgroundColor: 'red',
-    width: wp(10),
+    borderRadius: 10,
+    padding: 10,
+    height: hp(12)
+  },
+  notificationItemContainer: {
+    flexDirection: 'row',
+    backgroundColor: whiteColor,
+    borderRadius: 12,
+    marginBottom: 12,
+    elevation: 3, // Android shadow
+    shadowColor: '#000', // iOS shadow
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 2 },
+    padding: 10,
+    alignItems: 'center',
+  },
+  notificationImageWrapper: {
+    width: wp(16),
+    height: hp(8),
+    borderRadius: 10,
+    overflow: 'hidden',
+    marginRight: spacings.medium,
+  },
+  notificationImage: {
+    width: '100%',
     height: '100%',
-    borderRadius: 8,
+    resizeMode: 'cover',
+  },
+  notificationTextWrapper: {
+    flex: 1,
+    justifyContent: 'center',
+    height: '100%',
+  },
+  notificationTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: blackColor,
+    marginBottom: 4,
+  },
+  notificationMessage: {
+    fontSize: 14,
+    color: grayColor,
+    lineHeight: 18,
   },
 
 });

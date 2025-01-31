@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, Text, Image, Pressable, Modal, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, StyleSheet, Text, Image, Pressable, Modal, TouchableOpacity, ActivityIndicator, RefreshControl } from 'react-native';
 import { grayColor, whiteColor, blackColor, mediumGray, redColor } from '../constants/Color';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from '../utils';
 import { spacings, style } from '../constants/Fonts';
@@ -11,6 +11,7 @@ import { CELEBRATION_ICON, FEATHER_ICON } from '../assests/images';
 import WalletModal from '../components/modals/WalletModal';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import LoaderModal from '../components/modals/LoaderModal';
+import ContentLoader, { Rect, Circle } from 'react-content-loader/native';
 const { flex, flexDirectionRow, alignJustifyCenter, resizeModeContain, resizeModeCover, justifyContentSpaceBetween, justifyContentCenter, borderRadius10, borderWidth1, textAlign, alignItemsCenter, justifyContentSpaceEvenly } = BaseStyle;
 
 const WalletScreen = ({ navigation }) => {
@@ -23,7 +24,7 @@ const WalletScreen = ({ navigation }) => {
   const currentDate = new Date();
   const currentYear = currentDate.getFullYear();
   const currentMonth = currentDate.toLocaleString("en-US", { month: "long" });
-
+ const [refreshing, setRefreshing] = useState(false);
   useEffect(() => {
     fetchWalletHistory("", "", "all");
   }, []);
@@ -88,6 +89,7 @@ const WalletScreen = ({ navigation }) => {
   };
 
   const getWalletDetail = async (walletHistoryId) => {
+    console.log(walletHistoryId);
     try {
       const token = await AsyncStorage.getItem("userToken");
 
@@ -186,12 +188,21 @@ const WalletScreen = ({ navigation }) => {
           <Text style={styles.transactionType}>
             Points {capitalizeWords(item.transaction_type === "redeemed" ? "Spent" : item.transaction_type)}
           </Text>
-          <Text style={styles.description}>
+          {/* <Text style={styles.description}>
             {item?.transaction_type === "earned"
               ? "Purchase on Feathers"
               : item?.transaction_type === "redeemed"
                 ? "Spent points on Feathers"
                 : "Transaction on Feathers"}
+          </Text> */}
+          <Text style={styles.description}>
+            {item?.adjustment_reason === "points_refunded"
+              ? "Refunded points on Feathers"
+              : item?.transaction_type === "earned"
+                ? "Purchase on Feathers"
+                : item?.transaction_type === "redeemed"
+                  ? "Spent points on Feathers"
+                  : "Transaction on Feathers"}
           </Text>
           <Text style={styles.date}>{`${formatDate(item.created_at)} ${formatTime(item.created_at)}`}</Text>
         </View>
@@ -207,6 +218,35 @@ const WalletScreen = ({ navigation }) => {
     );
   };
 
+  const TransactionSkeleton = () => {
+    return (
+      <ContentLoader
+        speed={1.5}
+        width={wp(90)}
+        height={80}
+        viewBox={`0 0 ${wp(90)} 80`}
+        backgroundColor="#e0e0e0"
+        foregroundColor="#f5f5f5"
+      >
+        {/* Icon */}
+        <Circle cx={wp(10)} cy={40} r={wp(5)} />
+
+        {/* Text placeholders */}
+        <Rect x={wp(20)} y={15} rx={4} ry={4} width={wp(50)} height={12} />
+        <Rect x={wp(20)} y={35} rx={4} ry={4} width={wp(50)} height={10} />
+        <Rect x={wp(20)} y={55} rx={4} ry={4} width={wp(40)} height={10} />
+
+        {/* Points */}
+        <Rect x={wp(80)} y={25} rx={4} ry={4} width={wp(10)} height={15} />
+      </ContentLoader>
+    );
+  };
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    fetchWalletHistory(activeTab);
+    setRefreshing(false);
+  };
   return (
 
     <View style={[styles.container, flex]}>
@@ -258,7 +298,7 @@ const WalletScreen = ({ navigation }) => {
 
       <View style={styles.separator} />
 
-      {transactionData?.length === 0 ? (
+      {transactionData?.length === 0 && !loading ? (
         <Text style={styles.noTransactionsText}>No transactions available</Text>
       ) : (
         <FlatList
@@ -267,40 +307,50 @@ const WalletScreen = ({ navigation }) => {
           keyExtractor={(item) => item.id.toString()}
           contentContainerStyle={styles.transactionsList}
           showsVerticalScrollIndicator={false}
+          // refreshControl={
+          //   <RefreshControl
+          //     refreshing={refreshing}
+          //     onRefresh={onRefresh}
+          //     colors={["#42A5F5"]}
+          //     tintColor="#42A5F5"
+          //   />
+          // }
         />
       )}
-      {/* {loading && (
-        <LoaderModal visible={loading} message="Please wait..." />
-      )} */}
       {loading && (
-        <View style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: "rgba(0, 0, 0, 0.5)",
-          alignItems: "center",
-          justifyContent: "center",
-          zIndex: 9999,
-        }}>
-          <View style={{
-            width: 150,
-            padding: 20,
-            backgroundColor: "#fff",
-            borderRadius: 10,
-            alignItems: "center",
-            justifyContent: "center",
-          }}>
-            <Text style={{
-              marginBottom: 10,
-              fontSize: 16,
-              color: "#000",
-            }}>
-              Please wait...
-            </Text>
-            <ActivityIndicator size="large" color={"#42A5F5"} />
-          </View>
+        // <View style={{
+        //   position: "absolute",
+        //   top: 0,
+        //   left: 0,
+        //   right: 0,
+        //   bottom: 0,
+        //   backgroundColor: "rgba(0, 0, 0, 0.5)",
+        //   alignItems: "center",
+        //   justifyContent: "center",
+        //   zIndex: 9999,
+        // }}>
+        //   <View style={{
+        //     width: 150,
+        //     padding: 20,
+        //     backgroundColor: "#fff",
+        //     borderRadius: 10,
+        //     alignItems: "center",
+        //     justifyContent: "center",
+        //   }}>
+        //     <Text style={{
+        //       marginBottom: 10,
+        //       fontSize: 16,
+        //       color: "#000",
+        //     }}>
+        //       Please wait...
+        //     </Text>
+        //     <ActivityIndicator size="large" color={"#42A5F5"} />
+        //   </View>
+        // </View>
+        <View>
+          {new Array(6).fill(null).map((_, index) => (
+            <TransactionSkeleton key={index} />
+          ))}
         </View>
       )}
       {modalVisible && selectedTransaction != null && !loading && (
