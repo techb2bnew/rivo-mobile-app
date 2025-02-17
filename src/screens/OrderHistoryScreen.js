@@ -52,11 +52,24 @@ const OrderHistoryScreen = ({ navigation }) => {
       }));
     });
   };
+  const listenForForegroundPushNotifications = () => {
+    messaging().onMessage(async (remoteMessage) => {
+      console.log('Foreground Push Notification:', remoteMessage);
+  
+      // Check if notification is not already added
+      dispatch(addNotification({
+        identifier: remoteMessage.messageId,
+        title: remoteMessage.notification?.title || 'No Title',
+        body: remoteMessage.notification?.body || 'No Body',
+      }));
+    });
+  };
 
   useFocusEffect(
     useCallback(() => {
       fetchNotifications();
       listenForPushNotifications();
+      listenForForegroundPushNotifications();
     }, [])
   );
 
@@ -379,7 +392,7 @@ const OrderHistoryScreen = ({ navigation }) => {
           </View>
         )}
         {!loading && (
-          <View>
+          <View style={{marginBottom:hp(5)}}>
             {(ordersData?.length > 0 || ordersFromLocalStorage?.length > 0) && (
               <Text style={[styles.title, { padding: spacings.large }]}>{ALL_ORDERS}</Text>
             )}

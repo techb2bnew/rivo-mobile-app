@@ -19,6 +19,8 @@ const ExpirePointsModal = ({ visible, onClose, data }) => {
         const year = date.getFullYear();
         return `${day} ${month}, ${year}`;
     };
+    console.log("item?.points_expire_at",data);
+    
     return (
         <Modal
             transparent
@@ -55,7 +57,7 @@ const ExpirePointsModal = ({ visible, onClose, data }) => {
                                 ]}
                             >
                                 {/* <Text style={styles.rowText}>{formatDate('2022-07-31T16:29:38.024Z')}</Text> */}
-                                <Text style={styles.rowText}>{formatDate(item?.points_expire_at)}</Text>
+                                <Text style={styles.rowText}>{item?.points_expire_at}</Text>
                                 <Text style={styles.rowText}>{item?.vip_tier?.threshold}</Text>
                             </View>
                         )}

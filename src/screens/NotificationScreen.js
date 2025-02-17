@@ -11,7 +11,7 @@ import { APP_LOGO, NO_NOTIFICTION_IMG } from '../assests/images';
 import { GestureHandlerRootView, Swipeable } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import messaging from '@react-native-firebase/messaging';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { resetNotificationCount } from '../redux/actions';
 
 const { flex, flexDirectionRow } = BaseStyle;
@@ -25,46 +25,64 @@ const NotificationScreen = ({ navigation }) => {
   //   { id: '5', title: 'Account Setup Successfully!', description: 'Your account has been created.' },
   // ];
   const dispatch = useDispatch();
-  const [notifications, setNotifications] = useState([]);
+  const notifications = useSelector((state) => state.notifications.notifications); // Update with the correct path to your state
 
-  const fetchNotifications = () => {
-    PushNotification.getDeliveredNotifications((deliveredNotifications) => {
-      // console.log('Delivered Notifications:', deliveredNotifications);
-      setNotifications(deliveredNotifications);
-    });
-  };
+  // const [notifications, setNotifications] = useState([]);
 
-  const listenForPushNotifications = () => {
-    messaging().onMessage(async (remoteMessage) => {
-      // console.log('Push Notification Received:', remoteMessage);
-      setNotifications(remoteMessage);
-    });
-  };
+  // const fetchNotifications = () => {
+  //   PushNotification.getDeliveredNotifications((deliveredNotifications) => {
+  //     // console.log('Delivered Notifications:', deliveredNotifications);
+  //     setNotifications(deliveredNotifications);
+  //   });
+  // };
 
-  useEffect(() => {
-    fetchNotifications();
-    listenForPushNotifications();
-  }, []);
+  // const listenForPushNotifications = () => {
+  //   messaging().onMessage(async (remoteMessage) => {
+  //     // console.log('Push Notification Received:', remoteMessage);
+  //     setNotifications(remoteMessage);
+  //   });
+  // };
+
+  // const listenForForegroundPushNotifications = () => {
+  //   messaging().onMessage(async (remoteMessage) => {
+  //     console.log('Foreground Push Notification:', remoteMessage);
+  
+  //     // Check if notification is not already added
+  //     setNotifications(remoteMessage);
+  //   });
+  // };
+
+  // useEffect(() => {
+  //   fetchNotifications();
+  //   listenForPushNotifications();
+  //   listenForForegroundPushNotifications();
+  // }, []);
 
   useEffect(() => {
     dispatch(resetNotificationCount());
   }, [dispatch]);
 
+  
   const removeNotification = (id) => {
+    // Remove the notification from PushNotification
     PushNotification.removeDeliveredNotifications([id]);
-    setNotifications((prevNotifications) =>
-      prevNotifications.filter((notification) => notification.identifier !== id)
-    );
+  
+    // Dispatch the REMOVE_NOTIFICATION action to update the Redux store
+    dispatch({
+      type: 'REMOVE_NOTIFICATION',
+      payload: { id: id },
+    });
   };
+  
 
   const renderNotification = ({ item }) => (
     <Swipeable
-      onSwipeableRightOpen={() => removeNotification(item.identifier)}
-      renderRightActions={() => (
-        <View style={styles.swipeAction}>
-          <Icon name="close" size={24} color={blackColor} />
-        </View>
-      )}
+      // onSwipeableRightOpen={() => removeNotification(item.identifier)}
+      // renderRightActions={() => (
+      //   <View style={styles.swipeAction}>
+      //     <Icon name="close" size={24} color={blackColor} />
+      //   </View>
+      // )}
     >
       <View style={styles.notificationItemContainer}>
         <View style={styles.notificationImageWrapper}>
@@ -124,11 +142,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacings.large,
     paddingVertical: spacings.small
   },
-  notificationList: {
-    paddingHorizontal: spacings.large,
-    paddingBottom: spacings.medium,
-    backgroundColor: 'red'
-  },
   notificationItem: {
     padding: 16,
     // marginVertical: 8,
@@ -161,7 +174,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     backgroundColor: whiteColor,
     borderRadius: 12,
-    marginBottom: 12,
+    margin: 5, // Reduced from 12 to 6
     elevation: 3, // Android shadow
     shadowColor: '#000', // iOS shadow
     shadowOpacity: 0.1,
@@ -169,6 +182,13 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     padding: 10,
     alignItems: 'center',
+    height:hp(13),
+    width:"98%"
+  },
+  notificationList: {
+    paddingHorizontal: spacings.large,
+    paddingBottom: spacings.medium,
+    paddingTop: spacings.small, 
   },
   notificationImageWrapper: {
     width: wp(16),

@@ -8,34 +8,34 @@ const initialState = {
 const notificationReducer = (state = initialState, action) => {
   switch (action.type) {
     case 'ADD_NOTIFICATION':
-      // Check if the notification with the same identifier already exists
-      const isDuplicate = state.notifications.some(
-        (notification) => notification.identifier === action.payload.identifier
-      );
+      console.log("Adding Notification with ID:", action.payload.identifier);
 
-      if (isDuplicate) {
-        return state; // Don't add the notification if it's a duplicate
+      // Check for duplicates before adding
+      if (state.notifications.some(notification => notification.identifier === action.payload.identifier)) {
+        console.log("Duplicate Notification, skipping:", action.payload.identifier);
+        return state; // Prevent duplicate addition
       }
+
       PushNotification.setApplicationIconBadgeNumber(state.count + 1);
+
       return {
         ...state,
         notifications: [...state.notifications, action.payload],
-        count: state.count + 1, // Increment count when a new notification is added
+        count: state.count + 1,
       };
-      
+
     case 'RESET_NOTIFICATION_COUNT':
       PushNotification.setApplicationIconBadgeNumber(0);
       return {
         ...state,
-        count: 0, // Reset count to 0 (e.g., when user views notifications)
+        count: 0,
       };
-      
+
     default:
       return state;
   }
 };
 
 export default notificationReducer;
-
 
 // PushNotification.setApplicationIconBadgeNumber(updatedNotifications.length);

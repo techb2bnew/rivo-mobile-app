@@ -159,14 +159,14 @@ const BiometricModal = ({isBiometricModalVisible,setIsBiometricModalVisible}) =>
             });
     
             if (result.success) {
-                setTimeout(() => setIsBiometricModalVisible(false), 500);
+                setTimeout(() => setIsBiometricModalVisible(false), 1000);
             } else {
-                setTimeout(() => handleBiometricAuthentication, 500);
+                setTimeout(() => handleBiometricAuthentication(), 1000);
                 // Alert.alert('Authentication Failed', 'Please try again.');
             }
         } catch (error) {
             console.error('Biometric authentication error:', error);
-            setTimeout(() => handleBiometricAuthentication, 500);
+            setTimeout(() => handleBiometricAuthentication(), 1000);
         }
     };
     

@@ -104,7 +104,11 @@ const DashBoardScreen = ({ navigation }) => {
 
     const fetchNotifications = () => {
         PushNotification.getDeliveredNotifications((deliveredNotifications) => {
+            console.log("Delivered Notifications:", deliveredNotifications); // Log all notifications
+    
             deliveredNotifications.forEach((notification) => {
+                console.log("Notification:", notification); // Log each notification
+    
                 dispatch(addNotification({
                     identifier: notification.identifier,
                     title: notification.title,
@@ -113,9 +117,10 @@ const DashBoardScreen = ({ navigation }) => {
             });
         });
     };
-
+    
     const listenForPushNotifications = () => {
         messaging().onMessage(async (remoteMessage) => {
+            console.log('listenForPushNotifications:', remoteMessage);
             // Check if notification is not already added by checking the identifier
             dispatch(addNotification({
                 identifier: remoteMessage.messageId,
@@ -124,6 +129,19 @@ const DashBoardScreen = ({ navigation }) => {
             }));
         });
     };
+    
+    const listenForForegroundPushNotifications = () => {
+        messaging().onMessage(async (remoteMessage) => {
+          console.log('Foreground Push Notification:', remoteMessage);
+      
+          // Check if notification is not already added
+          dispatch(addNotification({
+            identifier: remoteMessage.messageId,
+            title: remoteMessage.notification?.title || 'No Title',
+            body: remoteMessage.notification?.body || 'No Body',
+          }));
+        });
+      };
 
     const fetchExpPoints = async () => {
         try {
@@ -150,7 +168,7 @@ const DashBoardScreen = ({ navigation }) => {
 
             const result = await response.json();
             setExpiryPointsData(result?.data)
-            // console.log("ExpPoints", result.data);
+            console.log("ExpPoints", result.data);
         } catch (error) {
             console.error("Error fetching ExpPoints:", error);
         }
@@ -205,6 +223,7 @@ const DashBoardScreen = ({ navigation }) => {
         useCallback(() => {
             fetchNotifications();
             listenForPushNotifications();
+            listenForForegroundPushNotifications();
             fetchProfileData();
             fetchOrdersFromAPI();
             fetchExpPoints();

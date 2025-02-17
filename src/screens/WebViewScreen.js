@@ -10,7 +10,7 @@ import LoaderModal from '../components/modals/LoaderModal';
 const WebViewScreen = ({ route, navigation }) => {
     const { url } = route.params;
     const [loading, setLoading] = useState(false);
-
+    console.log(url, loading)
     return (
         <View style={styles.container}>
             {/* Back Button */}
@@ -25,7 +25,11 @@ const WebViewScreen = ({ route, navigation }) => {
                 source={{ uri: url }}
                 style={styles.webview}
                 onLoadStart={() => setLoading(true)}
-                onLoadEnd={() => setLoading(false)}
+                onLoadProgress={({ nativeEvent }) => {
+                    if (nativeEvent.progress === 1) {
+                        setLoading(false);
+                    }
+                }}
             />
 
             {/* Loader Modal */}

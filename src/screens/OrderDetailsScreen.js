@@ -45,7 +45,7 @@ const OrderDetailsScreen = ({ route, navigation }) => {
             });
             const responseText = await response.text();
             const result = JSON.parse(responseText);
-            console.log("fetching order details:", result.data.order_items);
+            console.log("fetching order details:", result.data);
             setOrderDetails(result.data);
             setLoading(false);
         } catch (error) {

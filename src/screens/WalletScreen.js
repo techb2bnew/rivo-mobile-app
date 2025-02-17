@@ -89,39 +89,49 @@ const WalletScreen = ({ navigation }) => {
   };
 
   const getWalletDetail = async (walletHistoryId) => {
-    console.log(walletHistoryId);
+    console.log("Fetching wallet details for ID:", walletHistoryId);
+  
     try {
       const token = await AsyncStorage.getItem("userToken");
-
+  
       if (!token) {
         console.log("Token not found");
         return;
       }
+  
+      console.log("Token retrieved successfully");
+  
       const myHeaders = new Headers();
       myHeaders.append("Authorization", `Bearer ${token}`);
       myHeaders.append("Accept", "application/json");
-
+  
       const requestOptions = {
         method: "GET",
         headers: myHeaders,
         redirect: "follow",
       };
-
+  
       const url = `https://publicapi.dev.saasintegrator.online/api/wallet-detail/${walletHistoryId}`;
-
+      console.log("Request URL:", url);
+  
       // Fetch wallet details
       const response = await fetch(url, requestOptions);
-
+      console.log("Response status:", response.status);
+  
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        throw new Error(`HTTP error! Status: ${response.status}`);
       }
-
-      return await response.json();
+  
+      const data = await response.json();
+      console.log("Wallet details response:", JSON.stringify(data, null, 2));
+  
+      return data;
     } catch (error) {
       console.error("Error fetching wallet details:", error);
       throw error;
     }
   };
+  
 
   const openModal = async (item) => {
     // setLoading(true);
