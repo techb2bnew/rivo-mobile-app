@@ -55,7 +55,7 @@ const OrderHistoryScreen = ({ navigation }) => {
   const listenForForegroundPushNotifications = () => {
     messaging().onMessage(async (remoteMessage) => {
       console.log('Foreground Push Notification:', remoteMessage);
-  
+
       // Check if notification is not already added
       dispatch(addNotification({
         identifier: remoteMessage.messageId,
@@ -392,7 +392,7 @@ const OrderHistoryScreen = ({ navigation }) => {
           </View>
         )}
         {!loading && (
-          <View style={{marginBottom:hp(5)}}>
+          <View style={{ marginBottom: hp(5) }}>
             {(ordersData?.length > 0 || ordersFromLocalStorage?.length > 0) && (
               <Text style={[styles.title, { padding: spacings.large }]}>{ALL_ORDERS}</Text>
             )}
@@ -403,7 +403,7 @@ const OrderHistoryScreen = ({ navigation }) => {
               showsVerticalScrollIndicator={false}
               keyExtractor={(item) => item?.id?.toString()}
               ListEmptyComponent={
-                <View style={{ width:wp(100),height:hp(50), justifyContent: "center", alignItems: "center", marginTop: 20 }}>
+                <View style={{ width: wp(100), height: hp(50), justifyContent: "center", alignItems: "center", marginTop: 20 }}>
                   <Text style={{ color: "#646E77", fontSize: 16, fontWeight: "bold" }}>
                     No orders yet!
                   </Text>
@@ -420,6 +420,7 @@ const OrderHistoryScreen = ({ navigation }) => {
                   tintColor="#42A5F5"
                 />
               }
+              style={{ height: Platform.OS === "android" ? hp(81) : hp(72) }}
             />
           </View>
         )}

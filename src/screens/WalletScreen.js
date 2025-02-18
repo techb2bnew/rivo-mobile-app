@@ -24,7 +24,7 @@ const WalletScreen = ({ navigation }) => {
   const currentDate = new Date();
   const currentYear = currentDate.getFullYear();
   const currentMonth = currentDate.toLocaleString("en-US", { month: "long" });
- const [refreshing, setRefreshing] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   useEffect(() => {
     fetchWalletHistory("", "", "all");
   }, []);
@@ -64,13 +64,22 @@ const WalletScreen = ({ navigation }) => {
       }
 
       const result = await response.json();
-      // console.log("Result:", result.data.data);
+      console.log("Result:", result.data.data);
       setTransactionData(result.data.data);
-      const totalPoints = result.data.data.reduce((sum, transaction) => {
-        // Convert points to a number before adding
+      // Filter out 'redeemed' transactions only if transactionType is 'all'
+      const filteredTransactions = transactionType === "all"
+        ? result.data.data.filter(transaction => transaction.transaction_type !== "redeemed")
+        : result.data.data;
+
+      // Calculate total points
+      const totalPoints = filteredTransactions.reduce((sum, transaction) => {
         return sum + parseFloat(transaction.points);
       }, 0);
-      // console.log(totalPoints)
+      // const totalPoints = result.data.data.reduce((sum, transaction) => {
+      //   // Convert points to a number before adding
+      //   return sum + parseFloat(transaction.points);
+      // }, 0);
+      console.log("totalPoints", totalPoints)
       setTotalPoints(totalPoints.toFixed(2));
       setLoading(false);
     } catch (error) {
@@ -90,48 +99,48 @@ const WalletScreen = ({ navigation }) => {
 
   const getWalletDetail = async (walletHistoryId) => {
     console.log("Fetching wallet details for ID:", walletHistoryId);
-  
+
     try {
       const token = await AsyncStorage.getItem("userToken");
-  
+
       if (!token) {
         console.log("Token not found");
         return;
       }
-  
+
       console.log("Token retrieved successfully");
-  
+
       const myHeaders = new Headers();
       myHeaders.append("Authorization", `Bearer ${token}`);
       myHeaders.append("Accept", "application/json");
-  
+
       const requestOptions = {
         method: "GET",
         headers: myHeaders,
         redirect: "follow",
       };
-  
+
       const url = `https://publicapi.dev.saasintegrator.online/api/wallet-detail/${walletHistoryId}`;
       console.log("Request URL:", url);
-  
+
       // Fetch wallet details
       const response = await fetch(url, requestOptions);
       console.log("Response status:", response.status);
-  
+
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
-  
+
       const data = await response.json();
       console.log("Wallet details response:", JSON.stringify(data, null, 2));
-  
+
       return data;
     } catch (error) {
       console.error("Error fetching wallet details:", error);
       throw error;
     }
   };
-  
+
 
   const openModal = async (item) => {
     // setLoading(true);
@@ -317,14 +326,14 @@ const WalletScreen = ({ navigation }) => {
           keyExtractor={(item) => item.id.toString()}
           contentContainerStyle={styles.transactionsList}
           showsVerticalScrollIndicator={false}
-          // refreshControl={
-          //   <RefreshControl
-          //     refreshing={refreshing}
-          //     onRefresh={onRefresh}
-          //     colors={["#42A5F5"]}
-          //     tintColor="#42A5F5"
-          //   />
-          // }
+        // refreshControl={
+        //   <RefreshControl
+        //     refreshing={refreshing}
+        //     onRefresh={onRefresh}
+        //     colors={["#42A5F5"]}
+        //     tintColor="#42A5F5"
+        //   />
+        // }
         />
       )}
       {loading && (

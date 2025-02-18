@@ -74,6 +74,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
+        width:"99.8%",
     },
     question: {
         fontSize: 16,

@@ -24,7 +24,6 @@ const WalletModal = ({ visible, onClose, transaction }) => {
     return `${day} ${month}, ${year}`;
   };
 
-
   return (
     <Modal
       transparent={true}
@@ -48,7 +47,7 @@ const WalletModal = ({ visible, onClose, transaction }) => {
           </View>
           <Text style={styles.modalDate}>{formatDate(item.created_at)}</Text>
           {(id || orders[0]?.uid) && <View style={styles.separator} />}
-          {id &&
+          {/* {id &&
             <View style={[{ width: "100%" }, alignItemsCenter, flexDirectionRow]}>
               <View style={{width:"44%"}}>
                 <Text style={[styles.transactionDetails, { color: blackColor }]}>
@@ -61,7 +60,7 @@ const WalletModal = ({ visible, onClose, transaction }) => {
                 </Text>
               </View>
             </View>
-          }
+          } */}
           {orders[0]?.uid &&
             <View style={[{ width: "100%", paddingVertical: 5 }, alignItemsCenter, flexDirectionRow]}>
               <View style={{width:"44%"}}>

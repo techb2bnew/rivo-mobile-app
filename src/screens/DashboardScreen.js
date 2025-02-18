@@ -40,8 +40,8 @@ const DashBoardScreen = ({ navigation }) => {
     const data = [
         {
             id: '1',
-            title: `${userName}`,
-            points: `${phoneNumber}`,
+            title: `${phoneNumber}`,
+            points: `${userName}`,
             backgroundColor: "#1c1c1c",
             textColor: whiteColor,
             subtextColor: whiteColor,
@@ -105,10 +105,10 @@ const DashBoardScreen = ({ navigation }) => {
     const fetchNotifications = () => {
         PushNotification.getDeliveredNotifications((deliveredNotifications) => {
             console.log("Delivered Notifications:", deliveredNotifications); // Log all notifications
-    
+
             deliveredNotifications.forEach((notification) => {
                 console.log("Notification:", notification); // Log each notification
-    
+
                 dispatch(addNotification({
                     identifier: notification.identifier,
                     title: notification.title,
@@ -117,7 +117,7 @@ const DashBoardScreen = ({ navigation }) => {
             });
         });
     };
-    
+
     const listenForPushNotifications = () => {
         messaging().onMessage(async (remoteMessage) => {
             console.log('listenForPushNotifications:', remoteMessage);
@@ -129,19 +129,19 @@ const DashBoardScreen = ({ navigation }) => {
             }));
         });
     };
-    
+
     const listenForForegroundPushNotifications = () => {
         messaging().onMessage(async (remoteMessage) => {
-          console.log('Foreground Push Notification:', remoteMessage);
-      
-          // Check if notification is not already added
-          dispatch(addNotification({
-            identifier: remoteMessage.messageId,
-            title: remoteMessage.notification?.title || 'No Title',
-            body: remoteMessage.notification?.body || 'No Body',
-          }));
+            console.log('Foreground Push Notification:', remoteMessage);
+
+            // Check if notification is not already added
+            dispatch(addNotification({
+                identifier: remoteMessage.messageId,
+                title: remoteMessage.notification?.title || 'No Title',
+                body: remoteMessage.notification?.body || 'No Body',
+            }));
         });
-      };
+    };
 
     const fetchExpPoints = async () => {
         try {
@@ -382,7 +382,7 @@ const DashBoardScreen = ({ navigation }) => {
                     <>
                         <View>
                             <Text style={[styles.pointsText, { color: item.textColor }]}>
-                                {item.points}
+                                {capitalizeWords(item.points)}
                             </Text>
                             <Text style={[styles.subText, { color: item.subtextColor }]}>
                                 {capitalizeWords(item.title)}
