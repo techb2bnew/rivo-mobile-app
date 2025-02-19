@@ -142,10 +142,10 @@ const OrderDetailsScreen = ({ route, navigation }) => {
 
 
                     <View style={styles.separator} />
-                    {orderDetails?.order_payment_methods[0]?.payment_method_name && <>
+                    {orderDetails?.order_shippings[0]?.shipping_method_name && <>
                         <View style={styles.infoContainer}>
                             <Text style={styles.infoTitle}>{DELIVERY_METHOD}</Text>
-                            <Text style={styles.infoText}>{orderDetails?.order_payment_methods[0]?.payment_method_name}</Text>
+                            <Text style={styles.infoText}>{orderDetails?.order_shippings[0]?.shipping_method_name}</Text>
                         </View>
                         <View style={styles.separator} />
                     </>}
@@ -185,7 +185,7 @@ const OrderDetailsScreen = ({ route, navigation }) => {
                                     />
                                     <View style={styles.productDetails}>
                                         <Text style={styles.productName}>Name : {item?.product?.name}</Text>
-                                        <Text style={styles.productInfo}>id - {item?.product?.sku}</Text>
+                                        <Text style={styles.productInfo}>Sku - {item?.product?.sku}</Text>
                                         <Text
                                             style={[
                                                 styles.productInfo,
@@ -196,7 +196,7 @@ const OrderDetailsScreen = ({ route, navigation }) => {
                                         </Text>
                                     </View>
                                     <View style={{ height: "100%", width: "20%" }}>
-                                        <Text style={styles.productPrice}>${item.price}</Text>
+                                        <Text style={styles.productPrice}>${Math.floor(item.price)}</Text>
                                     </View>
                                 </View>
                                 <View style={styles.separator} />
@@ -272,7 +272,7 @@ const styles = StyleSheet.create({
         marginLeft: spacings.medium,
     },
     productName: {
-        fontSize: style.fontSizeMedium.fontSize,
+        fontSize: style.fontSizeNormal2x.fontSize,
         fontWeight: 'bold',
         color: blackColor,
         marginBottom: 4,
@@ -283,7 +283,7 @@ const styles = StyleSheet.create({
         paddingTop: spacings.small
     },
     productPrice: {
-        fontSize: style.fontSizeMedium.fontSize,
+        fontSize: style.fontSizeNormal2x.fontSize,
         fontWeight: '600',
         color: blackColor,
     },

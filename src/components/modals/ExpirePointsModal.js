@@ -15,12 +15,12 @@ const ExpirePointsModal = ({ visible, onClose, data }) => {
         }
         const date = new Date(isoDate);
         const day = date.getDate().toString().padStart(2, '0');
-        const month = date.toLocaleString("en-US", { month: "short" }); 
+        const month = date.toLocaleString("en-US", { month: "short" });
         const year = date.getFullYear();
         return `${day} ${month}, ${year}`;
     };
-    console.log("item?.points_expire_at",data);
-    
+    console.log("item?.points_expire_at", data);
+
     return (
         <Modal
             transparent
@@ -32,7 +32,7 @@ const ExpirePointsModal = ({ visible, onClose, data }) => {
                 <View style={styles.modalContent}                >
                     {/* Header */}
                     <View style={[styles.modalHeader, flexDirectionRow, alignItemsCenter, justifyContentSpaceBetween]}>
-                        <Text style={styles.modalTitle}>{EXPIRE_POINTS}</Text>
+                        <Text style={styles.modalTitle}>{POINT_EXPIRE}</Text>
                         <TouchableOpacity onPress={onClose} >
                             <Ionicons name="close-sharp" size={24} color={blackColor} />
                         </TouchableOpacity>
@@ -41,7 +41,7 @@ const ExpirePointsModal = ({ visible, onClose, data }) => {
                     {/* Table Header */}
                     <View style={[styles.tableHeader, flexDirectionRow, justifyContentSpaceBetween]}>
                         <Text style={styles.headerText}>{DATE}</Text>
-                        <Text style={styles.headerText}>{POINT_EXPIRE}</Text>
+                        <Text style={styles.headerText}>Points</Text>
                     </View>
 
                     {/* List */}

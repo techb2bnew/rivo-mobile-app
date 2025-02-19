@@ -28,10 +28,10 @@ const DashBoardScreen = ({ navigation }) => {
     const [isbarCodeModalVisible, setIsbarCodeModalVisible] = useState(false);
     const [selectedData, setSelectedData] = useState(null);
     const [balancePoint, setBalancePoint] = useState(null);
-    const [userName, setUserName] = useState("");
+    const [userName, setUserName] = useState(null);
     const [userID, setUserID] = useState("");
-    const [phoneNumber, setPhoneNumber] = useState('');
-    const [tierStatus, setTierStatus] = useState('');
+    const [phoneNumber, setPhoneNumber] = useState(null);
+    const [tierStatus, setTierStatus] = useState(null);
     const [expiryPointsData, setExpiryPointsData] = useState([]);
     const [isBiometricModalVisible, setIsBiometricModalVisible] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
@@ -40,19 +40,20 @@ const DashBoardScreen = ({ navigation }) => {
     const data = [
         {
             id: '1',
-            title: `${phoneNumber}`,
             points: `${userName}`,
+            title: `${phoneNumber}`,
             backgroundColor: "#1c1c1c",
             textColor: whiteColor,
             subtextColor: whiteColor,
             imageBackground: "#e6e6e6",
             icon: CARD_IMAGE,
-            name: `${userName}`
+            name: `${userName}`,
+            memberShip: `${tierStatus}`
         },
         {
             id: '2',
-            title: 'Points Balance',
             points: `${balancePoint} PT`,
+            title: 'Points Balance',
             backgroundColor: "#f5f5f5",
             textColor: blackColor,
             subtextColor: "#808080",
@@ -61,8 +62,8 @@ const DashBoardScreen = ({ navigation }) => {
         },
         {
             id: '3',
-            title: 'Tier Status',
             points: `${tierStatus}`,
+            title: 'Tier Status',
             backgroundColor: "#1c1c1c",
             textColor: whiteColor,
             subtextColor: whiteColor,
@@ -71,26 +72,26 @@ const DashBoardScreen = ({ navigation }) => {
         },
     ];
 
-    useEffect(() => {
-        console.log("isBiometricModalVisible", isBiometricModalVisible);
+    // useEffect(() => {
+    //     console.log("isBiometricModalVisible", isBiometricModalVisible);
 
-        const checkFirstLaunch = async () => {
-            try {
-                const firstLoginCompleted = await AsyncStorage.getItem("firstLoginCompleted");
-                const userToken = await AsyncStorage.getItem('userToken');
+    //     const checkFirstLaunch = async () => {
+    //         try {
+    //             const firstLoginCompleted = await AsyncStorage.getItem("firstLoginCompleted");
+    //             const userToken = await AsyncStorage.getItem('userToken');
 
-                if (firstLoginCompleted == "true" && userToken) {
-                    setIsBiometricModalVisible(true);
-                } else {
-                    await AsyncStorage.setItem("firstLoginCompleted", "true");
-                }
-            } catch (error) {
-                console.error("Error checking first launch:", error);
-            }
-        };
+    //             if (firstLoginCompleted == "true" && userToken) {
+    //                 setIsBiometricModalVisible(true);
+    //             } else {
+    //                 await AsyncStorage.setItem("firstLoginCompleted", "true");
+    //             }
+    //         } catch (error) {
+    //             console.error("Error checking first launch:", error);
+    //         }
+    //     };
 
-        checkFirstLaunch();
-    }, []);
+    //     checkFirstLaunch();
+    // }, []);
 
     const openModal = (item) => {
         setSelectedData(item);
@@ -252,7 +253,7 @@ const DashBoardScreen = ({ navigation }) => {
                 setTierStatus(response.data?.data.tier_groups?.[0]?.name)
                 setBalancePoint(response.data?.data?.available_loyalty_points);
                 setUserName(response.data?.data?.full_name);
-                setPhoneNumber(response.data?.data?.uids?.['o360-retail-express']);
+                setPhoneNumber(response.data?.data?.meta_map_values?.[0]?.value);
                 setUserID(response.data?.data?.uid)
             } else {
                 throw new Error('Failed to fetch profile data');
@@ -301,53 +302,13 @@ const DashBoardScreen = ({ navigation }) => {
         navigation.navigate('FAQ');
     };
 
-    // const renderItem = ({ item }) => {
-    //     return (
-    //         <Pressable
-    //             style={[
-    //                 styles.card,
-    //                 { backgroundColor: item.backgroundColor },
-    //                 flexDirectionRow,
-    //                 alignItemsCenter,
-    //                 justifyContentSpaceBetween,
-    //                 borderRadius10
-    //             ]}
-    //             onPress={() => {
-    //                 if (item.id === '1') {
-    //                     openModal(item);
-    //                 }
-    //             }}
-    //         >
-    //             <View>
-    //                 {item.points ? (
-    //                     <Text style={[styles.pointsText, { color: item.textColor }]}>
-    //                         {item.points}
-    //                     </Text>
-    //                 ) : (
-    //                     <ActivityIndicator size={"small"} color={item.textColor} />
-    //                 )}
-    //                 <Text style={[styles.subText, { color: item.subtextColor }]}>
-    //                     {capitalizeWords(item.title)}
-    //                 </Text>
-    //             </View>
-    //             <View
-    //                 style={[
-    //                     styles.iconBox,
-    //                     borderRadius10,
-    //                     { backgroundColor: item.imageBackground },
-    //                     alignJustifyCenter
-    //                 ]}
-    //             >
-    //                 <Image source={item.icon} style={[styles.icon, resizeModeContain]} />
-    //             </View>
-    //         </Pressable>
-    //     );
-    // };
 
     const renderItem = ({ item }) => {
-        // Check if item data is not available (you can adjust this condition based on your data structure)
         const isLoading = !item.points || !balancePoint;
-
+        if (item.title === "undefined" || item.points === "undefined" || item.title === "null" || item.points === "null") {
+            console.log("Skipping Item:", item);
+            return null;
+        }
         return (
             <Pressable
                 style={[
@@ -382,10 +343,10 @@ const DashBoardScreen = ({ navigation }) => {
                     <>
                         <View>
                             <Text style={[styles.pointsText, { color: item.textColor }]}>
-                                {capitalizeWords(item.points)}
+                                {capitalizeWords(item?.points)}
                             </Text>
                             <Text style={[styles.subText, { color: item.subtextColor }]}>
-                                {capitalizeWords(item.title)}
+                                {capitalizeWords(item?.title)}
                             </Text>
                         </View>
                         <View

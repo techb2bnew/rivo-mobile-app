@@ -37,7 +37,7 @@ const WalletModal = ({ visible, onClose, transaction }) => {
             Points {item.transaction_type === "earned" ? "Earned" : "Spent"}
           </Text>
           <Text style={[styles.modalDescription, textAlign]}>{item?.transaction_type === "earned"
-            ? "Purchase on Feathers"
+            ? "Purchased on Feathers"
             : item?.transaction_type === "redeemed"
               ? "Spent points on Feathers"
               : "Transaction on Feathers"}

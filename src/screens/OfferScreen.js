@@ -111,14 +111,14 @@ const OfferScreen = ({ navigation }) => {
                     <>
                         <View style={{ marginVertical: spacings.large }}>
                             <Carousel
-                                data={offers?.slice(0, 4)}
+                                data={offers?.slice(0, 3)}
                                 renderItem={renderCarouselItem}
                                 sliderWidth={wp(100)}
                                 itemWidth={wp(100)}
                                 onSnapToItem={(index) => setActiveSlide(index)}
                             />
                             <Pagination
-                                dotsLength={offers?.slice(0, 4).length}
+                                dotsLength={offers?.slice(0, 3).length}
                                 activeDotIndex={activeSlide}
                                 containerStyle={styles.paginationContainer}
                                 dotStyle={styles.dotStyle}
@@ -128,7 +128,8 @@ const OfferScreen = ({ navigation }) => {
                         </View>
                         <Text style={[styles.sectionHeader, textAlign]}>Luxury In Layers</Text>
                         <FlatList
-                            data={offers}
+                            // data={offers}
+                            data={offers.filter((_, index) => index > 2)}
                             horizontal
                             // keyExtractor={(item) => item.id}
                             contentContainerStyle={styles.categories}
@@ -151,6 +152,7 @@ const OfferScreen = ({ navigation }) => {
                             // keyExtractor={(item) => item.id}
                             contentContainerStyle={{ width: "100%" }}
                             showsHorizontalScrollIndicator={false}
+                            scrollEnabled={false}
                             renderItem={({ item }) => (
                                 <Pressable style={[{ width: "95%", height: hp(15), margin: spacings.large, alignItemsCenter, backgroundColor: "#2D2D27" }, borderRadius10]}
                                     onPress={() => navigation.navigate('WebViewScreen', { url: item.offerLink })}>
@@ -221,7 +223,7 @@ const styles = StyleSheet.create({
     categoryBox: {
         alignItems: "center",
         marginHorizontal: spacings.small,
-        backgroundColor: "rgba(0, 0, 0, 0.5)",
+        backgroundColor: "rgba(0, 0, 0, 0.7)",
     },
     categoryImage: {
         width: wp(28),
@@ -241,8 +243,8 @@ const styles = StyleSheet.create({
         paddingVertical: spacings.large,
     },
     dotStyle: {
-        width: 10,
-        height: 10,
+        width: 20,
+        height: 8,
         borderRadius: 5,
         backgroundColor: blackColor,
     },

@@ -14,10 +14,10 @@ const BarcodeModal = ({ isVisible, data, onClose }) => {
     const capitalizeWords = (str) => {
         if (!str) return "";
         return str
-          .split(" ")
-          .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-          .join(" ");
-      };
+            .split(" ")
+            .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+            .join(" ");
+    };
     return (
         <Modal
             visible={isVisible}
@@ -29,20 +29,20 @@ const BarcodeModal = ({ isVisible, data, onClose }) => {
                 <View style={[styles.modalContainer, borderRadius10, alignItemsCenter]}>
                     <View style={[{ padding: spacings.large, width: "100%" }, alignJustifyCenter]}>
                         <Text style={styles.modalName}>{capitalizeWords(data.name)}</Text>
-                        <Text style={styles.modalMembership}>{data.title}</Text>
-                        {/* <Text style={styles.modalCardNumber}>{data.points}</Text> */}
+                        <Text style={styles.modalMembership}>{data.memberShip} Member</Text>
+                        <Text style={styles.modalCardNumber}>{data.title}</Text>
                     </View>
                     {/* Barcode */}
-                    <View style={{ width: "100%", backgroundColor: whiteColor,alignItems:'center' }}>
+                    <View style={{ width: "100%", backgroundColor: whiteColor, alignItems: 'center' }}>
                         <View style={[styles.barcodeContainer, alignJustifyCenter]}>
                             <Barcode
-                                value={data.points}
+                                value={data.title}
                                 format="CODE128"
                                 height={100}
                                 width={2}
                                 lineColor="#000"
                                 background="#fff"
-                                displayValue={true} 
+                                displayValue={true}
                             />
                         </View>
 
@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
     modalName: {
         fontSize: style.fontSizeLargeX.fontSize,
         fontWeight: 'bold',
-        marginBottom: spacings.small,
+        marginBottom: spacings.large,
         color: whiteColor
     },
     modalMembership: {
@@ -90,9 +90,9 @@ const styles = StyleSheet.create({
     },
     barcodeContainer: {
         margin: 20,
-        width: '90%',
+        width: wp(100),
         height: hp(15),
-        paddingHorizontal: spacings.large,
+        paddingHorizontal: spacings.large
     },
     modalAdditionalNumber: {
         fontSize: style.fontSizeNormal.fontSize,
