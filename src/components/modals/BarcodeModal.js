@@ -73,19 +73,20 @@ const styles = StyleSheet.create({
         overflow: 'hidden'
     },
     modalName: {
-        fontSize: style.fontSizeLargeX.fontSize,
-        fontWeight: 'bold',
+        fontSize: style.fontSizeLarge1x.fontSize,
+        fontWeight: style.fontWeightThin1x.fontWeight,
         marginBottom: spacings.large,
         color: whiteColor
     },
     modalMembership: {
-        fontSize: style.fontSizeNormal2x.fontSize,
+        fontSize: style.fontSizeNormal1x.fontSize,
+        fontWeight: style.fontWeightThin1x.fontWeight,
         color: whiteColor,
         marginBottom: spacings.large,
     },
     modalCardNumber: {
         fontSize: style.fontSizeNormal2x.fontSize,
-        marginBottom: 20,
+        marginBottom: 5,
         color: whiteColor
     },
     barcodeContainer: {

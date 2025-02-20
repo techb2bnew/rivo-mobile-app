@@ -57,24 +57,24 @@ const OfferScreen = ({ navigation }) => {
             }));
         });
     };
-    
+
     const listenForForegroundPushNotifications = () => {
         messaging().onMessage(async (remoteMessage) => {
-          console.log('Foreground Push Notification:', remoteMessage);
-      
-          // Check if notification is not already added
-          dispatch(addNotification({
-            identifier: remoteMessage.messageId,
-            title: remoteMessage.notification?.title || 'No Title',
-            body: remoteMessage.notification?.body || 'No Body',
-          }));
+            console.log('Foreground Push Notification:', remoteMessage);
+
+            // Check if notification is not already added
+            dispatch(addNotification({
+                identifier: remoteMessage.messageId,
+                title: remoteMessage.notification?.title || 'No Title',
+                body: remoteMessage.notification?.body || 'No Body',
+            }));
         });
-      };
+    };
 
     useEffect(() => {
         const fetchOffers = async () => {
             try {
-                const response = await fetch("https://rivo-admin-c5ddaab83d6b.herokuapp.com/api/proxy/offers?page=1&limit=10", {
+                const response = await fetch("https://rivo-admin-c5ddaab83d6b.herokuapp.com/api/proxy/offers?page=1&limit=1000", {
                     method: "GET",
                     redirect: "follow",
                 });
@@ -85,6 +85,8 @@ const OfferScreen = ({ navigation }) => {
 
                 const result = await response.json();
                 setOffers(result.data);
+                console.log(result.data.length);
+                
             } catch (error) {
                 setError(error.message);
             } finally {
@@ -128,12 +130,13 @@ const OfferScreen = ({ navigation }) => {
                         </View>
                         <Text style={[styles.sectionHeader, textAlign]}>Luxury In Layers</Text>
                         <FlatList
-                            // data={offers}
-                            data={offers.filter((_, index) => index > 2)}
+                            data={offers.slice(3, 6)}
+                            // data={offers.filter((_, index) => index > 2)}
                             horizontal
                             // keyExtractor={(item) => item.id}
                             contentContainerStyle={styles.categories}
                             showsHorizontalScrollIndicator={false}
+                            scrollEnabled={false}
                             renderItem={({ item }) => (
                                 <Pressable onPress={() => navigation.navigate('WebViewScreen', { url: item.offerLink })}>
                                     <View style={[styles.categoryBox, borderRadius10]}>
@@ -147,7 +150,7 @@ const OfferScreen = ({ navigation }) => {
                         />
 
                         <FlatList
-                            data={offers?.slice(4, 5)}
+                            data={offers?.slice(7, 8)}
                             horizontal
                             // keyExtractor={(item) => item.id}
                             contentContainerStyle={{ width: "100%" }}
@@ -157,6 +160,23 @@ const OfferScreen = ({ navigation }) => {
                                 <Pressable style={[{ width: "95%", height: hp(15), margin: spacings.large, alignItemsCenter, backgroundColor: "#2D2D27" }, borderRadius10]}
                                     onPress={() => navigation.navigate('WebViewScreen', { url: item.offerLink })}>
                                     <Image source={{ uri: item.fileUrl }} style={[{ width: "100%", height: hp(15) }, borderRadius10]} />
+                                </Pressable>
+                            )}
+                        />
+
+                        <FlatList
+                            data={offers.slice(8)}
+                            contentContainerStyle={styles.categories}
+                            showsHorizontalScrollIndicator={false}
+                            numColumns={3}
+                            renderItem={({ item }) => (
+                                <Pressable onPress={() => navigation.navigate('WebViewScreen', { url: item.offerLink })}>
+                                    <View style={[styles.categoryBox, borderRadius10, { marginBottom: 10 }]}>
+                                        <Image source={{ uri: item.fileUrl }} style={[styles.categoryImage, resizeModeCover, borderRadius10]} />
+                                        <View style={[styles.overlay, borderRadius10, alignJustifyCenter]}>
+                                            <Text style={[styles.categoryLabel, textAlign, positionAbsolute, { fontSize: style.fontSizeSmall2x.fontSize, }]}>{item.name}</Text>
+                                        </View>
+                                    </View>
                                 </Pressable>
                             )}
                         />
@@ -226,8 +246,8 @@ const styles = StyleSheet.create({
         backgroundColor: "rgba(0, 0, 0, 0.7)",
     },
     categoryImage: {
-        width: wp(28),
-        height: wp(28),
+        width: wp(30),
+        height: wp(30),
     },
     categoryLabel: {
         color: whiteColor,

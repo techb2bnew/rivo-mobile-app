@@ -154,7 +154,7 @@ const OrderDetailsScreen = ({ route, navigation }) => {
                         <>
                             <View style={styles.infoContainer}>
                                 <Text style={styles.infoTitle}>Earned Points</Text>
-                                <Text style={styles.infoText}>{capitalizeWords(orderDetails?.loyalty_points_earned)}</Text>
+                                <Text style={styles.infoText}>{Math.floor(orderDetails?.loyalty_points_earned)}</Text>
                             </View>
                             <View style={styles.separator} />
                         </>
@@ -164,7 +164,7 @@ const OrderDetailsScreen = ({ route, navigation }) => {
                         <>
                             <View style={styles.infoContainer}>
                                 <Text style={styles.infoTitle}>Redeemed Points</Text>
-                                <Text style={styles.infoText}>{capitalizeWords(orderDetails?.loyalty_points_redeemed)}</Text>
+                                <Text style={styles.infoText}>{Math.floor(orderDetails?.loyalty_points_redeemed)}</Text>
                             </View>
                             <View style={styles.separator} />
                         </>
@@ -192,7 +192,7 @@ const OrderDetailsScreen = ({ route, navigation }) => {
                                                 { color: blackColor, fontWeight: style.fontWeightThin1x.fontWeight, marginTop: 2 },
                                             ]}
                                         >
-                                            Qty: {item?.quantity_ordered}
+                                            Qty: {Math.floor(item?.quantity_ordered)}
                                         </Text>
                                     </View>
                                     <View style={{ height: "100%", width: "20%" }}>
@@ -208,15 +208,15 @@ const OrderDetailsScreen = ({ route, navigation }) => {
                         {orderDetails?.order_items[0]?.product && <Text style={[styles.priceHeader, justifyContentSpaceBetween, flexDirectionRow]}>{PRICE_DETAILS} ({orderDetails?.order_items?.length} Items)</Text>}
                         {orderDetails?.order_items[0]?.product && <View style={[styles.priceRow, flexDirectionRow, justifyContentSpaceBetween]}>
                             <Text style={styles.priceLabel}>Subtotal</Text>
-                            <Text style={styles.priceValue}>${orderDetails?.subtotal}</Text>
+                            <Text style={styles.priceValue}>${Math.floor(orderDetails?.subtotal)}</Text>
                         </View>}
                         {orderDetails?.order_items[0]?.product && <View style={[styles.priceRow, flexDirectionRow, justifyContentSpaceBetween]}>
                             <Text style={styles.priceLabel}>Shipping Amount</Text>
-                            <Text style={styles.priceValue}>{orderDetails?.shipping_amount}</Text>
+                            <Text style={styles.priceValue}>{Math.floor(orderDetails?.shipping_amount)}</Text>
                         </View>}
                         <View style={[styles.priceRow, flexDirectionRow, justifyContentSpaceBetween]}>
                             <Text style={styles.priceLabelTotal}>{TOTAL} Amount</Text>
-                            <Text style={styles.priceValueTotal}>${orderDetails?.grand_total}</Text>
+                            <Text style={styles.priceValueTotal}>${Math.floor(orderDetails?.grand_total)}</Text>
                         </View>
                     </View>
 

@@ -32,7 +32,7 @@ const DashBoardScreen = ({ navigation }) => {
     const [userID, setUserID] = useState("");
     const [phoneNumber, setPhoneNumber] = useState(null);
     const [tierStatus, setTierStatus] = useState(null);
-    const [expiryPointsData, setExpiryPointsData] = useState([]);
+    const [expiryPointsData, setExpiryPointsData] = useState("");
     const [isBiometricModalVisible, setIsBiometricModalVisible] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
     const dispatch = useDispatch();
@@ -72,26 +72,26 @@ const DashBoardScreen = ({ navigation }) => {
         },
     ];
 
-    // useEffect(() => {
-    //     console.log("isBiometricModalVisible", isBiometricModalVisible);
+    useEffect(() => {
+        console.log("isBiometricModalVisible", isBiometricModalVisible);
 
-    //     const checkFirstLaunch = async () => {
-    //         try {
-    //             const firstLoginCompleted = await AsyncStorage.getItem("firstLoginCompleted");
-    //             const userToken = await AsyncStorage.getItem('userToken');
+        const checkFirstLaunch = async () => {
+            try {
+                const firstLoginCompleted = await AsyncStorage.getItem("firstLoginCompleted");
+                const userToken = await AsyncStorage.getItem('userToken');
 
-    //             if (firstLoginCompleted == "true" && userToken) {
-    //                 setIsBiometricModalVisible(true);
-    //             } else {
-    //                 await AsyncStorage.setItem("firstLoginCompleted", "true");
-    //             }
-    //         } catch (error) {
-    //             console.error("Error checking first launch:", error);
-    //         }
-    //     };
+                if (firstLoginCompleted == "true" && userToken) {
+                    setIsBiometricModalVisible(true);
+                } else {
+                    await AsyncStorage.setItem("firstLoginCompleted", "true");
+                }
+            } catch (error) {
+                console.error("Error checking first launch:", error);
+            }
+        };
 
-    //     checkFirstLaunch();
-    // }, []);
+        checkFirstLaunch();
+    }, []);
 
     const openModal = (item) => {
         setSelectedData(item);
@@ -144,36 +144,36 @@ const DashBoardScreen = ({ navigation }) => {
         });
     };
 
-    const fetchExpPoints = async () => {
-        try {
-            const userToken = await AsyncStorage.getItem('userToken');
-            if (!userToken) {
-                console.error("User token not found in local storage");
-                return;
-            }
+    // const fetchExpPoints = async () => {
+    //     try {
+    //         const userToken = await AsyncStorage.getItem('userToken');
+    //         if (!userToken) {
+    //             console.error("User token not found in local storage");
+    //             return;
+    //         }
 
-            const headers = new Headers();
-            headers.append("Authorization", `Bearer ${userToken}`);
-            headers.append("Content-Type", "application/json");
+    //         const headers = new Headers();
+    //         headers.append("Authorization", `Bearer ${userToken}`);
+    //         headers.append("Content-Type", "application/json");
 
 
-            const url = `https://publicapi.dev.saasintegrator.online/api/points-events?plugin_id=${PLUGGIN_ID}`;
+    //         const url = `https://publicapi.dev.saasintegrator.online/api/points-events?plugin_id=${PLUGGIN_ID}`;
 
-            const requestOptions = {
-                method: "GET",
-                headers: headers,
-                redirect: "follow",
-            };
+    //         const requestOptions = {
+    //             method: "GET",
+    //             headers: headers,
+    //             redirect: "follow",
+    //         };
 
-            const response = await fetch(url, requestOptions);
+    //         const response = await fetch(url, requestOptions);
 
-            const result = await response.json();
-            setExpiryPointsData(result?.data)
-            console.log("ExpPoints", result.data);
-        } catch (error) {
-            console.error("Error fetching ExpPoints:", error);
-        }
-    };
+    //         const result = await response.json();
+    //         setExpiryPointsData(result?.data)
+    //         console.log("ExpPoints", result.data);
+    //     } catch (error) {
+    //         console.error("Error fetching ExpPoints:", error);
+    //     }
+    // };
 
     const sendNotificationData = async (token, userID, userName) => {
         if (!token || !userID || !userName) {
@@ -227,7 +227,7 @@ const DashBoardScreen = ({ navigation }) => {
             listenForForegroundPushNotifications();
             fetchProfileData();
             fetchOrdersFromAPI();
-            fetchExpPoints();
+            // fetchExpPoints();
         }, [])
     );
 
@@ -251,10 +251,11 @@ const DashBoardScreen = ({ navigation }) => {
                 await AsyncStorage.setItem('currentPoints', String(availablePoints));
                 await AsyncStorage.setItem('currentTier', response.data?.data.tier_groups?.[0]?.name);
                 setTierStatus(response.data?.data.tier_groups?.[0]?.name)
-                setBalancePoint(response.data?.data?.available_loyalty_points);
+                setBalancePoint(Math.floor(response.data?.data?.available_loyalty_points));
                 setUserName(response.data?.data?.full_name);
                 setPhoneNumber(response.data?.data?.meta_map_values?.[0]?.value);
-                setUserID(response.data?.data?.uid)
+                setUserID(response.data?.data?.uid);
+                setExpiryPointsData(response.data?.data?.loyalty_point_expiration_date)
             } else {
                 throw new Error('Failed to fetch profile data');
             }
@@ -391,14 +392,14 @@ const DashBoardScreen = ({ navigation }) => {
                     />
                 }
             />
-            <Pressable
+            {expiryPointsData && expiryPointsData !== null && <Pressable
                 style={[styles.expirePointsButton, alignJustifyCenter, positionAbsolute]}
                 onPress={() => setModalVisible(true)}
             >
                 <View style={[{ width: "100%", height: "100%", backgroundColor: '#000', borderRadius: 50 }, alignJustifyCenter]}>
                     <Text style={[styles.expirePointsText, textAlign]}>{EXPIRE_POINTS}</Text>
                 </View>
-            </Pressable>
+            </Pressable>}
 
             <TouchableOpacity onPress={navigateToFAQ} style={[styles.faqButton, positionAbsolute]}>
                 <Icon name="help-circle-outline" size={50} color="#fff" />
@@ -408,6 +409,7 @@ const DashBoardScreen = ({ navigation }) => {
                 <ExpirePointsModal
                     visible={modalVisible}
                     onClose={() => setModalVisible(false)}
+                    point={balancePoint}
                     data={expiryPointsData}
                 />}
             {isbarCodeModalVisible && !modalVisible &&

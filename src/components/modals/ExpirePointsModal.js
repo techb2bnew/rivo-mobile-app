@@ -8,7 +8,7 @@ import { DATE, EXPIRE_POINTS, POINT_EXPIRE } from "../../constants/Constants";
 import { BaseStyle } from '../../constants/Style';
 const { textAlign, alignJustifyCenter, flex, borderRadius10, alignItemsCenter, flexDirectionRow, justifyContentSpaceBetween } = BaseStyle;
 
-const ExpirePointsModal = ({ visible, onClose, data }) => {
+const ExpirePointsModal = ({ visible, onClose, data, point }) => {
     const formatDate = (isoDate) => {
         if (!isoDate) {
             return ' -';
@@ -19,7 +19,7 @@ const ExpirePointsModal = ({ visible, onClose, data }) => {
         const year = date.getFullYear();
         return `${day} ${month}, ${year}`;
     };
-    console.log("item?.points_expire_at", data);
+    console.log("item?.points_expire_at", data,point);
 
     return (
         <Modal
@@ -45,7 +45,7 @@ const ExpirePointsModal = ({ visible, onClose, data }) => {
                     </View>
 
                     {/* List */}
-                    <FlatList
+                    {/* <FlatList
                         data={data}
                         keyExtractor={(item, index) => index.toString()}
                         renderItem={({ item, index }) => (
@@ -56,13 +56,24 @@ const ExpirePointsModal = ({ visible, onClose, data }) => {
                                     flexDirectionRow
                                 ]}
                             >
-                                {/* <Text style={styles.rowText}>{formatDate('2022-07-31T16:29:38.024Z')}</Text> */}
                                 <Text style={styles.rowText}>{item?.points_expire_at}</Text>
                                 <Text style={styles.rowText}>{item?.vip_tier?.threshold}</Text>
                             </View>
                         )}
                         showsVerticalScrollIndicator={false}
-                    />
+                    /> */}
+
+                    <View
+                        style={[
+                            styles.row,
+                            justifyContentSpaceBetween,
+                            flexDirectionRow
+                        ]}
+                    >
+                        <Text style={styles.rowText}>{data}</Text>
+                        <Text style={styles.rowText}>{Math.floor(point)}</Text>
+                    </View>
+
                 </View>
             </View>
         </Modal>

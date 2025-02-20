@@ -284,7 +284,7 @@ const ProfileScreen = ({ navigation }) => {
         ) : (
           profileData?.data?.available_loyalty_points && (
             <View style={[{ width: wp(50), height: "100%", borderRightColor: "#d9d9d9", borderRightWidth: 1 }, alignJustifyCenter]}>
-              <Text style={[styles.text, { lineHeight: 20, fontSize: style.fontSizeLarge.fontSize }]}>{profileData?.data?.available_loyalty_points}</Text>
+              <Text style={[styles.text, { lineHeight: 20, fontSize: style.fontSizeLarge.fontSize }]}>{Math.floor(profileData?.data?.available_loyalty_points)}</Text>
               <Text style={[styles.text, { fontSize: style.fontSizeNormal.fontSize, color: grayColor, fontWeight: style.fontWeightThin1x.fontWeight }]}>{POINTS}</Text>
             </View>
           )
@@ -292,11 +292,11 @@ const ProfileScreen = ({ navigation }) => {
 
         {loading ? (
           <View style={{ width: wp(50), height: "100%" }}>
-           <View style={{ width: wp(50), height: "100%" }}>
-            <ContentLoader width={wp(50)} height={hp(7)} speed={1.2} backgroundColor="#f0f0f0" foregroundColor={grayColor}>
-              <Rect x="40" y="30" rx="4" ry="2" width="60%" height="50" />
-            </ContentLoader>
-          </View>
+            <View style={{ width: wp(50), height: "100%" }}>
+              <ContentLoader width={wp(50)} height={hp(7)} speed={1.2} backgroundColor="#f0f0f0" foregroundColor={grayColor}>
+                <Rect x="40" y="30" rx="4" ry="2" width="60%" height="50" />
+              </ContentLoader>
+            </View>
           </View>
         ) : (
           <View style={[{ width: wp(50), height: "100%" }, alignJustifyCenter]}>

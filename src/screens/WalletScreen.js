@@ -67,20 +67,39 @@ const WalletScreen = ({ navigation }) => {
       console.log("Result:", result.data.data);
       setTransactionData(result.data.data);
       // Filter out 'redeemed' transactions only if transactionType is 'all'
-      const filteredTransactions = transactionType === "all"
-        ? result.data.data.filter(transaction => transaction.transaction_type !== "redeemed")
-        : result.data.data;
+      // const filteredTransactions = transactionType === "all"
+      //   ? result.data.data.filter(transaction => transaction.transaction_type !== "redeemed")
+      //   : result.data.data;
 
-      // Calculate total points
-      const totalPoints = filteredTransactions.reduce((sum, transaction) => {
-        return sum + parseFloat(transaction.points);
-      }, 0);
-      // const totalPoints = result.data.data.reduce((sum, transaction) => {
-      //   // Convert points to a number before adding
+      // // Calculate total points
+      // const totalPoints = filteredTransactions.reduce((sum, transaction) => {
       //   return sum + parseFloat(transaction.points);
       // }, 0);
-      console.log("totalPoints", totalPoints)
-      setTotalPoints(totalPoints.toFixed(2));
+    
+      // console.log("totalPoints", totalPoints)
+      // setTotalPoints(totalPoints.toFixed(2));
+      if (transactionType === "all") {
+        // Earned transactions ka total sum
+        const earnedTotal = result.data.data
+            .filter(transaction => transaction.transaction_type === "earned")
+            .reduce((sum, transaction) => sum + parseFloat(transaction.points), 0);
+
+        // Redeemed transactions ka total sum
+        const redeemedTotal = result.data.data
+            .filter(transaction => transaction.transaction_type === "redeemed")
+            .reduce((sum, transaction) => sum + parseFloat(transaction.points), 0);
+
+        // Final Balance (Earned - Redeemed)
+        const finalBalance = earnedTotal - redeemedTotal;
+        setTotalPoints(finalBalance.toFixed(2));
+    } else {
+        // Agar 'all' nahi hai toh sirf respective transactions ka sum calculate karein
+        const totalPoints = result.data.data.reduce((sum, transaction) => {
+            return sum + parseFloat(transaction.points);
+        }, 0);
+
+        setTotalPoints(totalPoints.toFixed(2));
+    }
       setLoading(false);
     } catch (error) {
       setLoading(false);
@@ -231,7 +250,7 @@ const WalletScreen = ({ navigation }) => {
             { color: item.transaction_type === "redeemed" ? redColor : blackColor },
           ]}
         >
-          {item.points}
+          {Math.floor(item.points)}
         </Text>
       </Pressable>
     );
@@ -304,7 +323,7 @@ const WalletScreen = ({ navigation }) => {
           <Text style={[styles.summaryMonth, { color: grayColor }]}>{currentYear}</Text>
           <Text style={[styles.summaryMonth]}>{currentMonth}</Text>
         </View>
-        <Text style={styles.summaryPoints}>{totalPoints} Points</Text>
+        <Text style={styles.summaryPoints}>{Math.floor(totalPoints)} Points</Text>
       </View>
 
       <Text style={[styles.infoText, textAlign]}>

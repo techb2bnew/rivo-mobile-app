@@ -43,10 +43,10 @@ const WalletModal = ({ visible, onClose, transaction }) => {
               : "Transaction on Feathers"}
           </Text>
           <View style={{ paddingHorizontal: spacings.large, height: hp(6), alignItems: 'center', justifyContent: 'center', backgroundColor: blackColor, borderRadius: 10 }}>
-            <Text style={styles.modalPoints}>{points} Points</Text>
+            <Text style={styles.modalPoints}>{Math.floor(points)} Points</Text>
           </View>
           <Text style={styles.modalDate}>{formatDate(item.created_at)}</Text>
-          {(id || orders[0]?.uid) && <View style={styles.separator} />}
+          {(orders[0]?.uid) && <View style={styles.separator} />}
           {/* {id &&
             <View style={[{ width: "100%" }, alignItemsCenter, flexDirectionRow]}>
               <View style={{width:"44%"}}>
