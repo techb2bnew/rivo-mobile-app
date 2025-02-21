@@ -69,20 +69,21 @@ const OrderDetailsScreen = ({ route, navigation }) => {
         const month = date.toLocaleString("en-US", { month: "short" }); // Short month name
         const year = date.getFullYear();
         return `${day} ${month}, ${year}`;
-    };
-
-    // Function to format the time
-    const formatTime = (isoDate) => {
+      };
+  
+      // Function to format the time
+      const formatTime = (isoDate) => {
         const date = new Date(isoDate);
         let hours = date.getHours();
         const minutes = date.getMinutes().toString().padStart(2, '0');
         const amPm = hours >= 12 ? 'PM' : 'AM'; // Determine AM or PM
         hours = hours % 12 || 12; // Convert to 12-hour format, ensuring 12 for 0 hours
         return `${hours}:${minutes} ${amPm}`; // 12-hour format with AM/PM
-    };
+      };
 
     const formattedDate = formatDate(orderDetails?.order_created_at);
     const formattedTime = formatTime(orderDetails?.order_created_at);
+    console.log("orderDetails?.order_created_at", orderDetails?.order_created_at);
 
     return (
         <View style={[styles.container, flex]}>

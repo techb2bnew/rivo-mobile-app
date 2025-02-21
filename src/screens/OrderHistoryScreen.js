@@ -260,6 +260,8 @@ const OrderHistoryScreen = ({ navigation }) => {
   };
 
   const renderOrderItem = ({ item }) => {
+    console.log("iteem",item);
+    
     const formatDate = (isoDate) => {
       const date = new Date(isoDate);
       const day = date.getDate().toString().padStart(2, '0'); // Two-digit day
@@ -269,18 +271,34 @@ const OrderHistoryScreen = ({ navigation }) => {
     };
 
     // Function to format the time
-    const formatTime = (isoDate) => {
-      const date = new Date(isoDate);
-      let hours = date.getHours();
-      const minutes = date.getMinutes().toString().padStart(2, '0');
-      const amPm = hours >= 12 ? 'PM' : 'AM'; // Determine AM or PM
-      hours = hours % 12 || 12; // Convert to 12-hour format, ensuring 12 for 0 hours
-      return `${hours}:${minutes} ${amPm}`; // 12-hour format with AM/PM
-    };
+    // const formatTime = (isoDate) => {
+    //   const date = new Date(isoDate);
+    //   let hours = date.getHours();
+    //   const minutes = date.getMinutes().toString().padStart(2, '0');
+    //   const amPm = hours >= 12 ? 'PM' : 'AM'; // Determine AM or PM
+    //   hours = hours % 12 || 12; // Convert to 12-hour format, ensuring 12 for 0 hours
+    //   return `${hours}:${minutes} ${amPm}`; // 12-hour format with AM/PM
+    // };
+    const formatTimeUTC = (isoDate) => {
+      if (!isoDate) return "Invalid Date"; // Null check
+  
+      const utcDate = new Date(isoDate); // Parse as UTC
+      if (isNaN(utcDate.getTime())) return "Invalid Date"; // Handle invalid dates
+  
+      const options = {
+          hour: "2-digit",
+          minute: "2-digit",
+          // second: "2-digit",
+          hour12: true, // 12-hour format with AM/PM
+          timeZone: "UTC", // Ensure it stays in UTC
+      };
+  
+      return new Intl.DateTimeFormat("en-US", options).format(utcDate);
+  };
 
     const formattedDate = formatDate(item.date ?? item.created_at);
-    const formattedTime = formatTime(item.date ?? item.created_at);
-
+    const formattedTime = formatTimeUTC(item.date ?? item.created_at);
+    
     return (
       <Pressable
         style={styles.orderContainer}

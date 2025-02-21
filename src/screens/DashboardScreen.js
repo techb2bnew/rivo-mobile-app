@@ -72,26 +72,26 @@ const DashBoardScreen = ({ navigation }) => {
         },
     ];
 
-    useEffect(() => {
-        console.log("isBiometricModalVisible", isBiometricModalVisible);
+    // useEffect(() => {
+    //     console.log("isBiometricModalVisible", isBiometricModalVisible);
 
-        const checkFirstLaunch = async () => {
-            try {
-                const firstLoginCompleted = await AsyncStorage.getItem("firstLoginCompleted");
-                const userToken = await AsyncStorage.getItem('userToken');
+    //     const checkFirstLaunch = async () => {
+    //         try {
+    //             const firstLoginCompleted = await AsyncStorage.getItem("firstLoginCompleted");
+    //             const userToken = await AsyncStorage.getItem('userToken');
 
-                if (firstLoginCompleted == "true" && userToken) {
-                    setIsBiometricModalVisible(true);
-                } else {
-                    await AsyncStorage.setItem("firstLoginCompleted", "true");
-                }
-            } catch (error) {
-                console.error("Error checking first launch:", error);
-            }
-        };
+    //             if (firstLoginCompleted == "true" && userToken) {
+    //                 setIsBiometricModalVisible(true);
+    //             } else {
+    //                 await AsyncStorage.setItem("firstLoginCompleted", "true");
+    //             }
+    //         } catch (error) {
+    //             console.error("Error checking first launch:", error);
+    //         }
+    //     };
 
-        checkFirstLaunch();
-    }, []);
+    //     checkFirstLaunch();
+    // }, []);
 
     const openModal = (item) => {
         setSelectedData(item);
@@ -305,11 +305,13 @@ const DashBoardScreen = ({ navigation }) => {
 
 
     const renderItem = ({ item }) => {
-        const isLoading = !item.points || !balancePoint;
+        const isLoading = !item.points || balancePoint === null || balancePoint === undefined;
         if (item.title === "undefined" || item.points === "undefined" || item.title === "null" || item.points === "null") {
             console.log("Skipping Item:", item);
             return null;
         }
+        console.log(isLoading);
+        
         return (
             <Pressable
                 style={[
