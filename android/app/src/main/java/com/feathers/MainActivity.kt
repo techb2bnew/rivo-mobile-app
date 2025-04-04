@@ -1,4 +1,4 @@
-package com.feathers
+package com.feathers.app
 
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate

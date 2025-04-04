@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, RefreshControl, Platform, Pressable, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, FlatList, RefreshControl, Platform, Pressable, ActivityIndicator, AppState } from 'react-native';
 import Header from '../components/Header';
 import { blackColor, goldColor, grayColor, mediumGray, whiteColor, greenColor } from '../constants/Color';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from '../utils';
@@ -52,6 +52,7 @@ const OrderHistoryScreen = ({ navigation }) => {
       }));
     });
   };
+
   const listenForForegroundPushNotifications = () => {
     messaging().onMessage(async (remoteMessage) => {
       console.log('Foreground Push Notification:', remoteMessage);
@@ -79,6 +80,57 @@ const OrderHistoryScreen = ({ navigation }) => {
     }, [])
   );
 
+  // const fetchOrdersFromAPI = async () => {
+  //   try {
+  //     const token = await AsyncStorage.getItem('userToken');
+  //     if (!token) {
+  //       console.log('No authentication token found');
+  //       return;
+  //     }
+  //     setLoading(true);
+  //     const myHeaders = new Headers();
+  //     myHeaders.append("Authorization", `Bearer ${token}`);
+  //     myHeaders.append("Accept", "application/json");
+
+  //     const from_date = "";
+  //     const to_date = "";
+
+  //     const response = await fetch(
+  //       `https://publicapi.dev.saasintegrator.online/api/orders?page=${page}&per_page=30&from_date=${from_date}&to_date=${to_date}`,
+  //       { method: "GET", headers: myHeaders }
+  //     );
+
+  //     const result = await response.json();
+  //     console.log("result.data.data", result.data);
+
+  //     if (result.data.orders && result.data.orders.length > 0) {
+  //       await AsyncStorage.setItem("isDataFetched", "true");
+  //       if (Platform.OS === "android") {
+  //         await AsyncStorage.setItem("LocalorderData", JSON.stringify(result.data.orders))
+  //       }
+  //       if (Platform.OS === "ios") {
+  //         saveOrderToRealm(result.data.orders);
+  //         fetchOrdersFromRealm();
+  //       } else {
+  //         fetchOrdersFromLocalStorage();
+  //       }
+  //       // Sirf tabhi `page` update karein jab 30 items aayein
+  //       if (result.data.orders.length === 30) {
+  //         setpage(prevPage => prevPage + 1);
+  //       }
+  //       setLoading(false);
+  //     } else {
+  //       await AsyncStorage.setItem("isDataFetched", "false");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching orders from api:", error.message);
+  //     setLoading(false);
+  //   } finally {
+  //     setLoading(false); // Ensure loading is false in all cases
+  //   }
+  // };
+
+
   const fetchOrdersFromAPI = async () => {
     try {
       const token = await AsyncStorage.getItem('userToken');
@@ -87,6 +139,7 @@ const OrderHistoryScreen = ({ navigation }) => {
         return;
       }
       setLoading(true);
+
       const myHeaders = new Headers();
       myHeaders.append("Authorization", `Bearer ${token}`);
       myHeaders.append("Accept", "application/json");
@@ -100,27 +153,29 @@ const OrderHistoryScreen = ({ navigation }) => {
       );
 
       const result = await response.json();
-      console.log("result.data.data", result.data);
+      console.log("result.data.orders", result.data.orders);
 
       if (result.data.orders && result.data.orders.length > 0) {
         if (Platform.OS === "android") {
-          await AsyncStorage.setItem("LocalorderData", JSON.stringify(result.data.orders))
-        }
-        if (Platform.OS === "ios") {
+          await AsyncStorage.setItem("LocalorderData", JSON.stringify(result.data.orders));
+          fetchOrdersFromLocalStorage(); // Fetch after saving
+        } else if (Platform.OS === "ios") {
           saveOrderToRealm(result.data.orders);
-          fetchOrdersFromRealm();
-        } else {
-          fetchOrdersFromLocalStorage();
+          fetchOrdersFromRealm(); // Fetch after saving
         }
-        setLoading(false);
+
+        // Page update only when 30 items are fetched
+        if (result.data.orders.length === 30) {
+          setpage(prevPage => prevPage + 1);
+        }
       }
     } catch (error) {
-      console.error("Error fetching orders from api:", error.message);
-      setLoading(false);
+      console.error("Error fetching orders from API:", error.message);
     } finally {
       setLoading(false); // Ensure loading is false in all cases
     }
   };
+
 
   const saveOrderToRealm = (orderData) => {
     const realm = getRealm();
@@ -140,7 +195,7 @@ const OrderHistoryScreen = ({ navigation }) => {
             realm.create('Order', {
               id: order.uid,
               points: Math.floor(convertToNumber(order.grand_total)),
-              date: order.created_at,
+              date: order.order_created_at,
               status: order.status,
               items: order.order_items.map((item) => ({
                 id: item.id,
@@ -181,18 +236,81 @@ const OrderHistoryScreen = ({ navigation }) => {
     }
   };
 
+  const fetchOrdersFromLocalStorage = async () => {
+    try {
+      const localData = await AsyncStorage.getItem('LocalorderData');
+      // console.log("localData", localData);
+      const parsedData = JSON.parse(localData);
+      setOrdersFromLocalStorage(parsedData);
+    } catch (error) {
+      console.error("Error fetching orders from local storage:", error.message);
+    }
+  };
+
+  // const onRefresh = async () => {
+  //   setRefreshing(true);
+  //   console.log("Fetched orders page", page);
+
+  //   try {
+  //     const token = await AsyncStorage.getItem("userToken");
+  //     if (!token) {
+  //       console.log("No authentication token found");
+  //       setRefreshing(false);
+  //       return;
+  //     }
+
+  //     const myHeaders = new Headers();
+  //     myHeaders.append("Authorization", `Bearer ${token}`);
+  //     myHeaders.append("Accept", "application/json");
+
+  //     const response = await fetch(
+  //       `https://publicapi.dev.saasintegrator.online/api/orders?page=${page}&per_page=30`,
+  //       { method: "GET", headers: myHeaders }
+  //     );
+
+  //     const result = await response.json();
+  //     console.log("Fetched orders from API:", result.data);
+
+  //     if (result.data.orders && result.data.orders.length > 0) {
+  //       if (Platform.OS === "android") {
+  //         const isDataFetched = await AsyncStorage.getItem("isDataFetched");
+
+  //         if (isDataFetched === "false") {
+  //           // Sirf Android aur isDataFetched === "false" hone par ye chalega
+  //           await AsyncStorage.setItem("LocalorderData", JSON.stringify(result.data.orders));
+  //           fetchOrdersFromLocalStorage();
+  //         } else {
+  //           // Android par jab data pehle se fetch ho chuka ho
+  //           saveOrderToRealm(result.data.orders);
+  //           fetchOrdersFromRealm();
+  //         }
+  //       } else {
+  //         // iOS ke liye hamesha Realm chalega
+  //         saveOrderToRealm(result.data.orders);
+  //         fetchOrdersFromRealm();
+  //       }
+
+  //       // Sirf tabhi `page` update karein jab 30 items aayein
+  //       if (result.data.orders.length === 30) {
+  //         setpage(prevPage => prevPage + 1);
+  //       }
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching orders on refresh:", error.message);
+  //   } finally {
+  //     setRefreshing(false);
+  //   }
+  // };
+
+
   const onRefresh = async () => {
-    setpage(page + 1);
     setRefreshing(true);
+    console.log("Fetched orders page", page);
 
     try {
-      // Fetch today's date in the required format (YYYY-MM-DD)
-      const today = new Date().toISOString().split('T')[0];
-
-      // Fetch orders from the API with updated dates
-      const token = await AsyncStorage.getItem('userToken');
+      const token = await AsyncStorage.getItem("userToken");
       if (!token) {
-        console.log('No authentication token found');
+        console.log("No authentication token found");
         setRefreshing(false);
         return;
       }
@@ -201,23 +319,41 @@ const OrderHistoryScreen = ({ navigation }) => {
       myHeaders.append("Authorization", `Bearer ${token}`);
       myHeaders.append("Accept", "application/json");
 
-      const from_date = "";
-      const to_date = "";
-
       const response = await fetch(
-        `https://publicapi.dev.saasintegrator.online/api/orders?page=${page}&per_page=30&from_date=${from_date}&to_date=${to_date}`,
+        `https://publicapi.dev.saasintegrator.online/api/orders?page=${page}&per_page=30`,
         { method: "GET", headers: myHeaders }
       );
 
       const result = await response.json();
-      console.log("Fetched orders from API:", result.data);
+      console.log("Fetched orders from API:", result.data.orders);
 
       if (result.data.orders && result.data.orders.length > 0) {
-        // Save the new orders to Realm
-        saveOrderToRealm(result.data.orders);
+        if (Platform.OS === "android") {
+          // Fetch existing orders from AsyncStorage
+          const existingOrders = await AsyncStorage.getItem("LocalorderData");
+          const parsedOrders = existingOrders ? JSON.parse(existingOrders) : [];
 
-        // Fetch all orders from Realm (including the new ones)
-        fetchOrdersFromRealm();
+          // Filter out duplicates before adding new orders
+          const newOrders = result.data.orders.filter(
+            (newOrder) => !parsedOrders.some((existingOrder) => existingOrder.id === newOrder.id)
+          );
+
+          // Only update if there are new unique orders
+          if (newOrders.length > 0) {
+            const updatedOrders = [...newOrders, ...parsedOrders];
+            await AsyncStorage.setItem("LocalorderData", JSON.stringify(updatedOrders));
+            fetchOrdersFromLocalStorage(); // Fetch after saving
+          }
+        } else if (Platform.OS === "ios") {
+          // Add only new unique orders to Realm
+          saveOrderToRealm(result.data.orders);
+          fetchOrdersFromRealm(); // Fetch after saving
+        }
+
+        // Update `page` only if 30 new items are fetched
+        if (result.data.orders.length === 30) {
+          setpage(prevPage => prevPage + 1);
+        }
       }
     } catch (error) {
       console.error("Error fetching orders on refresh:", error.message);
@@ -226,30 +362,45 @@ const OrderHistoryScreen = ({ navigation }) => {
     }
   };
 
+
   const initializeOrders = async () => {
     const isFirstInstall = await AsyncStorage.getItem('hasFetchedOrders');
     if (!isFirstInstall) {
       await fetchOrdersFromAPI();
       await AsyncStorage.setItem('hasFetchedOrders', 'true');
     } else {
-      fetchOrdersFromRealm(); // Fetch from Realm if already initialized
+      if (Platform.OS === "android") {
+        fetchOrdersFromLocalStorage(); // Android → Fetch from AsyncStorage
+      } else {
+        fetchOrdersFromRealm(); // iOS → Fetch from Realm
+      }
     }
   };
 
-  const fetchOrdersFromLocalStorage = async () => {
-    try {
-      const localData = await AsyncStorage.getItem('LocalorderData');
-      // console.log("localData", localData);
-      const parsedData = JSON.parse(localData);
-      setOrdersFromLocalStorage(parsedData?.reverse());
-    } catch (error) {
-      console.error("Error fetching orders from local storage:", error.message);
-    }
-  };
+
 
   useEffect(() => {
     initializeOrders();
   }, []);
+
+  // useEffect(() => {
+  //   const handleAppStateChange = async (nextAppState) => {
+  //     if (nextAppState === "active") {
+  //       const isDataFetched = await AsyncStorage.getItem("isDataFetched");
+
+  //       if (isDataFetched === "false") {
+  //         // App kill hone ke baad dubara open ho to isDataFetched = "true" ho jaye
+  //         await AsyncStorage.setItem("isDataFetched", "true");
+  //       }
+  //     }
+  //   };
+
+  //   AppState.addEventListener("change", handleAppStateChange);
+
+  //   return () => {
+  //     AppState.removeEventListener("change", handleAppStateChange);
+  //   };
+  // }, []);
 
   const capitalizeWords = (str) => {
     if (!str) return "";
@@ -260,8 +411,8 @@ const OrderHistoryScreen = ({ navigation }) => {
   };
 
   const renderOrderItem = ({ item }) => {
-    console.log("iteem",item);
-    
+    // console.log("iteem", item);
+
     const formatDate = (isoDate) => {
       const date = new Date(isoDate);
       const day = date.getDate().toString().padStart(2, '0'); // Two-digit day
@@ -271,34 +422,18 @@ const OrderHistoryScreen = ({ navigation }) => {
     };
 
     // Function to format the time
-    // const formatTime = (isoDate) => {
-    //   const date = new Date(isoDate);
-    //   let hours = date.getHours();
-    //   const minutes = date.getMinutes().toString().padStart(2, '0');
-    //   const amPm = hours >= 12 ? 'PM' : 'AM'; // Determine AM or PM
-    //   hours = hours % 12 || 12; // Convert to 12-hour format, ensuring 12 for 0 hours
-    //   return `${hours}:${minutes} ${amPm}`; // 12-hour format with AM/PM
-    // };
-    const formatTimeUTC = (isoDate) => {
-      if (!isoDate) return "Invalid Date"; // Null check
-  
-      const utcDate = new Date(isoDate); // Parse as UTC
-      if (isNaN(utcDate.getTime())) return "Invalid Date"; // Handle invalid dates
-  
-      const options = {
-          hour: "2-digit",
-          minute: "2-digit",
-          // second: "2-digit",
-          hour12: true, // 12-hour format with AM/PM
-          timeZone: "UTC", // Ensure it stays in UTC
-      };
-  
-      return new Intl.DateTimeFormat("en-US", options).format(utcDate);
-  };
+    const formatTime = (isoDate) => {
+      const date = new Date(isoDate);
+      let hours = date.getHours();
+      const minutes = date.getMinutes().toString().padStart(2, '0');
+      const amPm = hours >= 12 ? 'PM' : 'AM';
+      hours = hours % 12 || 12; // Convert to 12-hour format, ensuring 12 for 0 hours
+      return `${hours}:${minutes} ${amPm}`; // 12-hour format with AM/PM
+    };
 
-    const formattedDate = formatDate(item.date ?? item.created_at);
-    const formattedTime = formatTimeUTC(item.date ?? item.created_at);
-    
+    const formattedDate = formatDate(item.date ?? item.order_created_at);
+    const formattedTime = formatTime(item.date ?? item.order_created_at);
+
     return (
       <Pressable
         style={styles.orderContainer}
@@ -325,7 +460,7 @@ const OrderHistoryScreen = ({ navigation }) => {
         >
           <View style={[{ width: wp(50) }, flexDirectionRow]}>
             <Text style={[styles.details, { color: blackColor, fontWeight: style.fontWeightThin1x.fontWeight }]}>
-              RP - {item.grand_total ?? item.points} |
+              RP - {Math.floor(item.grand_total ?? item.points)} |
             </Text>
             <Text style={[styles.details]}>
               {formattedDate} at {formattedTime}

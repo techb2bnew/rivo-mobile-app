@@ -228,7 +228,7 @@ const SignUpScreen = ({ navigation }) => {
             </TouchableOpacity>
             <Text style={[styles.title, textAlign]}>{OTP_VERIFICATION}</Text>
             <Text style={[styles.subtitle, textAlign, { width: wp(80) }]}>
-              {ENTER_THE_OTP_SEND_TO} {inputValue}
+              {ENTER_THE_OTP_SEND_TO}{"\n"}{inputValue}
             </Text>
             <View style={[styles.otpContainer, alignItemsCenter]}>
               <OTPTextInput

@@ -1,4 +1,4 @@
-package com.feathers
+package com.feathers.app
 
 import android.app.Application
 import com.facebook.react.PackageList

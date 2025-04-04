@@ -206,14 +206,24 @@ const WalletScreen = ({ navigation }) => {
     };
 
     // Function to format the time
+    // const formatTime = (isoDate) => {
+    //   const date = new Date(isoDate);
+    //   let hours = date.getHours();
+    //   const minutes = date.getMinutes().toString().padStart(2, '0');
+    //   const amPm = hours >= 12 ? 'PM' : 'AM'; // Determine AM or PM
+    //   hours = hours % 12 || 12; // Convert to 12-hour format, ensuring 12 for 0 hours
+    //   return `${hours}:${minutes} ${amPm}`; // 12-hour format with AM/PM
+    // };
     const formatTime = (isoDate) => {
-      const date = new Date(isoDate);
-      let hours = date.getHours();
-      const minutes = date.getMinutes().toString().padStart(2, '0');
-      const amPm = hours >= 12 ? 'PM' : 'AM'; // Determine AM or PM
-      hours = hours % 12 || 12; // Convert to 12-hour format, ensuring 12 for 0 hours
-      return `${hours}:${minutes} ${amPm}`; // 12-hour format with AM/PM
+      const date = new Date(isoDate); // Date object created directly from UTC time
+      const hours = date.getUTCHours().toString().padStart(2, '0'); // Get UTC hours
+      const minutes = date.getUTCMinutes().toString().padStart(2, '0'); // Get UTC minutes
+      const amPm = hours >= 12 ? 'PM' : 'AM'; // Determine AM/PM
+      return `${hours}:${minutes} ${amPm}`;
     };
+    
+    
+    
 
     return (
       <Pressable style={[styles.transactionContainer, flexDirectionRow, alignItemsCenter]}
@@ -237,12 +247,13 @@ const WalletScreen = ({ navigation }) => {
             {item?.adjustment_reason === "points_refunded"
               ? "Refunded points on Feathers"
               : item?.transaction_type === "earned"
-                ? "Purchase on Feathers"
+                ? "Purchased on Feathers"
                 : item?.transaction_type === "redeemed"
                   ? "Spent points on Feathers"
                   : "Transaction on Feathers"}
           </Text>
-          <Text style={styles.date}>{`${formatDate(item.created_at)} ${formatTime(item.created_at)}`}</Text>
+          {/* <Text style={styles.date}>{`${formatDate(item?.created_at)} ${formatTime(item?.created_at)}`}</Text> */}
+          <Text style={styles.date}>{`${formatDate(item?.loyalty_point_created_at ?? item?.created_at)} ${formatTime(item?.loyalty_point_created_at ?? item?.created_at)}`}</Text>
         </View>
         <Text
           style={[
@@ -280,13 +291,8 @@ const WalletScreen = ({ navigation }) => {
     );
   };
 
-  const onRefresh = async () => {
-    setRefreshing(true);
-    fetchWalletHistory(activeTab);
-    setRefreshing(false);
-  };
-  return (
 
+  return (
     <View style={[styles.container, flex]}>
       <View style={[{ width: "100%", height: "auto", padding: 16 }, flexDirectionRow]}>
         <Pressable onPress={() => navigation.goBack()}>
@@ -345,14 +351,6 @@ const WalletScreen = ({ navigation }) => {
           keyExtractor={(item) => item.id.toString()}
           contentContainerStyle={styles.transactionsList}
           showsVerticalScrollIndicator={false}
-        // refreshControl={
-        //   <RefreshControl
-        //     refreshing={refreshing}
-        //     onRefresh={onRefresh}
-        //     colors={["#42A5F5"]}
-        //     tintColor="#42A5F5"
-        //   />
-        // }
         />
       )}
       {loading && (

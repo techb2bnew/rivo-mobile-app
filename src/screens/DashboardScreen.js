@@ -72,26 +72,26 @@ const DashBoardScreen = ({ navigation }) => {
         },
     ];
 
-    // useEffect(() => {
-    //     console.log("isBiometricModalVisible", isBiometricModalVisible);
+    useEffect(() => {
+        console.log("isBiometricModalVisible", isBiometricModalVisible);
 
-    //     const checkFirstLaunch = async () => {
-    //         try {
-    //             const firstLoginCompleted = await AsyncStorage.getItem("firstLoginCompleted");
-    //             const userToken = await AsyncStorage.getItem('userToken');
+        const checkFirstLaunch = async () => {
+            try {
+                const firstLoginCompleted = await AsyncStorage.getItem("firstLoginCompleted");
+                const userToken = await AsyncStorage.getItem('userToken');
 
-    //             if (firstLoginCompleted == "true" && userToken) {
-    //                 setIsBiometricModalVisible(true);
-    //             } else {
-    //                 await AsyncStorage.setItem("firstLoginCompleted", "true");
-    //             }
-    //         } catch (error) {
-    //             console.error("Error checking first launch:", error);
-    //         }
-    //     };
+                if (firstLoginCompleted == "true" && userToken) {
+                    setIsBiometricModalVisible(true);
+                } else {
+                    await AsyncStorage.setItem("firstLoginCompleted", "true");
+                }
+            } catch (error) {
+                console.error("Error checking first launch:", error);
+            }
+        };
 
-    //     checkFirstLaunch();
-    // }, []);
+        checkFirstLaunch();
+    }, []);
 
     const openModal = (item) => {
         setSelectedData(item);
@@ -248,14 +248,14 @@ const DashBoardScreen = ({ navigation }) => {
             if (response.data.success) {
                 console.log("response.data?.data", response.data?.data)
                 const availablePoints = response.data?.data?.available_loyalty_points;
-                await AsyncStorage.setItem('currentPoints', String(availablePoints));
-                await AsyncStorage.setItem('currentTier', response.data?.data.tier_groups?.[0]?.name);
                 setTierStatus(response.data?.data.tier_groups?.[0]?.name)
                 setBalancePoint(Math.floor(response.data?.data?.available_loyalty_points));
                 setUserName(response.data?.data?.full_name);
                 setPhoneNumber(response.data?.data?.meta_map_values?.[0]?.value);
                 setUserID(response.data?.data?.uid);
                 setExpiryPointsData(response.data?.data?.loyalty_point_expiration_date)
+                await AsyncStorage.setItem('currentPoints', String(availablePoints));
+                await AsyncStorage.setItem('currentTier', response.data?.data.tier_groups?.[0]?.name);
             } else {
                 throw new Error('Failed to fetch profile data');
             }
@@ -295,7 +295,11 @@ const DashBoardScreen = ({ navigation }) => {
         if (!str) return "";
         return str
             .split(" ")
-            .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+            .map(word => 
+                word === word.toUpperCase() 
+                    ? word 
+                    : word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+            )
             .join(" ");
     };
 

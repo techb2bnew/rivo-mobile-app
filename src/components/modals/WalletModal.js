@@ -36,11 +36,19 @@ const WalletModal = ({ visible, onClose, transaction }) => {
           <Text style={styles.modalTitle}>
             Points {item.transaction_type === "earned" ? "Earned" : "Spent"}
           </Text>
-          <Text style={[styles.modalDescription, textAlign]}>{item?.transaction_type === "earned"
+          <Text style={[styles.modalDescription, textAlign]}>
+            {/* {item?.transaction_type === "earned"
             ? "Purchased on Feathers"
             : item?.transaction_type === "redeemed"
               ? "Spent points on Feathers"
-              : "Transaction on Feathers"}
+              : "Transaction on Feathers"} */}
+              {item?.adjustment_reason === "points_refunded"
+              ? "Refunded points on Feathers"
+              : item?.transaction_type === "earned"
+                ? "Purchased on Feathers"
+                : item?.transaction_type === "redeemed"
+                  ? "Spent points on Feathers"
+                  : "Transaction on Feathers"}
           </Text>
           <View style={{ paddingHorizontal: spacings.large, height: hp(6), alignItems: 'center', justifyContent: 'center', backgroundColor: blackColor, borderRadius: 10 }}>
             <Text style={styles.modalPoints}>{Math.floor(points)} Points</Text>
@@ -63,7 +71,7 @@ const WalletModal = ({ visible, onClose, transaction }) => {
           } */}
           {orders[0]?.uid &&
             <View style={[{ width: "100%", paddingVertical: 5 }, alignItemsCenter, flexDirectionRow]}>
-              <View style={{width:"44%"}}>
+              <View style={{ width: "44%" }}>
                 <Text style={[styles.transactionDetails, { color: blackColor }]}>
                   Order Number
                 </Text>
