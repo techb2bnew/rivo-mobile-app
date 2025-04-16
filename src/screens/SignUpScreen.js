@@ -190,6 +190,11 @@ const SignUpScreen = ({ navigation }) => {
     handleGenerateOtp();
   };
 
+  const handlePrivacyPolicyPress = () => {
+    // Replace with your actual privacy policy URL
+    Linking.openURL('https://www.feathers.com.au/pages/feathers-boutique-app-privacy-policy');
+  };
+
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
@@ -218,7 +223,7 @@ const SignUpScreen = ({ navigation }) => {
               </TouchableOpacity>
             )}
             <View style={{ marginTop: 40 }}>
-              <CustomButton title={GENERATE_OTP} onPress={handleGenerateOtp} isLoading={loading}/>
+              <CustomButton title={GENERATE_OTP} onPress={handleGenerateOtp} isLoading={loading} />
             </View>
           </View>
         ) : (
@@ -243,14 +248,14 @@ const SignUpScreen = ({ navigation }) => {
             {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
             <View style={{ flexDirection: "row", alignSelf: 'center', marginTop: spacings.xxLarge }}>
               <Text style={[styles.subtitle, textAlign, flexDirectionRow, { height: hp(3.5) }]}>
-                {OTP_NOT_RECEIVED} ?
+                {OTP_NOT_RECEIVED} ? 
               </Text>
               {countdown > 0 ? (
                 <Text style={styles.timerText}> Resend OTP in {countdown}s</Text>
               ) : (
                 <Pressable onPress={onPressResendCode} disabled={!isResendEnabled}>
                   <Text style={[styles.subtitle, textAlign, { color: blackColor, fontWeight: "800", textDecorationLine: "underline", }]}>
-                    {RESEND_CODE}
+                  {RESEND_CODE}
                   </Text>
                 </Pressable>
               )}
@@ -260,37 +265,15 @@ const SignUpScreen = ({ navigation }) => {
             </View>
           </View>
         )}
-        {/* {loading && (
-          <View style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: "rgba(0, 0, 0, 0.5)",
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: 9999,
-          }}>
-            <View style={{
-              width: 150,
-              padding: 20,
-              backgroundColor: "#fff",
-              borderRadius: 10,
-              alignItems: "center",
-              justifyContent: "center",
-            }}>
-              <Text style={{
-                marginBottom: 10,
-                fontSize: 16,
-                color: "#000",
-              }}>
-                Please wait...
-              </Text>
-              <ActivityIndicator size="large" color={"#42A5F5"} />
-            </View>
-          </View>
-        )} */}
+        <Pressable
+          onPress={handlePrivacyPolicyPress}
+          style={({ pressed }) => [
+            styles.button,
+            pressed && styles.pressed
+          ]}
+        >
+          <Text style={styles.text}>Privacy Policy</Text>
+        </Pressable>
         <SuccesfullModal
           visible={isSuccessModalVisible}
           onClose={() => setIsSuccessModalVisible(false)}
@@ -359,6 +342,17 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     textDecorationLine: 'underline',
     marginTop: 5,
+  },
+  button: {
+    padding: 10,
+    alignSelf:"center"
+  },
+  pressed: {
+    opacity: 0.7,
+  },
+  text: {
+    color: 'blue',
+    textDecorationLine: 'underline',
   },
 });
 

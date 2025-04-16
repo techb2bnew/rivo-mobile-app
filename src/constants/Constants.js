@@ -5,7 +5,7 @@ export const MOBILE_OR_EMAIL = "Mobile Number or Email Address";
 export const ENTER_THE_OTP_SEND_TO = "Enter the OTP sent to";
 export const OTP_VERIFICATION = "OTP Verification";
 export const OTP_NOT_RECEIVED = "OTP not received";
-export const RESEND_CODE = "Resend Code";
+export const RESEND_CODE = " Resend Code";
 export const SUCCESSFULLY = "Successfully";
 export const VERIFICATION_SUCCESSFULL_MESSAGE = "Verification successful! Your account has been securely verified. You now have full access to all features and services.";
 export const CONTINUE = "Continue";
@@ -33,4 +33,6 @@ export const EARNED_POINTS = "Earned Points";
 export const SPENT_POINTS = "Spent Points";
 
 export const CONNECTION_ID = "YEPM307571";
-export const PLUGGIN_ID = "sid_0r9lx47trdc4scppekx1x";
+// export const PLUGGIN_ID = "sid_0r9lx47trdc4scppekx1x";
+export const PLUGGIN_ID = "sid_8i34gkc5csx2p64mu20mt";
+export const BASE_URL = "https://publicapi.live.saasintegrator.online";

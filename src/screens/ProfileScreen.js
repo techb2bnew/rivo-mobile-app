@@ -7,7 +7,7 @@ import { BaseStyle } from '../constants/Style';
 import Ionicons from 'react-native-vector-icons/dist/Ionicons';
 import Feather from 'react-native-vector-icons/dist/Feather';
 import Fontisto from 'react-native-vector-icons/dist/Fontisto';
-import { DOA, DOB, ORDERS, POINTS } from '../constants/Constants';
+import { BASE_URL, DOA, DOB, ORDERS, POINTS } from '../constants/Constants';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import LoaderModal from '../components/modals/LoaderModal';
@@ -22,39 +22,6 @@ const ProfileScreen = ({ navigation }) => {
   const [loading, setLoading] = useState(true);
   const orderLength = useSelector((state) => state.order.orderLength);
 
-  // useEffect(() => {
-  //   const fetchProfileData = async () => {
-  //     try {
-  //       const token = await AsyncStorage.getItem('userToken');
-  //       console.log(token)
-  //       if (!token) {
-  //         setError('Token not found');
-  //         setLoading(false);
-  //         return;
-  //       }
-  //       // Make the API call with the token
-  //       const response = await axios.get('https://publicapi.dev.saasintegrator.online/api/profile', {
-  //         headers: {
-  //           'Accept': 'application/json',
-  //           'Authorization': `Bearer ${token}`, // Pass token in Authorization header
-  //         },
-  //       });
-  //       if (response.data.success) {
-  //         // console.log("profiledata", response.data)
-  //         setProfileData(response.data)
-  //         await AsyncStorage.setItem('currentPoints', profileData?.data?.available_loyalty_points);
-  //       } else {
-  //         setError('Failed to fetch data');
-  //       }
-  //     } catch (err) {
-  //       setError('Error fetching data');
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-  //   fetchProfileData();
-  // }, []);
-
   useFocusEffect(
     useCallback(() => {
       const fetchProfileData = async () => {
@@ -68,7 +35,7 @@ const ProfileScreen = ({ navigation }) => {
           }
 
           // Make the API call with the token
-          const response = await axios.get('https://publicapi.dev.saasintegrator.online/api/profile', {
+          const response = await axios.get(`${BASE_URL}/api/profile`, {
             headers: {
               Accept: 'application/json',
               Authorization: `Bearer ${token}`,

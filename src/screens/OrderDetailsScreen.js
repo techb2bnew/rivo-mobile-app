@@ -6,7 +6,7 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from '../utils'
 import Ionicons from 'react-native-vector-icons/dist/Ionicons';
 import CustomButton from '../components/CustomButton';
 import { BaseStyle } from '../constants/Style';
-import { DELIVERY_METHOD, LOCATION, PRICE_DETAILS, SHIPPING, SUBTOTAL, TOTAL } from '../constants/Constants';
+import { BASE_URL, DELIVERY_METHOD, LOCATION, PRICE_DETAILS, SHIPPING, SUBTOTAL, TOTAL } from '../constants/Constants';
 import LoaderModal from '../components/modals/LoaderModal';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ContentLoader, { Rect, Circle } from 'react-content-loader/native';
@@ -27,7 +27,7 @@ const OrderDetailsScreen = ({ route, navigation }) => {
     }, [connectionId]);
 
     const fetchOrderDetails = async (connectionId) => {
-        const url = `https://publicapi.dev.saasintegrator.online/api/order-detail/${connectionId}`;
+        const url = `${BASE_URL}/api/order-detail/${connectionId}`;
         // const token = "145|q6QFYNtXokrba3jWLFliTtGI2waQWxk0fXcXQ9WV5cf8d4a7";
 
         try {
@@ -69,21 +69,21 @@ const OrderDetailsScreen = ({ route, navigation }) => {
         const month = date.toLocaleString("en-US", { month: "short" }); // Short month name
         const year = date.getFullYear();
         return `${day} ${month}, ${year}`;
-      };
-  
-      // Function to format the time
-      const formatTime = (isoDate) => {
+    };
+
+    // Function to format the time
+    const formatTime = (isoDate) => {
         const date = new Date(isoDate);
         let hours = date.getHours();
         const minutes = date.getMinutes().toString().padStart(2, '0');
         const amPm = hours >= 12 ? 'PM' : 'AM'; // Determine AM or PM
         hours = hours % 12 || 12; // Convert to 12-hour format, ensuring 12 for 0 hours
         return `${hours}:${minutes} ${amPm}`; // 12-hour format with AM/PM
-      };
+    };
 
     const formattedDate = formatDate(orderDetails?.order_created_at);
     const formattedTime = formatTime(orderDetails?.order_created_at);
-    console.log("orderDetails?.order_created_at", orderDetails?.order_created_at);
+    // console.log("orderDetails?.order_created_at", orderDetails?.order_created_at);
 
     return (
         <View style={[styles.container, flex]}>
@@ -172,37 +172,42 @@ const OrderDetailsScreen = ({ route, navigation }) => {
                     )}
 
                     {orderDetails?.order_items
-                        ?.filter((item) => item.product) // Only include items with a product
-                        .map((item) => (
-                            <React.Fragment key={item.id}>
-                                <View style={[styles.productContainer, flexDirectionRow, alignItemsCenter]}>
-                                    <Image
-                                        source={{
-                                            uri:
-                                                item.product?.images?.[0]?.url ||
-                                                "https://cdn.shopify.com/s/files/1/0890/4035/5626/files/GiftCard_1__Image_e6c0e644-0a85-4d79-95ed-85d2d4e00da3.jpg?v=1729670332",
-                                        }}
-                                        style={styles.productImage}
-                                    />
-                                    <View style={styles.productDetails}>
-                                        <Text style={styles.productName}>Name : {item?.product?.name}</Text>
-                                        <Text style={styles.productInfo}>Sku - {item?.product?.sku}</Text>
-                                        <Text
-                                            style={[
-                                                styles.productInfo,
-                                                { color: blackColor, fontWeight: style.fontWeightThin1x.fontWeight, marginTop: 2 },
-                                            ]}
-                                        >
-                                            Qty: {Math.floor(item?.quantity_ordered)}
-                                        </Text>
+                        ?.filter((item) => item.product)
+                        .map((item) => {
+                            console.log("Order Item:", item); // 🔍 Console log added here
+
+                            return (
+                                <React.Fragment key={item.id}>
+                                    <View style={[styles.productContainer, flexDirectionRow, alignItemsCenter]}>
+                                        <Image
+                                            source={{
+                                                uri:
+                                                    item?.product?.main_image_url?.[0]?.url ||
+                                                    "https://cdn.shopify.com/s/files/1/0890/4035/5626/files/GiftCard_1__Image_e6c0e644-0a85-4d79-95ed-85d2d4e00da3.jpg?v=1729670332",
+                                            }}
+                                            style={styles.productImage}
+                                        />
+                                        <View style={styles.productDetails}>
+                                            <Text style={styles.productName}>Name : {item?.product?.name}</Text>
+                                            <Text style={styles.productInfo}>Sku - {item?.product?.sku}</Text>
+                                            <Text
+                                                style={[
+                                                    styles.productInfo,
+                                                    { color: blackColor, fontWeight: style.fontWeightThin1x.fontWeight, marginTop: 2 },
+                                                ]}
+                                            >
+                                                Qty: {Math.floor(item?.quantity_ordered)}
+                                            </Text>
+                                        </View>
+                                        <View style={{ height: "100%" }}>
+                                            <Text style={styles.productPrice}>${Math.floor(item.price)}</Text>
+                                        </View>
                                     </View>
-                                    <View style={{ height: "100%", width: "20%" }}>
-                                        <Text style={styles.productPrice}>${Math.floor(item.price)}</Text>
-                                    </View>
-                                </View>
-                                <View style={styles.separator} />
-                            </React.Fragment>
-                        ))}
+                                    <View style={styles.separator} />
+                                </React.Fragment>
+                            );
+                        })}
+
 
 
                     <View style={styles.priceDetails}>

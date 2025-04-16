@@ -14,7 +14,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { addNotification } from '../redux/actions';
 import LoaderModal from '../components/modals/LoaderModal';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { PLUGGIN_ID } from '../constants/Constants';
+import { BASE_URL, PLUGGIN_ID } from '../constants/Constants';
 import ContentLoader, { Rect, Circle } from 'react-content-loader/native'; // Import the ContentLoader for React Native
 const { flex, alignItemsCenter, alignItemsFlexStart, flexDirectionRow, textAlign, justifyContentCenter, borderRadius10, resizeModeContain, resizeModeCover, positionAbsolute, alignJustifyCenter } = BaseStyle;
 
@@ -25,75 +25,7 @@ const TierScreen = ({ navigation }) => {
   const [refreshing, setRefreshing] = useState(false);
   const reversedData = [...levels].reverse();
 
-  // const fetchTiers = async () => {
-  //   setLoading(true);
-  //   try {
-  //     // Retrieve token and current points from AsyncStorage
-  //     const token = await AsyncStorage.getItem("userToken");
-  //     const currentPoints = await AsyncStorage.getItem("currentPoints");
-  //     const currentTier = await AsyncStorage.getItem("currentTier");
 
-  //     if (!token) {
-  //       console.warn("Token missing in AsyncStorage");
-  //       setLoading(false);
-  //       return;
-  //     }
-
-  //     if (currentPoints === null || currentTier === null) {
-  //       console.warn("Current points or tier missing in AsyncStorage");
-  //       setLoading(false);
-  //       return;
-  //     }
-
-  //     // Prepare headers
-  //     const myHeaders = new Headers();
-  //     myHeaders.append("Authorization", `Bearer ${token}`);
-  //     myHeaders.append("Content-Type", "application/json");
-
-  //     // API URL and request options
-  //     const url = `https://publicapi.dev.saasintegrator.online/api/vip-tiers?plugin_id=${PLUGGIN_ID}`;
-  //     const requestOptions = {
-  //       method: "GET",
-  //       headers: myHeaders,
-  //       redirect: "follow",
-  //     };
-
-  //     // Fetch data from API
-  //     const response = await fetch(url, requestOptions);
-  //     const result = await response.json();
-
-  //     if (result.success) {
-  //       const sortedTiers = result.data.sort((a, b) => a.threshold - b.threshold);
-  //       let levels = [];
-
-  //       sortedTiers.forEach((item, index) => {
-  //         const achieved = currentPoints >= item.threshold;
-  //         const isInProgress =
-  //           currentPoints < item.threshold &&
-  //           currentPoints >= (sortedTiers[index - 1]?.threshold || 0);
-
-  //         levels.push({
-  //           id: item.id.toString(),
-  //           name: item.name,
-  //           points: item.threshold,
-  //           achieved,
-  //           isInProgress,
-  //           icon: getTierIcon(item.name, achieved),
-  //         });
-  //       });
-
-  //       // Update state with levels array
-  //       setLevels(levels);
-  //       // console.log("Processed Levels:", levels);
-  //     } else {
-  //       console.error("Failed to fetch tiers:", result.message);
-  //     }
-  //   } catch (error) {
-  //     console.error("Error fetching tiers:", error);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
 
   const fetchTiers = async () => {
     setLoading(true);
@@ -120,7 +52,7 @@ const TierScreen = ({ navigation }) => {
       myHeaders.append("Content-Type", "application/json");
 
       // API URL and request options
-      const url = `https://publicapi.dev.saasintegrator.online/api/vip-tiers?plugin_id=${PLUGGIN_ID}`;
+      const url = `${BASE_URL}/api/vip-tiers?plugin_id=${PLUGGIN_ID}`;
       const requestOptions = {
         method: "GET",
         headers: myHeaders,

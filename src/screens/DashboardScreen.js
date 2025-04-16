@@ -7,7 +7,7 @@ import { spacings, style } from '../constants/Fonts';
 import { BaseStyle } from '../constants/Style';
 import { CARD_IMAGE, COIN_IMAGE, SALARY_IMAGE, SHEET_IMAGE, STAR_IMAGE } from '../assests/images';
 import ExpirePointsModal from '../components/modals/ExpirePointsModal';
-import { EXPIRE_POINTS, PLUGGIN_ID } from '../constants/Constants';
+import { BASE_URL, EXPIRE_POINTS, PLUGGIN_ID } from '../constants/Constants';
 import BarcodeModal from '../components/modals/BarcodeModal';
 import { useDispatch } from 'react-redux';
 import messaging from '@react-native-firebase/messaging';
@@ -144,37 +144,6 @@ const DashBoardScreen = ({ navigation }) => {
         });
     };
 
-    // const fetchExpPoints = async () => {
-    //     try {
-    //         const userToken = await AsyncStorage.getItem('userToken');
-    //         if (!userToken) {
-    //             console.error("User token not found in local storage");
-    //             return;
-    //         }
-
-    //         const headers = new Headers();
-    //         headers.append("Authorization", `Bearer ${userToken}`);
-    //         headers.append("Content-Type", "application/json");
-
-
-    //         const url = `https://publicapi.dev.saasintegrator.online/api/points-events?plugin_id=${PLUGGIN_ID}`;
-
-    //         const requestOptions = {
-    //             method: "GET",
-    //             headers: headers,
-    //             redirect: "follow",
-    //         };
-
-    //         const response = await fetch(url, requestOptions);
-
-    //         const result = await response.json();
-    //         setExpiryPointsData(result?.data)
-    //         console.log("ExpPoints", result.data);
-    //     } catch (error) {
-    //         console.error("Error fetching ExpPoints:", error);
-    //     }
-    // };
-
     const sendNotificationData = async (token, userID, userName) => {
         if (!token || !userID || !userName) {
             console.log("Error", "Missing required data to send the notification.");
@@ -238,7 +207,7 @@ const DashBoardScreen = ({ navigation }) => {
             if (!token) {
                 throw new Error('Token not found');
             }
-            const response = await axios.get('https://publicapi.dev.saasintegrator.online/api/profile', {
+            const response = await axios.get(`${BASE_URL}/api/profile`, {
                 headers: {
                     'Accept': 'application/json',
                     'Authorization': `Bearer ${token}`,
@@ -279,7 +248,7 @@ const DashBoardScreen = ({ navigation }) => {
             const to_date = "";
 
             const response = await fetch(
-                `https://publicapi.dev.saasintegrator.online/api/orders?page=1&per_page=30&from_date=${from_date}&to_date=${to_date}`,
+                `${BASE_URL}/api/orders?page=1&per_page=30&from_date=${from_date}&to_date=${to_date}`,
                 { method: "GET", headers: myHeaders }
             );
 

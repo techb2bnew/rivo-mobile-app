@@ -5,7 +5,7 @@ import { blackColor, goldColor, grayColor, mediumGray, whiteColor, greenColor } 
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from '../utils';
 import { spacings, style } from '../constants/Fonts';
 import { BaseStyle } from '../constants/Style';
-import { ALL_ORDERS } from '../constants/Constants';
+import { ALL_ORDERS, BASE_URL } from '../constants/Constants';
 import Entypo from 'react-native-vector-icons/dist/Entypo';
 import getRealm from '../schemas/schemas';
 import { useDispatch } from 'react-redux';
@@ -96,7 +96,7 @@ const OrderHistoryScreen = ({ navigation }) => {
   //     const to_date = "";
 
   //     const response = await fetch(
-  //       `https://publicapi.dev.saasintegrator.online/api/orders?page=${page}&per_page=30&from_date=${from_date}&to_date=${to_date}`,
+  //       `https://publicapi.live.saasintegrator.online/api/orders?page=${page}&per_page=30&from_date=${from_date}&to_date=${to_date}`,
   //       { method: "GET", headers: myHeaders }
   //     );
 
@@ -148,7 +148,7 @@ const OrderHistoryScreen = ({ navigation }) => {
       const to_date = "";
 
       const response = await fetch(
-        `https://publicapi.dev.saasintegrator.online/api/orders?page=${page}&per_page=30&from_date=${from_date}&to_date=${to_date}`,
+        `${BASE_URL}/api/orders?page=${page}&per_page=30&from_date=${from_date}&to_date=${to_date}`,
         { method: "GET", headers: myHeaders }
       );
 
@@ -264,7 +264,7 @@ const OrderHistoryScreen = ({ navigation }) => {
   //     myHeaders.append("Accept", "application/json");
 
   //     const response = await fetch(
-  //       `https://publicapi.dev.saasintegrator.online/api/orders?page=${page}&per_page=30`,
+  //       `https://publicapi.live.saasintegrator.online/api/orders?page=${page}&per_page=30`,
   //       { method: "GET", headers: myHeaders }
   //     );
 
@@ -320,7 +320,7 @@ const OrderHistoryScreen = ({ navigation }) => {
       myHeaders.append("Accept", "application/json");
 
       const response = await fetch(
-        `https://publicapi.dev.saasintegrator.online/api/orders?page=${page}&per_page=30`,
+        `${BASE_URL}/api/orders?page=${page}&per_page=30`,
         { method: "GET", headers: myHeaders }
       );
 

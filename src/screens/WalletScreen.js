@@ -5,7 +5,7 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from '../utils'
 import { spacings, style } from '../constants/Fonts';
 import { BaseStyle } from '../constants/Style';
 import Ionicons from 'react-native-vector-icons/dist/Ionicons';;
-import { EARNED_POINTS, SPENT_POINTS, WALLET } from '../constants/Constants';
+import { BASE_URL, EARNED_POINTS, SPENT_POINTS, WALLET } from '../constants/Constants';
 import { FlatList } from 'react-native-gesture-handler';
 import { CELEBRATION_ICON, FEATHER_ICON } from '../assests/images';
 import WalletModal from '../components/modals/WalletModal';
@@ -43,7 +43,7 @@ const WalletScreen = ({ navigation }) => {
         return;
       }
 
-      const url = new URL("https://publicapi.dev.saasintegrator.online/api/wallet-history");
+      const url = new URL(`${BASE_URL}/api/wallet-history`);
       url.searchParams.append("from_date", fromDate);
       url.searchParams.append("to_date", toDate);
       url.searchParams.append("transaction_type", transactionType);
@@ -139,7 +139,7 @@ const WalletScreen = ({ navigation }) => {
         redirect: "follow",
       };
 
-      const url = `https://publicapi.dev.saasintegrator.online/api/wallet-detail/${walletHistoryId}`;
+      const url = `${BASE_URL}/api/wallet-detail/${walletHistoryId}`;
       console.log("Request URL:", url);
 
       // Fetch wallet details
