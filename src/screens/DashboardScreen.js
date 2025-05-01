@@ -218,7 +218,7 @@ const DashBoardScreen = ({ navigation }) => {
                 console.log("response.data?.data", response.data?.data)
                 const availablePoints = response.data?.data?.available_loyalty_points;
                 setTierStatus(response.data?.data.tier_groups?.[0]?.name)
-                setBalancePoint(Math.floor(response.data?.data?.available_loyalty_points));
+                setBalancePoint(response.data?.data?.available_loyalty_points);
                 setUserName(response.data?.data?.full_name);
                 setPhoneNumber(response.data?.data?.meta_map_values?.[0]?.value);
                 setUserID(response.data?.data?.uid);

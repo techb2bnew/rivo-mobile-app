@@ -194,7 +194,7 @@ const OrderHistoryScreen = ({ navigation }) => {
           if (!existingOrder) {
             realm.create('Order', {
               id: order.uid,
-              points: Math.floor(convertToNumber(order.grand_total)),
+              points: convertToNumber(order.grand_total),
               date: order.order_created_at,
               status: order.status,
               items: order.order_items.map((item) => ({
@@ -460,7 +460,7 @@ const OrderHistoryScreen = ({ navigation }) => {
         >
           <View style={[{ width: wp(50) }, flexDirectionRow]}>
             <Text style={[styles.details, { color: blackColor, fontWeight: style.fontWeightThin1x.fontWeight }]}>
-              RP - {Math.floor(item.grand_total ?? item.points)} |
+              RP - {item.grand_total ?? item.points} |
             </Text>
             <Text style={[styles.details]}>
               {formattedDate} at {formattedTime}

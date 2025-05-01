@@ -251,7 +251,7 @@ const ProfileScreen = ({ navigation }) => {
         ) : (
           profileData?.data?.available_loyalty_points && (
             <View style={[{ width: wp(50), height: "100%", borderRightColor: "#d9d9d9", borderRightWidth: 1 }, alignJustifyCenter]}>
-              <Text style={[styles.text, { lineHeight: 20, fontSize: style.fontSizeLarge.fontSize }]}>{Math.floor(profileData?.data?.available_loyalty_points)}</Text>
+              <Text style={[styles.text, { lineHeight: 20, fontSize: style.fontSizeLarge.fontSize }]}>{profileData?.data?.available_loyalty_points}</Text>
               <Text style={[styles.text, { fontSize: style.fontSizeNormal.fontSize, color: grayColor, fontWeight: style.fontWeightThin1x.fontWeight }]}>{POINTS}</Text>
             </View>
           )

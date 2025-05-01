@@ -261,7 +261,7 @@ const WalletScreen = ({ navigation }) => {
             { color: item.transaction_type === "redeemed" ? redColor : blackColor },
           ]}
         >
-          {Math.floor(item.points)}
+          {item.points}
         </Text>
       </Pressable>
     );
@@ -329,7 +329,7 @@ const WalletScreen = ({ navigation }) => {
           <Text style={[styles.summaryMonth, { color: grayColor }]}>{currentYear}</Text>
           <Text style={[styles.summaryMonth]}>{currentMonth}</Text>
         </View>
-        <Text style={styles.summaryPoints}>{Math.floor(totalPoints)} Points</Text>
+        <Text style={styles.summaryPoints}>{totalPoints} Points</Text>
       </View>
 
       <Text style={[styles.infoText, textAlign]}>

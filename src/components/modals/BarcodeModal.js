@@ -29,8 +29,8 @@ const BarcodeModal = ({ isVisible, data, onClose }) => {
                 <View style={[styles.modalContainer, borderRadius10, alignItemsCenter]}>
                     <View style={[{ padding: spacings.large, width: "100%" }, alignJustifyCenter]}>
                         <Text style={styles.modalName}>{capitalizeWords(data.name)}</Text>
-                        <Text style={styles.modalMembership}>{data.memberShip} Member</Text>
-                        <Text style={styles.modalCardNumber}>{data.title}</Text>
+                        {data.memberShip && <Text style={styles.modalMembership}>{data.memberShip} Member</Text>}
+                        {data.title && <Text style={styles.modalCardNumber}>{data.title}</Text>}
                     </View>
                     {/* Barcode */}
                     <View style={{ width: "100%", backgroundColor: whiteColor, alignItems: 'center' }}>

@@ -16,6 +16,10 @@ const WalletModal = ({ visible, onClose, transaction }) => {
   if (!transaction ||!visible) return null;
 
   const { points, id, orders, item } = transaction;
+
+
+  console.log("transalction",transaction);
+  
   const formatDate = (isoDate) => {
     const date = new Date(isoDate);
     const day = date.getDate().toString().padStart(2, '0');
@@ -51,10 +55,10 @@ const WalletModal = ({ visible, onClose, transaction }) => {
                   : "Transaction on Feathers"}
           </Text>
           <View style={{ paddingHorizontal: spacings.large, height: hp(6), alignItems: 'center', justifyContent: 'center', backgroundColor: blackColor, borderRadius: 10 }}>
-            <Text style={styles.modalPoints}>{Math.floor(points)} Points</Text>
+            <Text style={styles.modalPoints}>{points} Points</Text>
           </View>
           <Text style={styles.modalDate}>{formatDate(item.created_at)}</Text>
-          {(orders[0]?.uid) && <View style={styles.separator} />}
+          {(item.transaction_type != "redeemed" && orders[0]?.uid) && <View style={styles.separator} />}
           {/* {id &&
             <View style={[{ width: "100%" }, alignItemsCenter, flexDirectionRow]}>
               <View style={{width:"44%"}}>
@@ -69,7 +73,7 @@ const WalletModal = ({ visible, onClose, transaction }) => {
               </View>
             </View>
           } */}
-          {orders[0]?.uid &&
+          {item.transaction_type != "redeemed" && orders[0]?.uid &&
             <View style={[{ width: "100%", paddingVertical: 5 }, alignItemsCenter, flexDirectionRow]}>
               <View style={{ width: "44%" }}>
                 <Text style={[styles.transactionDetails, { color: blackColor }]}>

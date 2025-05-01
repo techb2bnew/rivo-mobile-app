@@ -71,7 +71,7 @@ const ExpirePointsModal = ({ visible, onClose, data, point }) => {
                         ]}
                     >
                         <Text style={styles.rowText}>{data}</Text>
-                        <Text style={styles.rowText}>{Math.floor(point)}</Text>
+                        <Text style={styles.rowText}>{point}</Text>
                     </View>
 
                 </View>
