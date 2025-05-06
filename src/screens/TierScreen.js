@@ -143,7 +143,7 @@ const TierScreen = ({ navigation }) => {
   const listenForForegroundPushNotifications = () => {
     messaging().onMessage(async (remoteMessage) => {
       console.log('Foreground Push Notification:', remoteMessage);
-  
+
       // Check if notification is not already added
       dispatch(addNotification({
         identifier: remoteMessage.messageId,
@@ -165,7 +165,7 @@ const TierScreen = ({ navigation }) => {
     setRefreshing(true);
     fetchTiers();
     setRefreshing(false);
-};
+  };
 
   const renderItem = ({ item, index }) => {
     // console.log("item:::", item)
@@ -307,6 +307,12 @@ const styles = StyleSheet.create({
     height: hp(4),
     borderWidth: 1,
   },
+  statusIcon: {
+    // backgroundColor:"red",
+    alignItems: "center",
+    justifyContent: 'center',
+    height: wp(15)
+  }
 });
 
 export default TierScreen;

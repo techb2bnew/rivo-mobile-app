@@ -189,7 +189,7 @@ const OrderDetailsScreen = ({ route, navigation }) => {
                                         />
                                         <View style={styles.productDetails}>
                                             <Text style={styles.productName}>Name : {item?.product?.name}</Text>
-                                            <Text style={styles.productInfo}>Sku - {item?.product?.sku}</Text>
+                                            <Text style={styles.productInfo}>SKU - {item?.product?.sku}</Text>
                                             <Text
                                                 style={[
                                                     styles.productInfo,
@@ -211,7 +211,7 @@ const OrderDetailsScreen = ({ route, navigation }) => {
 
 
                     <View style={styles.priceDetails}>
-                        {orderDetails?.order_items[0]?.product && <Text style={[styles.priceHeader, justifyContentSpaceBetween, flexDirectionRow]}>{PRICE_DETAILS} ({orderDetails?.order_items?.length} {orderDetails?.order_items?.length === 1 ? 'Item' : 'Items'})</Text>}
+                        {orderDetails?.order_items[0]?.product && <Text style={[styles.priceHeader, justifyContentSpaceBetween, flexDirectionRow]}>{PRICE_DETAILS}</Text>}
                         {orderDetails?.order_items[0]?.product && <View style={[styles.priceRow, flexDirectionRow, justifyContentSpaceBetween]}>
                             <Text style={styles.priceLabel}>Subtotal</Text>
                             <Text style={styles.priceValue}>${orderDetails?.subtotal}</Text>

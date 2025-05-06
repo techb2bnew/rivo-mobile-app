@@ -251,7 +251,7 @@ const SignUpScreen = ({ navigation }) => {
                 {OTP_NOT_RECEIVED} ? 
               </Text>
               {countdown > 0 ? (
-                <Text style={styles.timerText}> Resend OTP in {countdown}s</Text>
+                <Text style={{marginTop:1.5}}> Resend OTP in {countdown}s</Text>
               ) : (
                 <Pressable onPress={onPressResendCode} disabled={!isResendEnabled}>
                   <Text style={[styles.subtitle, textAlign, { color: blackColor, fontWeight: "800", textDecorationLine: "underline", }]}>
@@ -296,7 +296,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: style.fontSizeLarge3x.fontSize,
     fontWeight: style.fontWeightBold.fontWeight,
-    width: wp(80),
+    // width: wp(100),
     textAlign: "center"
   },
   subtitle: {

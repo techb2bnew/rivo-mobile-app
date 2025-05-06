@@ -460,7 +460,7 @@ const OrderHistoryScreen = ({ navigation }) => {
         >
           <View style={[{ width: wp(50) }, flexDirectionRow]}>
             <Text style={[styles.details, { color: blackColor, fontWeight: style.fontWeightThin1x.fontWeight }]}>
-              RP - {item.grand_total ?? item.points} |
+              RP - {item.grand_total ?? item.points} | {" "}
             </Text>
             <Text style={[styles.details]}>
               {formattedDate} at {formattedTime}

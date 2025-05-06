@@ -13,13 +13,13 @@ import { BaseStyle } from '../../constants/Style';
 const { textAlign, alignJustifyCenter, flex, borderRadius10, alignItemsCenter, justifyContentSpaceBetween, flexDirectionRow } = BaseStyle;
 
 const WalletModal = ({ visible, onClose, transaction }) => {
-  if (!transaction ||!visible) return null;
+  if (!transaction || !visible) return null;
 
   const { points, id, orders, item } = transaction;
 
 
-  console.log("transalction",transaction);
-  
+  console.log("transalction", transaction);
+
   const formatDate = (isoDate) => {
     const date = new Date(isoDate);
     const day = date.getDate().toString().padStart(2, '0');
@@ -41,18 +41,24 @@ const WalletModal = ({ visible, onClose, transaction }) => {
             Points {item.transaction_type === "earned" ? "Earned" : "Spent"}
           </Text>
           <Text style={[styles.modalDescription, textAlign]}>
-            {/* {item?.transaction_type === "earned"
-            ? "Purchased on Feathers"
-            : item?.transaction_type === "redeemed"
-              ? "Spent points on Feathers"
-              : "Transaction on Feathers"} */}
-              {item?.adjustment_reason === "points_refunded"
+            {/* {item?.adjustment_reason === "points_refunded"
               ? "Refunded points on Feathers"
               : item?.transaction_type === "earned"
                 ? "Purchased on Feathers"
                 : item?.transaction_type === "redeemed"
                   ? "Spent points on Feathers"
-                  : "Transaction on Feathers"}
+                  : "Transaction on Feathers"} */}
+            {
+              item?.adjustment_reason === "birthday"
+                ? "Birthday points"
+                : item?.adjustment_reason === "points_refunded"
+                  ? "Refunded Points"
+                  : item?.transaction_type === "earned"
+                    ? "Purchased Points"
+                    : item?.transaction_type === "redeemed"
+                      ? "Spent Points "
+                      : "Purchased Points"
+            }
           </Text>
           <View style={{ paddingHorizontal: spacings.large, height: hp(6), alignItems: 'center', justifyContent: 'center', backgroundColor: blackColor, borderRadius: 10 }}>
             <Text style={styles.modalPoints}>{points} Points</Text>

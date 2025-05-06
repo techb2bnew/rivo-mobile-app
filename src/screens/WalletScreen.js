@@ -75,31 +75,31 @@ const WalletScreen = ({ navigation }) => {
       // const totalPoints = filteredTransactions.reduce((sum, transaction) => {
       //   return sum + parseFloat(transaction.points);
       // }, 0);
-    
+
       // console.log("totalPoints", totalPoints)
       // setTotalPoints(totalPoints.toFixed(2));
       if (transactionType === "all") {
         // Earned transactions ka total sum
         const earnedTotal = result.data.data
-            .filter(transaction => transaction.transaction_type === "earned")
-            .reduce((sum, transaction) => sum + parseFloat(transaction.points), 0);
+          .filter(transaction => transaction.transaction_type === "earned")
+          .reduce((sum, transaction) => sum + parseFloat(transaction.points), 0);
 
         // Redeemed transactions ka total sum
         const redeemedTotal = result.data.data
-            .filter(transaction => transaction.transaction_type === "redeemed")
-            .reduce((sum, transaction) => sum + parseFloat(transaction.points), 0);
+          .filter(transaction => transaction.transaction_type === "redeemed")
+          .reduce((sum, transaction) => sum + parseFloat(transaction.points), 0);
 
         // Final Balance (Earned - Redeemed)
         const finalBalance = earnedTotal - redeemedTotal;
         setTotalPoints(finalBalance.toFixed(2));
-    } else {
+      } else {
         // Agar 'all' nahi hai toh sirf respective transactions ka sum calculate karein
         const totalPoints = result.data.data.reduce((sum, transaction) => {
-            return sum + parseFloat(transaction.points);
+          return sum + parseFloat(transaction.points);
         }, 0);
 
         setTotalPoints(totalPoints.toFixed(2));
-    }
+      }
       setLoading(false);
     } catch (error) {
       setLoading(false);
@@ -221,9 +221,9 @@ const WalletScreen = ({ navigation }) => {
       const amPm = hours >= 12 ? 'PM' : 'AM'; // Determine AM/PM
       return `${hours}:${minutes} ${amPm}`;
     };
-    
-    
-    
+
+
+
 
     return (
       <Pressable style={[styles.transactionContainer, flexDirectionRow, alignItemsCenter]}
@@ -236,21 +236,25 @@ const WalletScreen = ({ navigation }) => {
           <Text style={styles.transactionType}>
             Points {capitalizeWords(item.transaction_type === "redeemed" ? "Spent" : item.transaction_type)}
           </Text>
-          {/* <Text style={styles.description}>
-            {item?.transaction_type === "earned"
-              ? "Purchase on Feathers"
-              : item?.transaction_type === "redeemed"
-                ? "Spent points on Feathers"
-                : "Transaction on Feathers"}
-          </Text> */}
           <Text style={styles.description}>
-            {item?.adjustment_reason === "points_refunded"
+            {/* {item?.adjustment_reason === "points_refunded"
               ? "Refunded points on Feathers"
               : item?.transaction_type === "earned"
                 ? "Purchased on Feathers"
                 : item?.transaction_type === "redeemed"
                   ? "Spent points on Feathers"
-                  : "Transaction on Feathers"}
+                  : "Transaction on Feathers"} */}
+            {
+              item?.adjustment_reason === "birthday"
+                ? "Birthday Points"
+                : item?.adjustment_reason === "points_refunded"
+                  ? "Refunded Points"
+                  : item?.transaction_type === "earned"
+                    ? "Purchased Points"
+                    : item?.transaction_type === "redeemed"
+                      ? "Spent points"
+                      : "Purchased Points"
+            }
           </Text>
           {/* <Text style={styles.date}>{`${formatDate(item?.created_at)} ${formatTime(item?.created_at)}`}</Text> */}
           <Text style={styles.date}>{`${formatDate(item?.loyalty_point_created_at ?? item?.created_at)} ${formatTime(item?.loyalty_point_created_at ?? item?.created_at)}`}</Text>
@@ -326,8 +330,10 @@ const WalletScreen = ({ navigation }) => {
 
       <View style={[styles.summary, flexDirectionRow, justifyContentSpaceBetween, alignItemsCenter]}>
         <View>
-          <Text style={[styles.summaryMonth, { color: grayColor }]}>{currentYear}</Text>
-          <Text style={[styles.summaryMonth]}>{currentMonth}</Text>
+          {/* <Text style={[styles.summaryMonth, { color: grayColor }]}>{currentYear}</Text> */}
+          {/* <Text style={[styles.summaryMonth]}>{currentMonth}</Text> */}
+          <Text style={[styles.summaryMonth]}>All Points</Text>
+
         </View>
         <Text style={styles.summaryPoints}>{totalPoints} Points</Text>
       </View>

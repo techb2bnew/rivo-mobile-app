@@ -1,5 +1,5 @@
-export const ENTER_EMAIL_OR_PHONE = "Enter Email Address or Phone Number";
-export const MOBILE_OR_EMAIL = "Mobile Number or Email Address";
+export const ENTER_EMAIL_OR_PHONE = "Enter Email Address ";
+export const MOBILE_OR_EMAIL = "Email Address";
 // export const ENTER_EMAIL_OR_PHONE = "Enter Phone Number";
 // export const MOBILE_OR_EMAIL = "Mobile Number ";
 export const ENTER_THE_OTP_SEND_TO = "Enter the OTP sent to";
@@ -24,7 +24,7 @@ export const DELIVERY_METHOD = "Delivery Method";
 export const SUBTOTAL = "Subtotal";
 export const TOTAL = "Total";
 export const SHIPPING = "Shipping";
-export const PRICE_DETAILS = "Price details";
+export const PRICE_DETAILS = "Price Details";
 export const POINTS = "Points";
 export const ORDERS = "Orders";
 export const DOB = "DOB";

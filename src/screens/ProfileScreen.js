@@ -268,7 +268,8 @@ const ProfileScreen = ({ navigation }) => {
         ) : (
           <View style={[{ width: wp(50), height: "100%" }, alignJustifyCenter]}>
             <Text style={[styles.text, { lineHeight: 20, fontSize: style.fontSizeLarge.fontSize }]}>{orderLength}</Text>
-            <Text style={[styles.text, { fontSize: style.fontSizeNormal.fontSize, color: grayColor, fontWeight: style.fontWeightThin1x.fontWeight }]}>{ORDERS}</Text>
+            <Text style={[styles.text, { fontSize: style.fontSizeNormal.fontSize, color: grayColor, fontWeight: style.fontWeightThin1x.fontWeight }]}>{orderLength === 1 ? 'Order' : 'Orders'}
+            </Text>
           </View>
         )}
       </View>
@@ -279,7 +280,15 @@ const ProfileScreen = ({ navigation }) => {
             <Text style={[styles.text]}>{DOB}</Text>
           </View>
           <View>
-            <Text style={[styles.text, { fontSize: style.fontSizeNormal.fontSize, color: grayColor, fontWeight: style.fontWeightThin1x.fontWeight }]}>{profileData?.data?.birthday}</Text>
+            <Text style={[styles.text, { fontSize: style.fontSizeNormal.fontSize, color: grayColor, fontWeight: style.fontWeightThin1x.fontWeight }]}>
+              {profileData?.data?.birthday &&
+                (() => {
+                  const date = new Date(profileData.data.birthday);
+                  const day = date.getDate();
+                  const month = date.toLocaleString('en-US', { month: 'short' });
+                  return `${day}-${month}`;
+                })()}
+            </Text>
           </View>
         </View>
       )}
