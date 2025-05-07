@@ -144,6 +144,40 @@ const DashBoardScreen = ({ navigation }) => {
         });
     };
 
+    // const sendNotificationData = async (token, userID, userName) => {
+    //     if (!token || !userID || !userName) {
+    //         console.log("Error", "Missing required data to send the notification.");
+    //         return;
+    //     }
+
+    //     try {
+    //         const formData = new FormData();
+    //         formData.append("userId", userID);
+    //         formData.append("userName", userName);
+    //         formData.append("fcmToken", token);
+
+    //         const requestOptions = {
+    //             method: "POST",
+    //             body: formData,
+    //             redirect: "follow",
+    //         };
+
+    //         const response = await fetch(
+    //             "https://rivo-admin-c5ddaab83d6b.herokuapp.com/api/notifications",
+    //             requestOptions
+    //         );
+
+    //         if (!response.ok) {
+    //             throw new Error(`HTTP error! status: ${response.status}`);
+    //         }
+
+    //         const result = await response.text();
+    //         console.log("Success", result);
+    //     } catch (error) {
+    //         console.error("Error:", error);
+    //     }
+    // };
+
     const sendNotificationData = async (token, userID, userName) => {
         if (!token || !userID || !userName) {
             console.log("Error", "Missing required data to send the notification.");
@@ -151,6 +185,18 @@ const DashBoardScreen = ({ navigation }) => {
         }
 
         try {
+            const staticEmail = "admin123@gmail.com";
+            const encodedEmail = encodeURIComponent(staticEmail);
+            console.log(encodedEmail);
+
+            const tokenResponse = await fetch(
+                `https://rivo-admin-c5ddaab83d6b.herokuapp.com/api/getToken?email=${encodedEmail}`
+            );
+
+            const tokenData = await tokenResponse.json();
+            const adminToken = tokenData?.data?.authToken;
+            await AsyncStorage.setItem("adminToken", adminToken);
+
             const formData = new FormData();
             formData.append("userId", userID);
             formData.append("userName", userName);
@@ -158,6 +204,9 @@ const DashBoardScreen = ({ navigation }) => {
 
             const requestOptions = {
                 method: "POST",
+                headers: {
+                    Authorization: `Bearer ${adminToken}`
+                },
                 body: formData,
                 redirect: "follow",
             };
@@ -174,7 +223,7 @@ const DashBoardScreen = ({ navigation }) => {
             const result = await response.text();
             console.log("Success", result);
         } catch (error) {
-            console.error("Error:", error);
+            console.error("Error To pass Fcm:", error);
         }
     };
 
@@ -264,9 +313,9 @@ const DashBoardScreen = ({ navigation }) => {
         if (!str) return "";
         return str
             .split(" ")
-            .map(word => 
-                word === word.toUpperCase() 
-                    ? word 
+            .map(word =>
+                word === word.toUpperCase()
+                    ? word
                     : word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
             )
             .join(" ");
@@ -284,7 +333,7 @@ const DashBoardScreen = ({ navigation }) => {
             return null;
         }
         console.log(isLoading);
-        
+
         return (
             <Pressable
                 style={[

@@ -67,7 +67,66 @@ const SignUpScreen = ({ navigation }) => {
     return true;
   };
 
-  const handleGenerateOtp = () => {
+  // const handleGenerateOtp = () => {
+  //   // Validate the input value before proceeding
+  //   if (!validateInputValue()) {
+  //     return; // Exit if validation fails
+  //   }
+
+  //   let payload = {
+  //     email: null,
+  //     phoneNumber: null,
+  //     deliveryMethod: null,
+  //   };
+
+  //   // Determine whether the input is an email or phone number
+  //   if (inputValue.includes("@")) {
+  //     payload.email = inputValue.trim();
+  //     payload.deliveryMethod = "email";
+  //   } else {
+  //     payload.phoneNumber = inputValue.startsWith("+91")
+  //       ? inputValue.trim()
+  //       : `+91${inputValue.trim()}`;
+  //     payload.deliveryMethod = "sms";
+  //   }
+
+  //   setLoading(true);
+
+  //   // Prepare headers for the API request
+  //   const myHeaders = new Headers();
+  //   myHeaders.append("Content-Type", "application/json");
+
+  //   // Create request options
+  //   const requestOptions = {
+  //     method: "POST",
+  //     headers: myHeaders,
+  //     body: JSON.stringify(payload),
+  //     redirect: "follow",
+  //   };
+  //   console.log("payload", JSON.stringify(payload));
+
+  //   // Send the OTP request
+  //   fetch("https://rivo-admin-c5ddaab83d6b.herokuapp.com/api/sendOtp", requestOptions)
+  //     .then((response) => response.json())
+  //     .then((result) => {
+  //       setLoading(false);
+  //       console.log("result::", result);
+  //       if (result.success) {
+  //         setIsOtpSent(true);
+  //         setErrorMessage("");
+  //         setAuthToken(result.authToken);
+  //         console.log("OTP sent successfully:", result);
+  //       } else {
+  //         setErrorMessage(result.message === 'User not found' && "User not found. Please register on website First." || "Failed to send OTP.");
+  //       }
+  //     })
+  //     .catch((error) => {
+  //       setLoading(false);
+  //       console.error("Error generating OTP:", error);
+  //       setErrorMessage("An error occurred while sending OTP.");
+  //     });
+  // };
+  const handleGenerateOtp = async () => {
     // Validate the input value before proceeding
     if (!validateInputValue()) {
       return; // Exit if validation fails
@@ -79,53 +138,130 @@ const SignUpScreen = ({ navigation }) => {
       deliveryMethod: null,
     };
 
-    // Determine whether the input is an email or phone number
+    let email = null;
+
     if (inputValue.includes("@")) {
-      payload.email = inputValue.trim();
+      email = inputValue.trim();
+      payload.email = email;
       payload.deliveryMethod = "email";
     } else {
       payload.phoneNumber = inputValue.startsWith("+91")
         ? inputValue.trim()
         : `+91${inputValue.trim()}`;
       payload.deliveryMethod = "sms";
+      // If it's not email, you can skip token fetch or use a default email if needed
     }
 
     setLoading(true);
 
-    // Prepare headers for the API request
-    const myHeaders = new Headers();
-    myHeaders.append("Content-Type", "application/json");
+    try {
+      const staticEmail = "admin123@gmail.com";
+      const encodedEmail = encodeURIComponent(staticEmail);
+      console.log(encodedEmail);
 
-    // Create request options
-    const requestOptions = {
-      method: "POST",
-      headers: myHeaders,
-      body: JSON.stringify(payload),
-      redirect: "follow",
-    };
-    console.log("payload", JSON.stringify(payload));
+      const tokenResponse = await fetch(
+        `https://rivo-admin-c5ddaab83d6b.herokuapp.com/api/getToken?email=${encodedEmail}`
+      );
 
-    // Send the OTP request
-    fetch("https://rivo-admin-c5ddaab83d6b.herokuapp.com/api/sendOtp", requestOptions)
-      .then((response) => response.json())
-      .then((result) => {
+      const tokenData = await tokenResponse.json();
+
+
+      if (!tokenData?.data?.authToken) {
         setLoading(false);
-        console.log("result::", result);
-        if (result.success) {
-          setIsOtpSent(true);
-          setErrorMessage("");
-          setAuthToken(result.authToken);
-          console.log("OTP sent successfully:", result);
-        } else {
-          setErrorMessage(result.message === 'User not found' && "User not found. Please register on website First." || "Failed to send OTP.");
-        }
-      })
-      .catch((error) => {
-        setLoading(false);
-        console.error("Error generating OTP:", error);
-        setErrorMessage("An error occurred while sending OTP.");
-      });
+        setErrorMessage("Failed to fetch token.");
+        return;
+      }
+
+      const adminToken = tokenData?.data?.authToken;
+      await AsyncStorage.setItem("adminToken", adminToken);
+
+      // Prepare headers for the second API request
+      const myHeaders = new Headers();
+      myHeaders.append("Content-Type", "application/json");
+      myHeaders.append("Authorization", `Bearer ${adminToken}`);
+
+      const requestOptions = {
+        method: "POST",
+        headers: myHeaders,
+        body: JSON.stringify(payload),
+        redirect: "follow",
+      };
+
+      console.log("payload", JSON.stringify(payload));
+
+      // Second API to send OTP
+      const response = await fetch(
+        "https://rivo-admin-c5ddaab83d6b.herokuapp.com/api/sendOtp",
+        requestOptions
+      );
+
+      const result = await response.json();
+      setLoading(false);
+
+      console.log("result::", result);
+
+      if (result.success) {
+        setIsOtpSent(true);
+        setErrorMessage("");
+        setAuthToken(result?.authToken);
+        console.log("OTP sent successfully:", result);
+      } else {
+        setErrorMessage(
+          result.message === "User not found"
+            ? "User not found. Please register on website First."
+            : "Failed to send OTP."
+        );
+      }
+    } catch (error) {
+      setLoading(false);
+      console.error("Error generating OTP:", error);
+      setErrorMessage("An error occurred while sending OTP.");
+    }
   };
+
+
+  // const handleOtpSubmit = async () => {
+  //   if (!validateOtp()) {
+  //     return; // Exit if validation fails
+  //   }
+
+  //   setLoading(true);
+
+  //   const myHeaders = new Headers();
+  //   myHeaders.append("Content-Type", "application/json");
+
+  //   const payload = {
+  //     authToken: authtoken,
+  //     otp: otp.trim(),
+  //   };
+
+  //   const requestOptions = {
+  //     method: "POST",
+  //     headers: myHeaders,
+  //     body: JSON.stringify(payload),
+  //     redirect: "follow",
+  //   };
+
+  //   try {
+  //     const response = await fetch("https://rivo-admin-c5ddaab83d6b.herokuapp.com/api/verifyOtp", requestOptions);
+  //     const result = await response.json();
+  //     setLoading(false);
+  //     console.log("result.apiData.success", result)
+  //     if (result.success) {
+  //       Keyboard.dismiss();
+  //       setIsSuccessModalVisible(true);
+  //       setToken(result.data.token);
+  //       setErrorMessage("");
+  //       console.log("OTP verification successful:", result);
+  //     } else {
+  //       setErrorMessage(result.apiData.message || "Failed to verify OTP. Please try again.");
+  //     }
+  //   } catch (error) {
+  //     setLoading(false);
+  //     console.error("Error verifying OTP:", error);
+  //     setErrorMessage("Failed to verify OTP. Please try again.");
+  //   }
+  // };
 
   const handleOtpSubmit = async () => {
     if (!validateOtp()) {
@@ -134,26 +270,42 @@ const SignUpScreen = ({ navigation }) => {
 
     setLoading(true);
 
-    const myHeaders = new Headers();
-    myHeaders.append("Content-Type", "application/json");
-
-    const payload = {
-      authToken: authtoken,
-      otp: otp.trim(),
-    };
-
-    const requestOptions = {
-      method: "POST",
-      headers: myHeaders,
-      body: JSON.stringify(payload),
-      redirect: "follow",
-    };
-
     try {
-      const response = await fetch("https://rivo-admin-c5ddaab83d6b.herokuapp.com/api/verifyOtp", requestOptions);
+      // ✅ Get admin token from AsyncStorage
+      const adminToken = await AsyncStorage.getItem("adminToken");
+
+      if (!adminToken) {
+        setLoading(false);
+        setErrorMessage("Admin token not found.");
+        return;
+      }
+
+      const myHeaders = new Headers();
+      myHeaders.append("Content-Type", "application/json");
+      myHeaders.append("Authorization", `Bearer ${adminToken}`); // ✅ Add admin token here
+
+      const payload = {
+        authToken: authtoken,
+        otp: otp.trim(),
+      };
+
+      const requestOptions = {
+        method: "POST",
+        headers: myHeaders,
+        body: JSON.stringify(payload),
+        redirect: "follow",
+      };
+
+      const response = await fetch(
+        "https://rivo-admin-c5ddaab83d6b.herokuapp.com/api/verifyOtp",
+        requestOptions
+      );
+
       const result = await response.json();
       setLoading(false);
-      console.log("result.apiData.success", result)
+
+      console.log("result.apiData.success", result);
+
       if (result.success) {
         Keyboard.dismiss();
         setIsSuccessModalVisible(true);
@@ -161,7 +313,7 @@ const SignUpScreen = ({ navigation }) => {
         setErrorMessage("");
         console.log("OTP verification successful:", result);
       } else {
-        setErrorMessage(result.apiData.message || "Failed to verify OTP. Please try again.");
+        setErrorMessage(result?.message || "Failed to verify OTP. Please try again.");
       }
     } catch (error) {
       setLoading(false);
@@ -248,14 +400,14 @@ const SignUpScreen = ({ navigation }) => {
             {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
             <View style={{ flexDirection: "row", alignSelf: 'center', marginTop: spacings.xxLarge }}>
               <Text style={[styles.subtitle, textAlign, flexDirectionRow, { height: hp(3.5) }]}>
-                {OTP_NOT_RECEIVED} ? 
+                {OTP_NOT_RECEIVED} ?
               </Text>
               {countdown > 0 ? (
-                <Text style={{marginTop:1.5}}> Resend OTP in {countdown}s</Text>
+                <Text style={{ marginTop: 1.5 }}> Resend OTP in {countdown}s</Text>
               ) : (
                 <Pressable onPress={onPressResendCode} disabled={!isResendEnabled}>
                   <Text style={[styles.subtitle, textAlign, { color: blackColor, fontWeight: "800", textDecorationLine: "underline", }]}>
-                  {RESEND_CODE}
+                    {RESEND_CODE}
                   </Text>
                 </Pressable>
               )}
@@ -345,7 +497,7 @@ const styles = StyleSheet.create({
   },
   button: {
     padding: 10,
-    alignSelf:"center"
+    alignSelf: "center"
   },
   pressed: {
     opacity: 0.7,

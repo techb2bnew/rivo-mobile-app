@@ -209,7 +209,7 @@ const ProfileScreen = ({ navigation }) => {
             <Feather name="phone" size={25} color={blackColor} />
           </View>
           <View style={{ paddingVertical: spacings.xxLarge }}>
-            <Text style={[styles.text, { fontSize: style.fontSizeNormal.fontSize, paddingTop: 5 }]}>{profileData?.data?.phone}</Text>
+            <Text style={[styles.text, { fontSize: style.fontSizeNormal.fontSize, paddingTop: 3 }]}>{profileData?.data?.phone}</Text>
           </View>
         </View>
       )}
@@ -228,7 +228,7 @@ const ProfileScreen = ({ navigation }) => {
             <Fontisto name="email" size={25} color={blackColor} />
           </View>
           <View>
-            <Text style={[styles.text, { fontSize: style.fontSizeNormal.fontSize, paddingTop: 5 }]}>{profileData?.data?.email}</Text>
+            <Text style={[styles.text, { fontSize: style.fontSizeNormal.fontSize, paddingTop: 3 }]}>{profileData?.data?.email}</Text>
           </View>
         </View>
       )}
