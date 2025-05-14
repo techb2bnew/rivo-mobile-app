@@ -64,7 +64,12 @@ const WalletModal = ({ visible, onClose, transaction }) => {
             <Text style={styles.modalPoints}>{points} Points</Text>
           </View>
           <Text style={styles.modalDate}>{formatDate(item.created_at)}</Text>
-          {(item.transaction_type != "redeemed" && orders[0]?.uid) && <View style={styles.separator} />}
+          {
+          // (
+          //   item.transaction_type != "redeemed" && 
+            orders[0]?.uid
+            // ) 
+            && <View style={styles.separator} />}
           {/* {id &&
             <View style={[{ width: "100%" }, alignItemsCenter, flexDirectionRow]}>
               <View style={{width:"44%"}}>
@@ -79,7 +84,9 @@ const WalletModal = ({ visible, onClose, transaction }) => {
               </View>
             </View>
           } */}
-          {item.transaction_type != "redeemed" && orders[0]?.uid &&
+          {
+          // item.transaction_type != "redeemed" && 
+          orders[0]?.uid &&
             <View style={[{ width: "100%", paddingVertical: 5 }, alignItemsCenter, flexDirectionRow]}>
               <View style={{ width: "44%" }}>
                 <Text style={[styles.transactionDetails, { color: blackColor }]}>

@@ -36,3 +36,8 @@ export const CONNECTION_ID = "YEPM307571";
 // export const PLUGGIN_ID = "sid_0r9lx47trdc4scppekx1x";
 export const PLUGGIN_ID = "sid_8i34gkc5csx2p64mu20mt";
 export const BASE_URL = "https://publicapi.live.saasintegrator.online";
+
+export const NEXT_PUBLIC_ENCRYPTION_SALT = "1qwserdftgvbhyujnmkioplkjmnbgfvd";
+export const API_SECRET = "qwuytfdcvjhgfdyujhgfdvbkjytredvcxzxcvbytredfgh87654321qwtjklkj";
+export const APP_USER_AGENT = "Feather/1.0";
+export const APP_ID = "565yghgy";

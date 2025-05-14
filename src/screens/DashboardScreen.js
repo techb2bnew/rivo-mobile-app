@@ -7,7 +7,7 @@ import { spacings, style } from '../constants/Fonts';
 import { BaseStyle } from '../constants/Style';
 import { CARD_IMAGE, COIN_IMAGE, SALARY_IMAGE, SHEET_IMAGE, STAR_IMAGE } from '../assests/images';
 import ExpirePointsModal from '../components/modals/ExpirePointsModal';
-import { BASE_URL, EXPIRE_POINTS, PLUGGIN_ID } from '../constants/Constants';
+import { API_SECRET, APP_ID, APP_USER_AGENT, BASE_URL, encryptedApiSecret, encryptedAppId, encryptedUserAgent, EXPIRE_POINTS, PLUGGIN_ID } from '../constants/Constants';
 import BarcodeModal from '../components/modals/BarcodeModal';
 import { useDispatch } from 'react-redux';
 import messaging from '@react-native-firebase/messaging';
@@ -20,6 +20,7 @@ import { saveOrderLength } from '../redux/orders/orderAction';
 import BiometricModal from '../components/modals/BiometricModal';
 import Icon from 'react-native-vector-icons/Ionicons';
 import ContentLoader, { Rect, Circle } from 'react-content-loader/native';
+import { encrypt } from '../encrypt';
 
 const { flex, alignItemsCenter, flexDirectionRow, alignJustifyCenter, borderRadius10, resizeModeContain, resizeModeCover, positionAbsolute, justifyContentSpaceBetween, textAlign } = BaseStyle;
 
@@ -144,40 +145,6 @@ const DashBoardScreen = ({ navigation }) => {
         });
     };
 
-    // const sendNotificationData = async (token, userID, userName) => {
-    //     if (!token || !userID || !userName) {
-    //         console.log("Error", "Missing required data to send the notification.");
-    //         return;
-    //     }
-
-    //     try {
-    //         const formData = new FormData();
-    //         formData.append("userId", userID);
-    //         formData.append("userName", userName);
-    //         formData.append("fcmToken", token);
-
-    //         const requestOptions = {
-    //             method: "POST",
-    //             body: formData,
-    //             redirect: "follow",
-    //         };
-
-    //         const response = await fetch(
-    //             "https://rivo-admin-c5ddaab83d6b.herokuapp.com/api/notifications",
-    //             requestOptions
-    //         );
-
-    //         if (!response.ok) {
-    //             throw new Error(`HTTP error! status: ${response.status}`);
-    //         }
-
-    //         const result = await response.text();
-    //         console.log("Success", result);
-    //     } catch (error) {
-    //         console.error("Error:", error);
-    //     }
-    // };
-
     const sendNotificationData = async (token, userID, userName) => {
         if (!token || !userID || !userName) {
             console.log("Error", "Missing required data to send the notification.");
@@ -185,18 +152,6 @@ const DashBoardScreen = ({ navigation }) => {
         }
 
         try {
-            const staticEmail = "admin123@gmail.com";
-            const encodedEmail = encodeURIComponent(staticEmail);
-            console.log(encodedEmail);
-
-            const tokenResponse = await fetch(
-                `https://rivo-admin-c5ddaab83d6b.herokuapp.com/api/getToken?email=${encodedEmail}`
-            );
-
-            const tokenData = await tokenResponse.json();
-            const adminToken = tokenData?.data?.authToken;
-            await AsyncStorage.setItem("adminToken", adminToken);
-
             const formData = new FormData();
             formData.append("userId", userID);
             formData.append("userName", userName);
@@ -204,15 +159,17 @@ const DashBoardScreen = ({ navigation }) => {
 
             const requestOptions = {
                 method: "POST",
-                headers: {
-                    Authorization: `Bearer ${adminToken}`
-                },
                 body: formData,
-                redirect: "follow",
+                headers: {
+                    // "Content-Type": "application/json",
+                    "x-api-secret": encrypt(API_SECRET),
+                    "x-app-id": encrypt(APP_ID),
+                    "User-Agent": encrypt(APP_USER_AGENT),
+                },
             };
 
             const response = await fetch(
-                "https://rivo-admin-c5ddaab83d6b.herokuapp.com/api/notifications",
+                "https://rivo-admin-c5ddaab83d6b.herokuapp.com/api/proxy/notifications",
                 requestOptions
             );
 
@@ -442,7 +399,6 @@ const DashBoardScreen = ({ navigation }) => {
                     data={selectedData}
                     onClose={closeModal}
                 />}
-            {/* {isBiometricModalVisible && <BiometricModal />} */}
 
             {isBiometricModalVisible && <BiometricModal isBiometricModalVisible={isBiometricModalVisible} setIsBiometricModalVisible={setIsBiometricModalVisible} />}
         </View>

@@ -16,6 +16,8 @@ import { triggerLocalNotification } from '../notificationService';
 import LoaderModal from '../components/modals/LoaderModal';
 import ContentLoader, { Rect, Circle } from 'react-content-loader/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { encrypt } from '../encrypt';
+import { API_SECRET, APP_ID, APP_USER_AGENT, encryptedApiSecret, encryptedAppId, encryptedUserAgent } from '../constants/Constants';
 
 const { flex, alignItemsCenter, flexDirectionRow, textAlign, alignJustifyCenter, borderRadius10, resizeModeContain, resizeModeCover, positionAbsolute } = BaseStyle;
 
@@ -72,71 +74,28 @@ const OfferScreen = ({ navigation }) => {
         });
     };
 
-    // useEffect(() => {
-    //     const fetchOffers = async () => {
-    //         try {
-    //             const response = await fetch("https://rivo-admin-c5ddaab83d6b.herokuapp.com/api/proxy/offers?page=1&limit=1000", {
-    //                 method: "GET",
-    //                 redirect: "follow",
-    //             });
-
-    //             if (!response.ok) {
-    //                 throw new Error('Network response was not ok');
-    //             }
-
-    //             const result = await response.json();
-    //             setOffers(result.data);
-    //             console.log(result.data.length);
-
-    //         } catch (error) {
-    //             setError(error.message);
-    //         } finally {
-    //             setLoading(false);
-    //         }
-    //     };
-
-    //     fetchOffers();
-    // }, []);
-
     useEffect(() => {
         const fetchOffers = async () => {
             try {
-
-                const staticEmail = "admin123@gmail.com";
-                const encodedEmail = encodeURIComponent(staticEmail);
-                console.log(encodedEmail);
-
-                const tokenResponse = await fetch(
-                    `https://rivo-admin-c5ddaab83d6b.herokuapp.com/api/getToken?email=${encodedEmail}`
-                );
-
-                const tokenData = await tokenResponse.json();
-                const adminToken = tokenData?.data?.authToken;
-                await AsyncStorage.setItem("adminToken", adminToken);
-
-                if (!adminToken) {
-                    throw new Error("Token not found.");
-                }
-
-                const response = await fetch(
-                    "https://rivo-admin-c5ddaab83d6b.herokuapp.com/api/proxy/offers?page=1&limit=1000",
-                    {
-                        method: "GET",
-                        headers: {
-                            "Content-Type": "application/json",
-                            Authorization: `Bearer ${adminToken}`,
-                        },
-                        redirect: "follow",
-                    }
-                );
+                const response = await fetch("https://rivo-admin-c5ddaab83d6b.herokuapp.com/api/proxy/mobileAppOffers?page=1&limit=1000", {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "x-api-secret": encrypt(API_SECRET),
+                        "x-app-id": encrypt(APP_ID),
+                        "User-Agent": encrypt(APP_USER_AGENT),
+                    },
+                    redirect: "follow",
+                });
 
                 if (!response.ok) {
-                    throw new Error("Network response was not ok");
+                    throw new Error('Network response was not ok');
                 }
 
                 const result = await response.json();
                 setOffers(result.data);
-                console.log("Offers count:", result.data.length);
+                console.log(result.data.length);
+
             } catch (error) {
                 setError(error.message);
             } finally {
