@@ -310,9 +310,8 @@ const DashBoardScreen = ({ navigation }) => {
                 {isLoading ? (
                     <ContentLoader
                         speed={2}
-                        width={wp(90)} // Adjust the width according to your design
-                        height={80} // Adjust the height
-                        // viewBox="0 0 290 80"
+                        width={wp(90)} 
+                        height={80} 
                         backgroundColor="#f0f0f0"
                         foregroundColor={grayColor}
                     >

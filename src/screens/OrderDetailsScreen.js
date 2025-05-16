@@ -28,7 +28,6 @@ const OrderDetailsScreen = ({ route, navigation }) => {
 
     const fetchOrderDetails = async (connectionId) => {
         const url = `${BASE_URL}/api/order-detail/${connectionId}`;
-        // const token = "145|q6QFYNtXokrba3jWLFliTtGI2waQWxk0fXcXQ9WV5cf8d4a7";
 
         try {
             const token = await AsyncStorage.getItem('userToken');

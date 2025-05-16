@@ -22,7 +22,6 @@ const BiometricModal = ({isBiometricModalVisible,setIsBiometricModalVisible}) =>
                 setTimeout(() => setIsBiometricModalVisible(false), 1000);
             } else {
                 setTimeout(() => handleBiometricAuthentication(), 1000);
-                // Alert.alert('Authentication Failed', 'Please try again.');
             }
         } catch (error) {
             console.error('Biometric authentication error:', error);

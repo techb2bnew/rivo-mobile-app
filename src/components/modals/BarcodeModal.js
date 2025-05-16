@@ -10,7 +10,6 @@ const { textAlign, alignJustifyCenter, flex, borderRadius10, alignItemsCenter } 
 const BarcodeModal = ({ isVisible, data, onClose }) => {
     if (!data || !data.points) return null;
 
-    // console.log("Barcode Data:", data.points);
     const capitalizeWords = (str) => {
         if (!str) return "";
         return str
@@ -46,15 +45,7 @@ const BarcodeModal = ({ isVisible, data, onClose }) => {
                             />
                         </View>
 
-                        {/* <Text style={[styles.modalAdditionalNumber, textAlign]}>
-                            {"data.additionalNumber"}
-                        </Text> */}
                     </View>
-
-                    {/* Close Button */}
-                    {/* <Pressable onPress={onClose}>
-                        <Text style={styles.closeButton}>Close</Text>
-                    </Pressable> */}
                 </View>
             </Pressable>
         </Modal>

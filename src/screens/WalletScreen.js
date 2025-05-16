@@ -29,7 +29,6 @@ const WalletScreen = ({ navigation }) => {
     fetchWalletHistory("", "", "all");
   }, []);
 
-  // console.log("waleet", selectedTransaction, modalVisible)
 
   const fetchWalletHistory = async (fromDate, toDate, transactionType) => {
     setTotalPoints('')
@@ -66,18 +65,6 @@ const WalletScreen = ({ navigation }) => {
       const result = await response.json();
       console.log("Result:", result.data.data);
       setTransactionData(result.data.data);
-      // Filter out 'redeemed' transactions only if transactionType is 'all'
-      // const filteredTransactions = transactionType === "all"
-      //   ? result.data.data.filter(transaction => transaction.transaction_type !== "redeemed")
-      //   : result.data.data;
-
-      // // Calculate total points
-      // const totalPoints = filteredTransactions.reduce((sum, transaction) => {
-      //   return sum + parseFloat(transaction.points);
-      // }, 0);
-
-      // console.log("totalPoints", totalPoints)
-      // setTotalPoints(totalPoints.toFixed(2));
       if (transactionType === "all") {
         // Earned transactions ka total sum
         const earnedTotal = result.data.data
@@ -205,15 +192,7 @@ const WalletScreen = ({ navigation }) => {
       return `${day} ${month}, ${year}`;
     };
 
-    // Function to format the time
-    // const formatTime = (isoDate) => {
-    //   const date = new Date(isoDate);
-    //   let hours = date.getHours();
-    //   const minutes = date.getMinutes().toString().padStart(2, '0');
-    //   const amPm = hours >= 12 ? 'PM' : 'AM'; // Determine AM or PM
-    //   hours = hours % 12 || 12; // Convert to 12-hour format, ensuring 12 for 0 hours
-    //   return `${hours}:${minutes} ${amPm}`; // 12-hour format with AM/PM
-    // };
+
     const formatTime = (isoDate) => {
       const date = new Date(isoDate); // Date object created directly from UTC time
       const hours = date.getUTCHours().toString().padStart(2, '0'); // Get UTC hours
@@ -237,13 +216,6 @@ const WalletScreen = ({ navigation }) => {
             Points {capitalizeWords(item.transaction_type === "redeemed" ? "Spent" : item.transaction_type)}
           </Text>
           <Text style={styles.description}>
-            {/* {item?.adjustment_reason === "points_refunded"
-              ? "Refunded points on Feathers"
-              : item?.transaction_type === "earned"
-                ? "Purchased on Feathers"
-                : item?.transaction_type === "redeemed"
-                  ? "Spent points on Feathers"
-                  : "Transaction on Feathers"} */}
             {
               item?.adjustment_reason === "birthday"
                 ? "Birthday Points"
@@ -256,7 +228,6 @@ const WalletScreen = ({ navigation }) => {
                       : "Purchased Points"
             }
           </Text>
-          {/* <Text style={styles.date}>{`${formatDate(item?.created_at)} ${formatTime(item?.created_at)}`}</Text> */}
           <Text style={styles.date}>{`${formatDate(item?.loyalty_point_created_at ?? item?.created_at)} ${formatTime(item?.loyalty_point_created_at ?? item?.created_at)}`}</Text>
         </View>
         <Text
@@ -330,8 +301,6 @@ const WalletScreen = ({ navigation }) => {
 
       <View style={[styles.summary, flexDirectionRow, justifyContentSpaceBetween, alignItemsCenter]}>
         <View>
-          {/* <Text style={[styles.summaryMonth, { color: grayColor }]}>{currentYear}</Text> */}
-          {/* <Text style={[styles.summaryMonth]}>{currentMonth}</Text> */}
           <Text style={[styles.summaryMonth]}>All Points</Text>
 
         </View>
@@ -360,35 +329,6 @@ const WalletScreen = ({ navigation }) => {
         />
       )}
       {loading && (
-        // <View style={{
-        //   position: "absolute",
-        //   top: 0,
-        //   left: 0,
-        //   right: 0,
-        //   bottom: 0,
-        //   backgroundColor: "rgba(0, 0, 0, 0.5)",
-        //   alignItems: "center",
-        //   justifyContent: "center",
-        //   zIndex: 9999,
-        // }}>
-        //   <View style={{
-        //     width: 150,
-        //     padding: 20,
-        //     backgroundColor: "#fff",
-        //     borderRadius: 10,
-        //     alignItems: "center",
-        //     justifyContent: "center",
-        //   }}>
-        //     <Text style={{
-        //       marginBottom: 10,
-        //       fontSize: 16,
-        //       color: "#000",
-        //     }}>
-        //       Please wait...
-        //     </Text>
-        //     <ActivityIndicator size="large" color={"#42A5F5"} />
-        //   </View>
-        // </View>
         <View>
           {new Array(6).fill(null).map((_, index) => (
             <TransactionSkeleton key={index} />
@@ -470,9 +410,7 @@ const styles = StyleSheet.create({
     // paddingHorizontal: 16,
   },
   transactionContainer: {
-    // marginVertical: 8,
     padding: 16,
-    // backgroundColor: "#f9f9f9",
   },
   iconContainer: {
     width: wp(15),

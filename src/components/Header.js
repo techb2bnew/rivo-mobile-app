@@ -22,15 +22,15 @@ const Header = ({ navigation }) => {
     }
     return (
         <View style={[styles.headerContainer, flexDirectionRow]}>
-            <View style={{ width: "82%" }}>
+            <View style={{ width: "95%" }}>
                 <Image
                     source={FEATHER_LOGO_IMAGE}
                     style={{ resizeMode: "contain", width: wp(30) }}
                 />
 
             </View>
-            <View style={[{ width: "18%" }, justifyContentSpaceBetween, flexDirectionRow]}>
-                <TouchableOpacity onPress={onPressNotification}>
+            <View style={[{ width: "8%"}, flexDirectionRow]}>
+                {/* <TouchableOpacity onPress={onPressNotification}>
                     <Image
                         source={BELL_IMAGE}
                         style={[styles.icon, { marginTop: 2 }]}
@@ -40,7 +40,7 @@ const Header = ({ navigation }) => {
                             <Text style={styles.badgeText}>{notificationCount}</Text>
                         </View>
                     )}
-                </TouchableOpacity>
+                </TouchableOpacity> */}
 
                 <TouchableOpacity onPress={onPressWallet}>
                     <Image

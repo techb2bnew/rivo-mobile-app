@@ -31,7 +31,6 @@ const OfferScreen = ({ navigation }) => {
             <View style={[alignItemsCenter]}>
                 <Image source={{ uri: item.fileUrl }} style={styles.carouselImage} />
                 <View style={styles.captionContainer}>
-                    {/* <Text style={[textAlign, positionAbsolute, { bottom: 50, left: 35, right: 35, color: whiteColor }]}>{item.name}</Text> */}
                     <Text style={[styles.categoryLabel, textAlign, positionAbsolute, { bottom: 10, left: 35, right: 35 }]}>{item.name}</Text>
                 </View>
             </View>

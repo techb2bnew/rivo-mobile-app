@@ -80,57 +80,6 @@ const OrderHistoryScreen = ({ navigation }) => {
     }, [])
   );
 
-  // const fetchOrdersFromAPI = async () => {
-  //   try {
-  //     const token = await AsyncStorage.getItem('userToken');
-  //     if (!token) {
-  //       console.log('No authentication token found');
-  //       return;
-  //     }
-  //     setLoading(true);
-  //     const myHeaders = new Headers();
-  //     myHeaders.append("Authorization", `Bearer ${token}`);
-  //     myHeaders.append("Accept", "application/json");
-
-  //     const from_date = "";
-  //     const to_date = "";
-
-  //     const response = await fetch(
-  //       `https://publicapi.live.saasintegrator.online/api/orders?page=${page}&per_page=30&from_date=${from_date}&to_date=${to_date}`,
-  //       { method: "GET", headers: myHeaders }
-  //     );
-
-  //     const result = await response.json();
-  //     console.log("result.data.data", result.data);
-
-  //     if (result.data.orders && result.data.orders.length > 0) {
-  //       await AsyncStorage.setItem("isDataFetched", "true");
-  //       if (Platform.OS === "android") {
-  //         await AsyncStorage.setItem("LocalorderData", JSON.stringify(result.data.orders))
-  //       }
-  //       if (Platform.OS === "ios") {
-  //         saveOrderToRealm(result.data.orders);
-  //         fetchOrdersFromRealm();
-  //       } else {
-  //         fetchOrdersFromLocalStorage();
-  //       }
-  //       // Sirf tabhi `page` update karein jab 30 items aayein
-  //       if (result.data.orders.length === 30) {
-  //         setpage(prevPage => prevPage + 1);
-  //       }
-  //       setLoading(false);
-  //     } else {
-  //       await AsyncStorage.setItem("isDataFetched", "false");
-  //     }
-  //   } catch (error) {
-  //     console.error("Error fetching orders from api:", error.message);
-  //     setLoading(false);
-  //   } finally {
-  //     setLoading(false); // Ensure loading is false in all cases
-  //   }
-  // };
-
-
   const fetchOrdersFromAPI = async () => {
     try {
       const token = await AsyncStorage.getItem('userToken');
@@ -247,61 +196,6 @@ const OrderHistoryScreen = ({ navigation }) => {
     }
   };
 
-  // const onRefresh = async () => {
-  //   setRefreshing(true);
-  //   console.log("Fetched orders page", page);
-
-  //   try {
-  //     const token = await AsyncStorage.getItem("userToken");
-  //     if (!token) {
-  //       console.log("No authentication token found");
-  //       setRefreshing(false);
-  //       return;
-  //     }
-
-  //     const myHeaders = new Headers();
-  //     myHeaders.append("Authorization", `Bearer ${token}`);
-  //     myHeaders.append("Accept", "application/json");
-
-  //     const response = await fetch(
-  //       `https://publicapi.live.saasintegrator.online/api/orders?page=${page}&per_page=30`,
-  //       { method: "GET", headers: myHeaders }
-  //     );
-
-  //     const result = await response.json();
-  //     console.log("Fetched orders from API:", result.data);
-
-  //     if (result.data.orders && result.data.orders.length > 0) {
-  //       if (Platform.OS === "android") {
-  //         const isDataFetched = await AsyncStorage.getItem("isDataFetched");
-
-  //         if (isDataFetched === "false") {
-  //           // Sirf Android aur isDataFetched === "false" hone par ye chalega
-  //           await AsyncStorage.setItem("LocalorderData", JSON.stringify(result.data.orders));
-  //           fetchOrdersFromLocalStorage();
-  //         } else {
-  //           // Android par jab data pehle se fetch ho chuka ho
-  //           saveOrderToRealm(result.data.orders);
-  //           fetchOrdersFromRealm();
-  //         }
-  //       } else {
-  //         // iOS ke liye hamesha Realm chalega
-  //         saveOrderToRealm(result.data.orders);
-  //         fetchOrdersFromRealm();
-  //       }
-
-  //       // Sirf tabhi `page` update karein jab 30 items aayein
-  //       if (result.data.orders.length === 30) {
-  //         setpage(prevPage => prevPage + 1);
-  //       }
-  //     }
-  //   } catch (error) {
-  //     console.error("Error fetching orders on refresh:", error.message);
-  //   } finally {
-  //     setRefreshing(false);
-  //   }
-  // };
-
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -383,24 +277,6 @@ const OrderHistoryScreen = ({ navigation }) => {
     initializeOrders();
   }, []);
 
-  // useEffect(() => {
-  //   const handleAppStateChange = async (nextAppState) => {
-  //     if (nextAppState === "active") {
-  //       const isDataFetched = await AsyncStorage.getItem("isDataFetched");
-
-  //       if (isDataFetched === "false") {
-  //         // App kill hone ke baad dubara open ho to isDataFetched = "true" ho jaye
-  //         await AsyncStorage.setItem("isDataFetched", "true");
-  //       }
-  //     }
-  //   };
-
-  //   AppState.addEventListener("change", handleAppStateChange);
-
-  //   return () => {
-  //     AppState.removeEventListener("change", handleAppStateChange);
-  //   };
-  // }, []);
 
   const capitalizeWords = (str) => {
     if (!str) return "";
@@ -411,7 +287,6 @@ const OrderHistoryScreen = ({ navigation }) => {
   };
 
   const renderOrderItem = ({ item }) => {
-    // console.log("iteem", item);
 
     const formatDate = (isoDate) => {
       const date = new Date(isoDate);
@@ -509,34 +384,6 @@ const OrderHistoryScreen = ({ navigation }) => {
       <Header navigation={navigation} />
       <View style={styles.separator} />
       <View style={[{ height: Platform.OS === "android" ? hp(88) : hp(78), width: wp(100) }]}>
-        {/* {loading ? (
-          <View>
-            {new Array(4).fill(null).map((_, index) => (
-              <OrderItemLoader key={index} />
-            ))}
-          </View>
-        ) : (
-          <View>
-            {(ordersData?.length > 0 || ordersFromLocalStorage?.length > 0) && (
-              <Text style={[styles.title, { padding: spacings.large }]}>{ALL_ORDERS}</Text>
-            )}
-            <FlatList
-              data={ordersData.length > 0 ? ordersData : ordersFromLocalStorage}
-              renderItem={renderOrderItem}
-              contentContainerStyle={{ paddingBottom: 20 }}
-              showsVerticalScrollIndicator={false}
-              keyExtractor={(item) => item?.id?.toString()}
-              refreshControl={
-                <RefreshControl
-                  refreshing={refreshing}
-                  onRefresh={onRefresh}
-                  colors={["#42A5F5"]}
-                  tintColor="#42A5F5"
-                />
-              }
-            />
-
-          </View>)} */}
         {loading && (
           <View>
             {new Array(4).fill(null).map((_, index) => (

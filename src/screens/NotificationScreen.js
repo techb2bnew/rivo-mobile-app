@@ -17,72 +17,17 @@ import { resetNotificationCount } from '../redux/actions';
 const { flex, flexDirectionRow } = BaseStyle;
 
 const NotificationScreen = ({ navigation }) => {
-  // const notifications1 = [
-  //   { id: '1', title: '30% Special Discount!', description: 'Special promotion only valid today.' },
-  //   { id: '2', title: 'Top Up E-wallet Successfully!', description: 'You have top up your e-wallet.' },
-  //   { id: '3', title: 'New Service Available!', description: 'Now you can track order in real-time.' },
-  //   { id: '4', title: 'Credit Card Connected!', description: 'Credit card has been linked.' },
-  //   { id: '5', title: 'Account Setup Successfully!', description: 'Your account has been created.' },
-  // ];
   const dispatch = useDispatch();
   const notifications = useSelector((state) => state.notifications.notifications); // Update with the correct path to your state
-
-  // const [notifications, setNotifications] = useState([]);
-
-  // const fetchNotifications = () => {
-  //   PushNotification.getDeliveredNotifications((deliveredNotifications) => {
-  //     // console.log('Delivered Notifications:', deliveredNotifications);
-  //     setNotifications(deliveredNotifications);
-  //   });
-  // };
-
-  // const listenForPushNotifications = () => {
-  //   messaging().onMessage(async (remoteMessage) => {
-  //     // console.log('Push Notification Received:', remoteMessage);
-  //     setNotifications(remoteMessage);
-  //   });
-  // };
-
-  // const listenForForegroundPushNotifications = () => {
-  //   messaging().onMessage(async (remoteMessage) => {
-  //     console.log('Foreground Push Notification:', remoteMessage);
-  
-  //     // Check if notification is not already added
-  //     setNotifications(remoteMessage);
-  //   });
-  // };
-
-  // useEffect(() => {
-  //   fetchNotifications();
-  //   listenForPushNotifications();
-  //   listenForForegroundPushNotifications();
-  // }, []);
 
   useEffect(() => {
     dispatch(resetNotificationCount());
   }, [dispatch]);
 
   
-  const removeNotification = (id) => {
-    // Remove the notification from PushNotification
-    PushNotification.removeDeliveredNotifications([id]);
-  
-    // Dispatch the REMOVE_NOTIFICATION action to update the Redux store
-    dispatch({
-      type: 'REMOVE_NOTIFICATION',
-      payload: { id: id },
-    });
-  };
-  
 
   const renderNotification = ({ item }) => (
     <Swipeable
-      // onSwipeableRightOpen={() => removeNotification(item.identifier)}
-      // renderRightActions={() => (
-      //   <View style={styles.swipeAction}>
-      //     <Icon name="close" size={24} color={blackColor} />
-      //   </View>
-      // )}
     >
       <View style={styles.notificationItemContainer}>
         <View style={styles.notificationImageWrapper}>

@@ -10,7 +10,6 @@ import OTPTextInput from 'react-native-otp-textinput';
 import { CONTINUE, ENTER_EMAIL_OR_PHONE, ENTER_THE_OTP_SEND_TO, GENERATE_OTP, MOBILE_OR_EMAIL, OTP_NOT_RECEIVED, OTP_VERIFICATION, RESEND_CODE, SUCCESSFULLY, VERIFICATION_SUCCESSFULL_MESSAGE, CONNECTION_ID, encryptedApiSecret, encryptedAppId, encryptedUserAgent, API_SECRET, APP_ID, APP_USER_AGENT } from '../constants/Constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { triggerLocalNotification } from '../notificationService';
-import LoaderModal from '../components/modals/LoaderModal';
 import Ionicons from 'react-native-vector-icons/dist/Ionicons';
 import { encrypt } from '../encrypt';
 
@@ -25,7 +24,7 @@ const SignUpScreen = ({ navigation }) => {
   const [authtoken, setAuthToken] = useState('');
   const [token, setToken] = useState('');
   const [loading, setLoading] = useState(false);
-  const [countdown, setCountdown] = useState(0); // Countdown state
+  const [countdown, setCountdown] = useState(0); 
   const [isResendEnabled, setIsResendEnabled] = useState(true);
 
   // Timer effect
@@ -37,22 +36,22 @@ const SignUpScreen = ({ navigation }) => {
       }, 1000);
     } else {
       clearInterval(timer);
-      setIsResendEnabled(true); // Enable resend button after timer ends
+      setIsResendEnabled(true); 
     }
 
-    return () => clearInterval(timer); // Cleanup interval
+    return () => clearInterval(timer);
   }, [countdown]);
 
   const validateInputValue = () => {
     if (!inputValue.trim()) {
-      setErrorMessage("This field is required");
+      setErrorMessage("Email is required");
       return false;
     }
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const phoneRegex = /^\+?\d{10,15}$/;
 
-    if (!emailRegex.test(inputValue) && !phoneRegex.test(inputValue)) {
-      setErrorMessage("Please enter a valid email or phone number");
+    if (!emailRegex.test(inputValue)) {
+      setErrorMessage("Please enter a valid email");
       return false;
     }
 
@@ -68,7 +67,7 @@ const SignUpScreen = ({ navigation }) => {
     return true;
   };
 
-  const handleGenerateOtp = () => { 
+  const handleGenerateOtp = () => {
     // Validate the input value before proceeding
     if (!validateInputValue()) {
       return; // Exit if validation fails
@@ -104,13 +103,13 @@ const SignUpScreen = ({ navigation }) => {
       body: JSON.stringify(payload),
       headers: {
         "Content-Type": "application/json",
-       "x-api-secret": encrypt(API_SECRET),
+        "x-api-secret": encrypt(API_SECRET),
         "x-app-id": encrypt(APP_ID),
         "User-Agent": encrypt(APP_USER_AGENT),
       },
     };
-    console.log("formdataa",requestOptions);
-    
+    console.log("formdataa", requestOptions);
+
     console.log("payload", JSON.stringify(payload));
 
     // Send the OTP request
@@ -125,7 +124,8 @@ const SignUpScreen = ({ navigation }) => {
           setAuthToken(result.authToken);
           console.log("OTP sent successfully:", result);
         } else {
-          setErrorMessage(result.message === 'User not found' && "User not found. Please register on website First." || "Failed to send OTP.");
+          setErrorMessage("Invalid Credential");
+          // setErrorMessage(result.message === 'User not found' && "User not found. Please register on website First." || "Failed to send OTP.");
         }
       })
       .catch((error) => {
@@ -134,7 +134,7 @@ const SignUpScreen = ({ navigation }) => {
         setErrorMessage("An error occurred while sending OTP.");
       });
   };
- 
+
   const handleOtpSubmit = async () => {
     if (!validateOtp()) {
       return; // Exit if validation fails
@@ -191,7 +191,6 @@ const SignUpScreen = ({ navigation }) => {
   const handleContinue = async () => {
     await AsyncStorage.setItem("userToken", token);
     navigation.replace('TabNavigator');
-    // triggerLocalNotification("Welcome!", "Welcome to the app");
     setIsSuccessModalVisible(false);
   };
 
@@ -219,7 +218,6 @@ const SignUpScreen = ({ navigation }) => {
             <Text style={[styles.title, textAlign]}>{ENTER_EMAIL_OR_PHONE}</Text>
             <Text style={{ marginBottom: spacings.large, marginTop: spacings.ExtraLarge }}>{MOBILE_OR_EMAIL}</Text>
             <View style={[styles.inputContainer, flexDirectionRow, alignItemsCenter, borderRadius10]}>
-              {/* <Text style={styles.countryCode}>+61</Text> */}
               <TextInput
                 style={[styles.textInput, flex]}
                 placeholder={ENTER_EMAIL_OR_PHONE}
@@ -230,11 +228,11 @@ const SignUpScreen = ({ navigation }) => {
               />
             </View>
             {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
-            {errorMessage === "User not found. Please register on website First." && (
+            {/* {errorMessage === "User not found. Please register on website First." && (
               <TouchableOpacity onPress={() => Linking.openURL("https://saasintegration.myshopify.com/account/register")}>
                 <Text style={styles.registerLink}>Click here to register</Text>
               </TouchableOpacity>
-            )}
+            )} */}
             <View style={{ marginTop: 40 }}>
               <CustomButton title={GENERATE_OTP} onPress={handleGenerateOtp} isLoading={loading} />
             </View>

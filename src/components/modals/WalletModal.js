@@ -41,13 +41,6 @@ const WalletModal = ({ visible, onClose, transaction }) => {
             Points {item.transaction_type === "earned" ? "Earned" : "Spent"}
           </Text>
           <Text style={[styles.modalDescription, textAlign]}>
-            {/* {item?.adjustment_reason === "points_refunded"
-              ? "Refunded points on Feathers"
-              : item?.transaction_type === "earned"
-                ? "Purchased on Feathers"
-                : item?.transaction_type === "redeemed"
-                  ? "Spent points on Feathers"
-                  : "Transaction on Feathers"} */}
             {
               item?.adjustment_reason === "birthday"
                 ? "Birthday points"
@@ -65,10 +58,10 @@ const WalletModal = ({ visible, onClose, transaction }) => {
           </View>
           <Text style={styles.modalDate}>{formatDate(item.created_at)}</Text>
           {
-          // (
-          //   item.transaction_type != "redeemed" && 
-            orders[0]?.uid
-            // ) 
+            (
+              item.transaction_type != "redeemed" &&
+              orders[0]?.uid
+            )
             && <View style={styles.separator} />}
           {/* {id &&
             <View style={[{ width: "100%" }, alignItemsCenter, flexDirectionRow]}>
@@ -85,8 +78,8 @@ const WalletModal = ({ visible, onClose, transaction }) => {
             </View>
           } */}
           {
-          // item.transaction_type != "redeemed" && 
-          orders[0]?.uid &&
+            item.transaction_type != "redeemed" &&
+            orders[0]?.uid &&
             <View style={[{ width: "100%", paddingVertical: 5 }, alignItemsCenter, flexDirectionRow]}>
               <View style={{ width: "44%" }}>
                 <Text style={[styles.transactionDetails, { color: blackColor }]}>

@@ -12,7 +12,6 @@ import messaging from '@react-native-firebase/messaging';
 import PushNotification from 'react-native-push-notification';
 import { useFocusEffect } from '@react-navigation/native';
 import { addNotification } from '../redux/actions';
-import LoaderModal from '../components/modals/LoaderModal';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { BASE_URL, PLUGGIN_ID } from '../constants/Constants';
 import ContentLoader, { Rect, Circle } from 'react-content-loader/native'; // Import the ContentLoader for React Native
@@ -24,8 +23,6 @@ const TierScreen = ({ navigation }) => {
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const reversedData = [...levels].reverse();
-
-
 
   const fetchTiers = async () => {
     setLoading(true);
@@ -78,7 +75,7 @@ const TierScreen = ({ navigation }) => {
             points: item.threshold,
             achieved: achieved || (item.name !== currentTier && !foundCurrentTier),
             isInProgress: isInProgress,
-            icon: getTierIcon(item.name, achieved),
+            icon: getTierIcon(item.name, achieved || (item.name !== currentTier && !foundCurrentTier)),
           });
 
           if (item.name === currentTier) {
@@ -168,10 +165,8 @@ const TierScreen = ({ navigation }) => {
   };
 
   const renderItem = ({ item, index }) => {
-    // console.log("item:::", item)
     const isLastItem = index === reversedData.length - 1; // Using reversed data
     const isItemAchievedOrInProgress = item.achieved || item.isInProgress;
-    const nextItem = !isLastItem ? reversedData[index + 1] : null;
     return (
       <View style={[styles.itemContainer, flexDirectionRow, alignItemsFlexStart]}>
         <View style={[styles.iconContainer, alignItemsCenter]}>
@@ -204,7 +199,6 @@ const TierScreen = ({ navigation }) => {
           )}
           {item.isInProgress && (
             <View style={styles.statusIcon}>
-              {/* <MaterialIcons name="sync" size={23} color="gray" /> */}
               <Image source={PROCESSING_ICON} style={{ resizeMode: "contain", width: 17, height: 17 }} />
             </View>
           )}
@@ -213,7 +207,7 @@ const TierScreen = ({ navigation }) => {
     );
   };
   const Loader = () => {
-    const loaderArray = new Array(4).fill(null); // Create an array with 4 elements
+    const loaderArray = new Array(4).fill(null);
 
     return (
       <View>
