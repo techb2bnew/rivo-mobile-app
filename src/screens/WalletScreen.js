@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, Text, Image, Pressable, Modal, TouchableOpacity, ActivityIndicator, RefreshControl } from 'react-native';
+import { View, StyleSheet, Text, Image, Pressable, Modal, TouchableOpacity, ActivityIndicator, RefreshControl, ScrollView } from 'react-native';
 import { grayColor, whiteColor, blackColor, mediumGray, redColor } from '../constants/Color';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from '../utils';
 import { spacings, style } from '../constants/Fonts';
@@ -12,6 +12,7 @@ import WalletModal from '../components/modals/WalletModal';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import LoaderModal from '../components/modals/LoaderModal';
 import ContentLoader, { Rect, Circle } from 'react-content-loader/native';
+import { resetToAuthStack } from '../NavigationService';
 const { flex, flexDirectionRow, alignJustifyCenter, resizeModeContain, resizeModeCover, justifyContentSpaceBetween, justifyContentCenter, borderRadius10, borderWidth1, textAlign, alignItemsCenter, justifyContentSpaceEvenly } = BaseStyle;
 
 const WalletScreen = ({ navigation }) => {
@@ -39,6 +40,7 @@ const WalletScreen = ({ navigation }) => {
       if (!token) {
         setLoading(false)
         console.log("Token not found");
+        await resetToAuthStack();
         return;
       }
 
@@ -58,6 +60,11 @@ const WalletScreen = ({ navigation }) => {
       };
 
       const response = await fetch(url, requestOptions);
+      console.log("Response Status:", response.status);
+      if (response.status === 401) {
+        await resetToAuthStack();
+      }
+
       if (!response.ok) {
         throw new Error(`Error: ${response.status} - ${response.statusText}`);
       }
@@ -110,7 +117,8 @@ const WalletScreen = ({ navigation }) => {
       const token = await AsyncStorage.getItem("userToken");
 
       if (!token) {
-        console.log("Token not found");
+        console.log('No authentication token found');
+        await resetToAuthStack();
         return;
       }
 
@@ -132,7 +140,9 @@ const WalletScreen = ({ navigation }) => {
       // Fetch wallet details
       const response = await fetch(url, requestOptions);
       console.log("Response status:", response.status);
-
+      if (response.status === 401) {
+        await resetToAuthStack();
+      }
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
@@ -149,13 +159,11 @@ const WalletScreen = ({ navigation }) => {
 
 
   const openModal = async (item) => {
-    // setLoading(true);
     setModalVisible(false)
     try {
       const walletDetail = await getWalletDetail(item.id);
       setSelectedTransaction({ ...walletDetail.data, item })
       setModalVisible(true);
-      // console.log("Wallet Details Fetched:", walletDetail.data);
     } catch (error) {
       console.error("Error fetching wallet details:", error);
       setSelectedTransaction(null);
@@ -177,10 +185,6 @@ const WalletScreen = ({ navigation }) => {
       .join(" ");
   };
 
-  useEffect(() => {
-    console.log('loading:', loading);
-    console.log('showBarcodeModal:', modalVisible);
-  }, [loading, modalVisible]);
 
   const renderTransaction = ({ item }) => {
     // Function to format the date

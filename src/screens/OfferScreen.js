@@ -139,9 +139,7 @@ const OfferScreen = ({ navigation }) => {
                         <Text style={[styles.sectionHeader, textAlign]}>Luxury In Layers</Text>
                         <FlatList
                             data={offers.slice(3, 6)}
-                            // data={offers.filter((_, index) => index > 2)}
                             horizontal
-                            // keyExtractor={(item) => item.id}
                             contentContainerStyle={styles.categories}
                             showsHorizontalScrollIndicator={false}
                             scrollEnabled={false}
@@ -160,7 +158,6 @@ const OfferScreen = ({ navigation }) => {
                         <FlatList
                             data={offers?.slice(7, 8)}
                             horizontal
-                            // keyExtractor={(item) => item.id}
                             contentContainerStyle={{ width: "100%" }}
                             showsHorizontalScrollIndicator={false}
                             scrollEnabled={false}
@@ -204,8 +201,7 @@ const OfferScreen = ({ navigation }) => {
                             right: 0,
                             bottom: 0,
                             backgroundColor: lightGrayColor,
-                            // alignItems: "center",
-                            // justifyContent: "center",
+                            
                             zIndex: 9999,
                         }}
                     >

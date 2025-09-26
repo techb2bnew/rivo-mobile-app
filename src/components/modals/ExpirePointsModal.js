@@ -9,6 +9,11 @@ import { BaseStyle } from '../../constants/Style';
 const { textAlign, alignJustifyCenter, flex, borderRadius10, alignItemsCenter, flexDirectionRow, justifyContentSpaceBetween } = BaseStyle;
 
 const ExpirePointsModal = ({ visible, onClose, data, point }) => {
+    const formatDate = (dateString) => {
+        const date = new Date(dateString);
+        const options = { day: 'numeric', month: 'long', year: 'numeric' };
+        return date.toLocaleDateString('en-GB', options); // Example: "28 May 2025"
+    };
     return (
         <Modal
             transparent
@@ -32,7 +37,7 @@ const ExpirePointsModal = ({ visible, onClose, data, point }) => {
                         <Text style={styles.headerText}>Points</Text>
                     </View>
 
-                   
+
 
                     <View
                         style={[
@@ -41,7 +46,7 @@ const ExpirePointsModal = ({ visible, onClose, data, point }) => {
                             flexDirectionRow
                         ]}
                     >
-                        <Text style={styles.rowText}>{data}</Text>
+                        <Text style={styles.rowText}>{formatDate(data)}</Text>
                         <Text style={styles.rowText}>{point}</Text>
                     </View>
 

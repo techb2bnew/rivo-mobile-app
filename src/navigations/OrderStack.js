@@ -4,6 +4,7 @@ import NotificationScreen from '../screens/NotificationScreen';
 import WalletScreen from '../screens/WalletScreen';
 import OrderHistoryScreen from '../screens/OrderHistoryScreen';
 import OrderDetailsScreen from '../screens/OrderDetailsScreen';
+import AuthNavigator from './AuthNavigator';
 
 const Stack = createStackNavigator();
 
@@ -14,6 +15,8 @@ const OrderStack = () => {
       <Stack.Screen name="OrderDetails" component={OrderDetailsScreen} />
       <Stack.Screen name="Notification" component={NotificationScreen} />
       <Stack.Screen name="Wallet" component={WalletScreen} />
+       <Stack.Screen name="AuthNavigator" component={AuthNavigator} />
+
     </Stack.Navigator>
   );
 };

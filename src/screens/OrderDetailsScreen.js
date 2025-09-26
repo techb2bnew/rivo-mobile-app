@@ -10,6 +10,7 @@ import { BASE_URL, DELIVERY_METHOD, LOCATION, PRICE_DETAILS, SHIPPING, SUBTOTAL,
 import LoaderModal from '../components/modals/LoaderModal';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ContentLoader, { Rect, Circle } from 'react-content-loader/native';
+import { resetToAuthStack } from '../NavigationService';
 
 const { flex, alignItemsCenter, alignItemsFlexStart, flexDirectionRow, textAlign, justifyContentSpaceBetween, borderRadius10, resizeModeContain, resizeModeCover, positionAbsolute, alignJustifyCenter } = BaseStyle;
 
@@ -33,6 +34,7 @@ const OrderDetailsScreen = ({ route, navigation }) => {
             const token = await AsyncStorage.getItem('userToken');
             if (!token) {
                 console.log('No authentication token found');
+                await resetToAuthStack();
                 return;
             }
             setLoading(true)
@@ -42,6 +44,11 @@ const OrderDetailsScreen = ({ route, navigation }) => {
                     Authorization: `Bearer ${token}`,
                 },
             });
+            if (response.status === 401) {
+                console.log("Unauthorized access. Resetting to Auth Stack.");
+                await resetToAuthStack();
+                return;
+            }
             const responseText = await response.text();
             const result = JSON.parse(responseText);
             console.log("fetching order details:", result.data);
@@ -82,7 +89,6 @@ const OrderDetailsScreen = ({ route, navigation }) => {
 
     const formattedDate = formatDate(orderDetails?.order_created_at);
     const formattedTime = formatTime(orderDetails?.order_created_at);
-    // console.log("orderDetails?.order_created_at", orderDetails?.order_created_at);
 
     return (
         <View style={[styles.container, flex]}>
@@ -92,7 +98,6 @@ const OrderDetailsScreen = ({ route, navigation }) => {
                 </Pressable>
             </View>
             {loading ? (
-                // <LoaderModal visible={loading} message="Please wait..." />
                 <ContentLoader height={950} width="100%" speed={1.5} backgroundColor="#f3f3f3" foregroundColor={grayColor}>
                     {/* Top section - Order ID and Date */}
                     <Rect x="10" y="20" width="70%" height="30" /> {/* Order ID */}

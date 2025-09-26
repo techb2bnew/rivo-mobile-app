@@ -30,7 +30,9 @@ const ProfileScreen = ({ navigation }) => {
           console.log("working use Focus Effect", token);
           if (!token) {
             setError('Token not found');
+            console.log("Token not found");
             setLoading(false);
+            await resetToAuthStack();
             return;
           }
 
@@ -41,6 +43,7 @@ const ProfileScreen = ({ navigation }) => {
               Authorization: `Bearer ${token}`,
             },
           });
+          console.log("response", response?.status);
 
           if (response.data.success) {
             setProfileData(response.data);
@@ -49,7 +52,14 @@ const ProfileScreen = ({ navigation }) => {
             setError('Failed to fetch data');
           }
         } catch (err) {
-          setError('Error fetching data');
+          if (err.response) {
+            console.error('API Error:', err.response.status);
+            if (err.response.status === 401) {
+              await resetToAuthStack();
+            }
+          } else {
+            console.error('Error:', err.message);
+          }
         } finally {
           setLoading(false);
         }

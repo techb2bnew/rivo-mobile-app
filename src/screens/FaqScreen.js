@@ -16,7 +16,8 @@ const FAQScreen = ({ navigation }) => {
         {
             id: '2',
             question: 'How do I subscribe?',
-            answer: 'To subscribe to the Feathers Boutique mailing list, follow this link.'
+            answer: 'To subscribe to the Feathers Boutique mailing list, follow this link.',
+            link: "https://www.feathers.com.au/pages/sign-up"
         },
         {
             id: '3',
@@ -31,7 +32,9 @@ const FAQScreen = ({ navigation }) => {
         {
             id: '5',
             question: 'How do I change my order?',
-            answer: 'If your order has been processed and completed, you cannot change your online purchase. Please wait until your item arrives, follow the Returns Policy to return your item, and then re-purchase your preferred items.'
+            answer: 'If your order has been processed and completed, you cannot change your online purchase. Please wait until your item arrives, follow the Returns Policy to return your item, and then re-purchase your preferred items.',
+            link: "https://www.feathers.com.au/pages/refund-policy"
+
         },
         {
             id: '6',
@@ -74,7 +77,9 @@ const FAQScreen = ({ navigation }) => {
         {
             id: '12',
             question: 'What is the Feathers Return Policy?',
-            answer: 'Feathers will provide a refund for online purchases provided they are returned within 14 days of purchase, unwashed and unworn, in their original condition with all tags in place with a completed Returns Slip. Please note that items that are marked down as final sale cannot be refunded.'
+            answer: 'Feathers will provide a refund for online purchases provided they are returned within 14 days of purchase, unwashed and unworn, in their original condition with all tags in place with a completed Returns Slip. Please note that items that are marked down as final sale cannot be refunded.',
+            link: "https://www.feathers.com.au/pages/refund-policy"
+
         },
         {
             id: '13',

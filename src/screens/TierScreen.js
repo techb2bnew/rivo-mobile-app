@@ -10,11 +10,12 @@ import MaterialIcons from 'react-native-vector-icons/dist/MaterialIcons';
 import { useDispatch } from 'react-redux';
 import messaging from '@react-native-firebase/messaging';
 import PushNotification from 'react-native-push-notification';
-import { useFocusEffect } from '@react-navigation/native';
+import { CommonActions, useFocusEffect } from '@react-navigation/native';
 import { addNotification } from '../redux/actions';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { BASE_URL, PLUGGIN_ID } from '../constants/Constants';
+import { BASE_URL, logout, PLUGGIN_ID } from '../constants/Constants';
 import ContentLoader, { Rect, Circle } from 'react-content-loader/native'; // Import the ContentLoader for React Native
+import { resetToAuthStack } from '../NavigationService';
 const { flex, alignItemsCenter, alignItemsFlexStart, flexDirectionRow, textAlign, justifyContentCenter, borderRadius10, resizeModeContain, resizeModeCover, positionAbsolute, alignJustifyCenter } = BaseStyle;
 
 const TierScreen = ({ navigation }) => {
@@ -23,7 +24,6 @@ const TierScreen = ({ navigation }) => {
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const reversedData = [...levels].reverse();
-
   const fetchTiers = async () => {
     setLoading(true);
     try {
@@ -34,9 +34,10 @@ const TierScreen = ({ navigation }) => {
       if (!token) {
         console.warn("Token missing in AsyncStorage");
         setLoading(false);
+        await resetToAuthStack();
         return;
       }
-
+     
       if (!currentTier) {
         console.warn("Current tier missing in AsyncStorage");
         setLoading(false);
@@ -58,6 +59,10 @@ const TierScreen = ({ navigation }) => {
 
       // Fetch data from API
       const response = await fetch(url, requestOptions);
+      console.log("API response status:", response.status);
+      if (response.status === 401) {
+        await resetToAuthStack();
+      }
       const result = await response.json();
 
       if (result.success) {
@@ -302,7 +307,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   statusIcon: {
-    // backgroundColor:"red",
     alignItems: "center",
     justifyContent: 'center',
     height: wp(15)

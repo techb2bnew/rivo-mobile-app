@@ -5,13 +5,14 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import CustomSplashScreen from './src/screens/splashscren';
 import TabNavigator from './src/navigations/TabNavigator';
 import AuthNavigator from './src/navigations/AuthNavigator';
-import NetInfo from '@react-native-community/netinfo'; 
+import NetInfo from '@react-native-community/netinfo';
 import Toast from './src/components/Toast';
 import PushNotification from 'react-native-push-notification';
 import messaging from '@react-native-firebase/messaging';
-import { Provider} from 'react-redux';
+import { Provider } from 'react-redux';
 import store from './src/redux/store';
 import FAQScreen from './src/screens/FAQScreen';
+import RootNavigator from './src/navigations/RootNavigator';
 
 function App(): React.JSX.Element {
   const [showSplash, setShowSplash] = useState(true);
@@ -37,7 +38,7 @@ function App(): React.JSX.Element {
       (created) => console.log(`Notification Channel Created: ${created}`)
     );
     PushNotification.configure({
-      onNotification: function(notification) {
+      onNotification: function (notification) {
         console.log('Notification:', notification);
       },
       popInitialNotification: true,
@@ -59,8 +60,8 @@ function App(): React.JSX.Element {
 
           // Get the FCM token and save it
           const token = await messaging().getToken();
-          console.log('FCM Token:', token); 
-          
+          console.log('FCM Token:', token);
+
           // Store the token in AsyncStorage for future use
           await AsyncStorage.setItem('fcmToken', token);
         }
@@ -90,15 +91,15 @@ function App(): React.JSX.Element {
       if (!state.isConnected) {
         setToastMessage('No Internet Connection. Please check your internet connection.');
         setIsConnected(false);
-        setToastVisible(true); 
+        setToastVisible(true);
       } else {
         setToastMessage('');
         setIsConnected(true);
-        setToastVisible(false); 
+        setToastVisible(false);
       }
 
       if (!state.isConnected) {
-        setTimeout(() => setToastVisible(false), 5000); 
+        setTimeout(() => setToastVisible(false), 5000);
       }
     });
 
@@ -111,8 +112,10 @@ function App(): React.JSX.Element {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <Provider store={store}>
-      <NavigationContainer>
-        {showSplash ? (
+        <RootNavigator isLoggedIn={isLoggedIn} showSplash={showSplash} />
+        <Toast message={toastMessage} visible={toastVisible} />
+        {/* <NavigationContainer> */}
+        {/* {showSplash ? (
           <CustomSplashScreen />
         ) : isLoggedIn ? (
           <TabNavigator />
@@ -120,7 +123,8 @@ function App(): React.JSX.Element {
           <AuthNavigator screen="SignUp" />
         )}
       </NavigationContainer>
-      <Toast message={toastMessage} visible={toastVisible} />
+      <Toast message={toastMessage} visible={toastVisible} /> */}
+      <Toast message={toastMessage} visible={toastVisible} /> 
       </Provider>
     </SafeAreaView>
   );

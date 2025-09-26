@@ -8,14 +8,32 @@ import OfferStack from './offerStack';
 import TierStack from './TierStack';
 import OrderStack from './OrderStack';
 import ProfileStack from './ProfileStack';
+import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
+
 
 const Tab = createBottomTabNavigator();
+
+const getTabBarStyle = (route) => {
+  const routeName = getFocusedRouteNameFromRoute(route) ?? '';
+
+  const hideOnScreens = ['AuthStack','AuthNavigator']; // List your auth screen names here
+
+  if (hideOnScreens.includes(routeName)) {
+    return { display: 'none' };
+  }
+
+  return {
+    paddingBottom: 5,
+  };
+};
 
 const TabNavigator = () => {
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
         headerShown: false,
+        tabBarStyle: getTabBarStyle(route),
+
         tabBarIcon: ({ focused, color, size }) => {
           let iconSource;
           if (route.name === 'Dashboard') {
@@ -37,22 +55,20 @@ const TabNavigator = () => {
                 height: 24,
                 tintColor: focused ? blackColor : 'gray',
                 alignSelf: 'center',
-                resizeMode:"contain"
+                resizeMode: "contain"
               }}
             />
           );
         },
         tabBarLabel: () => null,
-        tabBarStyle: {
-          paddingBottom: 5, 
-        },
+      
       })}
     >
-      <Tab.Screen name="Dashboard" component={DashboardStack}  options={{ unmountOnBlur: true }}/>
-      <Tab.Screen name="Offers" component={OfferStack}  options={{ unmountOnBlur: true }}/>
-      <Tab.Screen name="Tier" component={TierStack}  options={{ unmountOnBlur: true }}/>
-      <Tab.Screen name="OrderHistory" component={OrderStack}  options={{ unmountOnBlur: true }}/>
-      <Tab.Screen name="Profile" component={ProfileStack}  options={{ unmountOnBlur: true }}/>
+      <Tab.Screen name="Dashboard" component={DashboardStack} options={{ unmountOnBlur: true }} />
+      <Tab.Screen name="Offers" component={OfferStack} options={{ unmountOnBlur: true }} />
+      <Tab.Screen name="Tier" component={TierStack} options={{ unmountOnBlur: true }} />
+      <Tab.Screen name="OrderHistory" component={OrderStack} options={{ unmountOnBlur: true }} />
+      <Tab.Screen name="Profile" component={ProfileStack} options={{ unmountOnBlur: true }} />
     </Tab.Navigator>
   );
 };

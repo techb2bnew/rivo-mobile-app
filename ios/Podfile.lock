@@ -1418,6 +1418,28 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
+  - react-native-simple-toast (3.3.2):
+    - DoubleConversion
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2024.10.14.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - Toast (~> 4)
+    - Yoga
   - react-native-webview (13.12.5):
     - DoubleConversion
     - glog
@@ -1962,6 +1984,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - Yoga
   - SocketRocket (0.7.1)
+  - Toast (4.1.1)
   - Yoga (0.0.0)
 
 DEPENDENCIES:
@@ -2007,6 +2030,7 @@ DEPENDENCIES:
   - react-native-get-random-values (from `../node_modules/react-native-get-random-values`)
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
+  - react-native-simple-toast (from `../node_modules/react-native-simple-toast`)
   - react-native-webview (from `../node_modules/react-native-webview`)
   - React-nativeconfig (from `../node_modules/react-native/ReactCommon`)
   - React-NativeModulesApple (from `../node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios`)
@@ -2060,6 +2084,7 @@ SPEC REPOS:
     - nanopb
     - PromisesObjC
     - SocketRocket
+    - Toast
 
 EXTERNAL SOURCES:
   boost:
@@ -2143,6 +2168,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-community/netinfo"
   react-native-safe-area-context:
     :path: "../node_modules/react-native-safe-area-context"
+  react-native-simple-toast:
+    :path: "../node_modules/react-native-simple-toast"
   react-native-webview:
     :path: "../node_modules/react-native-webview"
   React-nativeconfig:
@@ -2273,6 +2300,7 @@ SPEC CHECKSUMS:
   react-native-get-random-values: 21325b2244dfa6b58878f51f9aa42821e7ba3d06
   react-native-netinfo: f0a9899081c185db1de5bb2fdc1c88c202a059ac
   react-native-safe-area-context: 5f606552b691af80cb4b1c9aabacfef66fa24fc4
+  react-native-simple-toast: 967a55d148cf332a665b2e99857c06a92ea4f07f
   react-native-webview: a2382d7bf7ed34e98ab8075ff176a4c9959329d6
   React-nativeconfig: 415626a63057638759bcc75e0a96e2e07771a479
   React-NativeModulesApple: bffc60f55895c2723b1e5472fa40567fe3df4923
@@ -2312,6 +2340,7 @@ SPEC CHECKSUMS:
   RNSVG: 4e70cf02ec5acab831eaa44c9027c8d9fb8469d4
   RNVectorIcons: a4221a7b9121b3ebfc5674165e9ad1c43b82d860
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
+  Toast: 1f5ea13423a1e6674c4abdac5be53587ae481c4e
   Yoga: 1259c7a8cbaccf7b4c3ddf8ee36ca11be9dee407
 
 PODFILE CHECKSUM: 869c434657df94f89a054ba3db9f9c4b8ef0d533

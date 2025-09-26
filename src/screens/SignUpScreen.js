@@ -124,8 +124,14 @@ const SignUpScreen = ({ navigation }) => {
           setAuthToken(result.authToken);
           console.log("OTP sent successfully:", result);
         } else {
-          setErrorMessage("Invalid Credential");
-          // setErrorMessage(result.message === 'User not found' && "User not found. Please register on website First." || "Failed to send OTP.");
+          console.log("result.message", result);
+          if (result.message === "User not found") {
+            setErrorMessage("User not found. Please register on website First.");
+          } else if (result.message === "Invalid credentials") {
+            setErrorMessage("Invalid credential. Please check your input.");
+          } else {
+            setErrorMessage("Failed to send OTP.");
+          }
         }
       })
       .catch((error) => {
@@ -228,11 +234,11 @@ const SignUpScreen = ({ navigation }) => {
               />
             </View>
             {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
-            {/* {errorMessage === "User not found. Please register on website First." && (
-              <TouchableOpacity onPress={() => Linking.openURL("https://saasintegration.myshopify.com/account/register")}>
+            {errorMessage === "User not found. Please register on website First." && (
+              <TouchableOpacity onPress={() => Linking.openURL("https://www.feathers.com.au/account/register")}>
                 <Text style={styles.registerLink}>Click here to register</Text>
               </TouchableOpacity>
-            )} */}
+            )}
             <View style={{ marginTop: 40 }}>
               <CustomButton title={GENERATE_OTP} onPress={handleGenerateOtp} isLoading={loading} />
             </View>
@@ -349,7 +355,7 @@ const styles = StyleSheet.create({
     fontSize: style.fontSizeNormal.fontSize,
   },
   registerLink: {
-    color: "#1E88E6",  // Customize with your preferred color
+    color: "#1E88E6",  
     fontWeight: '600',
     textDecorationLine: 'underline',
     marginTop: 5,

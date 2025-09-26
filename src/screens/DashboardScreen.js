@@ -21,6 +21,7 @@ import BiometricModal from '../components/modals/BiometricModal';
 import Icon from 'react-native-vector-icons/Ionicons';
 import ContentLoader, { Rect, Circle } from 'react-content-loader/native';
 import { encrypt } from '../encrypt';
+import { resetToAuthStack } from '../NavigationService';
 
 const { flex, alignItemsCenter, flexDirectionRow, alignJustifyCenter, borderRadius10, resizeModeContain, resizeModeCover, positionAbsolute, justifyContentSpaceBetween, textAlign } = BaseStyle;
 
@@ -164,7 +165,7 @@ const DashBoardScreen = ({ navigation }) => {
                     // "Content-Type": "application/json",
                     "x-api-secret": encrypt(API_SECRET),
                     "x-app-id": encrypt(APP_ID),
-                    "User-Agent": encrypt(APP_USER_AGENT),
+                    "x-user-Agent": encrypt(APP_USER_AGENT),
                 },
             };
 
@@ -209,9 +210,10 @@ const DashBoardScreen = ({ navigation }) => {
     const fetchProfileData = async () => {
         try {
             const token = await AsyncStorage.getItem('userToken');
-
             if (!token) {
-                throw new Error('Token not found');
+                console.log('No authentication token found');
+                await resetToAuthStack();
+                return;
             }
             const response = await axios.get(`${BASE_URL}/api/profile`, {
                 headers: {
@@ -220,7 +222,7 @@ const DashBoardScreen = ({ navigation }) => {
                 },
             });
 
-            if (response.data.success) {
+            if (response?.data?.success) {
                 console.log("response.data?.data", response.data?.data)
                 const availablePoints = response.data?.data?.available_loyalty_points;
                 setTierStatus(response.data?.data.tier_groups?.[0]?.name)
@@ -235,7 +237,14 @@ const DashBoardScreen = ({ navigation }) => {
                 throw new Error('Failed to fetch profile data');
             }
         } catch (err) {
-            console.error('Error fetching profile data:', err.message || err);
+            if (err.response) {
+                console.error('API Error:', err.response.status);
+                if (err.response.status === 401) {
+                    await resetToAuthStack();
+                }
+            } else {
+                console.error('Error:', err.message);
+            }
         }
     };
 
@@ -244,6 +253,7 @@ const DashBoardScreen = ({ navigation }) => {
             const token = await AsyncStorage.getItem('userToken');
             if (!token) {
                 console.log('No authentication token found');
+                await resetToAuthStack();
                 return;
             }
             const myHeaders = new Headers();
@@ -257,10 +267,12 @@ const DashBoardScreen = ({ navigation }) => {
                 `${BASE_URL}/api/orders?page=1&per_page=30&from_date=${from_date}&to_date=${to_date}`,
                 { method: "GET", headers: myHeaders }
             );
-
+            console.log("Response Status:", response.status);
+            if (response.status === 401) {
+                await resetToAuthStack();
+            }
             const result = await response.json();
-            console.log("result.data.data", result.data.orders.length);
-            dispatch(saveOrderLength(result.data.orders.length));
+            dispatch(saveOrderLength(result?.data?.orders?.length));
         } catch (error) {
             console.error("Error fetching orders:", error.message);
         }
@@ -310,8 +322,8 @@ const DashBoardScreen = ({ navigation }) => {
                 {isLoading ? (
                     <ContentLoader
                         speed={2}
-                        width={wp(90)} 
-                        height={80} 
+                        width={wp(90)}
+                        height={80}
                         backgroundColor="#f0f0f0"
                         foregroundColor={grayColor}
                     >

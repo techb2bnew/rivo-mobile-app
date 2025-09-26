@@ -3,6 +3,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import NotificationScreen from '../screens/NotificationScreen';
 import WalletScreen from '../screens/WalletScreen';
 import ProfileScreen from '../screens/ProfileScreen';
+import AuthNavigator from './AuthNavigator';
 
 const Stack = createStackNavigator();
 
@@ -12,6 +13,7 @@ const ProfileStack = () => {
       <Stack.Screen name="Profile" component={ProfileScreen} />
       <Stack.Screen name="Notification" component={NotificationScreen} />
       <Stack.Screen name="Wallet" component={WalletScreen} />
+      <Stack.Screen name="AuthNavigator" component={AuthNavigator} />
     </Stack.Navigator>
   );
 };

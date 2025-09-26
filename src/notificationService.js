@@ -26,18 +26,3 @@ export const triggerLocalNotification = (title, message) => {
     soundName: "default", 
   });
 };
-
-
-
-// export const scheduleNotification = () => {
-//     PushNotification.localNotificationSchedule({
-//       message: "This is a scheduled notification",
-//       date: new Date(Date.now() + 5 * 1000),
-//       title: "Scheduled Notification",
-//       largeIcon: "ic_launcher", // Custom large icon
-//       smallIcon: "ic_notification", // Custom small icon
-//       color: "#FF0000", // Custom color
-//       priority: "high", // Priority
-//       vibrate: true, // Enable vibration
-//     });
-//   };

@@ -18,6 +18,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import LoaderModal from '../components/modals/LoaderModal';
 import { saveOrderLength } from '../redux/orders/orderAction';
 import ContentLoader, { Rect, Circle } from 'react-content-loader/native';
+import { resetToAuthStack } from '../NavigationService';
 
 
 const { flex, alignItemsCenter, alignItemsFlexStart, flexDirectionRow, textAlign, justifyContentSpaceBetween, borderRadius10, resizeModeContain, resizeModeCover, positionAbsolute, alignJustifyCenter } = BaseStyle;
@@ -85,6 +86,7 @@ const OrderHistoryScreen = ({ navigation }) => {
       const token = await AsyncStorage.getItem('userToken');
       if (!token) {
         console.log('No authentication token found');
+        await resetToAuthStack();
         return;
       }
       setLoading(true);
@@ -100,7 +102,14 @@ const OrderHistoryScreen = ({ navigation }) => {
         `${BASE_URL}/api/orders?page=${page}&per_page=30&from_date=${from_date}&to_date=${to_date}`,
         { method: "GET", headers: myHeaders }
       );
+      // Log status code
+      console.log("Response status:", response.status);
 
+      // Handle unauthorized (trigger logout)
+      if (response.status === 401) {
+        console.warn("Unauthorized. Logging out...");
+        await resetToAuthStack();
+      }
       const result = await response.json();
       console.log("result.data.orders", result.data.orders);
 
@@ -206,6 +215,7 @@ const OrderHistoryScreen = ({ navigation }) => {
       if (!token) {
         console.log("No authentication token found");
         setRefreshing(false);
+        await resetToAuthStack();
         return;
       }
 
@@ -217,19 +227,22 @@ const OrderHistoryScreen = ({ navigation }) => {
         `${BASE_URL}/api/orders?page=${page}&per_page=30`,
         { method: "GET", headers: myHeaders }
       );
-
+      if (response.status === 401) {
+        console.warn("Unauthorized. Logging out...");
+        resetToAuthStack();
+      }
       const result = await response.json();
-      console.log("Fetched orders from API:", result.data.orders);
+      console.log("Fetched orders from API:", result?.data?.orders);
 
-      if (result.data.orders && result.data.orders.length > 0) {
+      if (result?.data?.orders && result?.data?.orders?.length > 0) {
         if (Platform.OS === "android") {
           // Fetch existing orders from AsyncStorage
           const existingOrders = await AsyncStorage.getItem("LocalorderData");
           const parsedOrders = existingOrders ? JSON.parse(existingOrders) : [];
 
           // Filter out duplicates before adding new orders
-          const newOrders = result.data.orders.filter(
-            (newOrder) => !parsedOrders.some((existingOrder) => existingOrder.id === newOrder.id)
+          const newOrders = result?.data?.orders?.filter(
+            (newOrder) => !parsedOrders.some((existingOrder) => existingOrder?.id === newOrder?.id)
           );
 
           // Only update if there are new unique orders
@@ -240,12 +253,12 @@ const OrderHistoryScreen = ({ navigation }) => {
           }
         } else if (Platform.OS === "ios") {
           // Add only new unique orders to Realm
-          saveOrderToRealm(result.data.orders);
+          saveOrderToRealm(result?.data?.orders);
           fetchOrdersFromRealm(); // Fetch after saving
         }
 
         // Update `page` only if 30 new items are fetched
-        if (result.data.orders.length === 30) {
+        if (result?.data?.orders?.length === 30) {
           setpage(prevPage => prevPage + 1);
         }
       }

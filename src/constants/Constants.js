@@ -33,7 +33,6 @@ export const EARNED_POINTS = "Earned Points";
 export const SPENT_POINTS = "Spent Points";
 
 export const CONNECTION_ID = "YEPM307571";
-// export const PLUGGIN_ID = "sid_0r9lx47trdc4scppekx1x";
 export const PLUGGIN_ID = "sid_8i34gkc5csx2p64mu20mt";
 export const BASE_URL = "https://publicapi.live.saasintegrator.online";
 

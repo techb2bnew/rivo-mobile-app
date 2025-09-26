@@ -63,20 +63,6 @@ const WalletModal = ({ visible, onClose, transaction }) => {
               orders[0]?.uid
             )
             && <View style={styles.separator} />}
-          {/* {id &&
-            <View style={[{ width: "100%" }, alignItemsCenter, flexDirectionRow]}>
-              <View style={{width:"44%"}}>
-                <Text style={[styles.transactionDetails, { color: blackColor }]}>
-                  Transaction ID
-                </Text>
-              </View>
-              <View style={{width:"50%"}}>
-                <Text style={[styles.transactionDetails, { color: "#1C1C1C" }]}>
-                  {id}
-                </Text>
-              </View>
-            </View>
-          } */}
           {
             item.transaction_type != "redeemed" &&
             orders[0]?.uid &&
